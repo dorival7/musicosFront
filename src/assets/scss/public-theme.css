@@ -1,0 +1,159 @@
+/* ==================================================================== */
+/* 🎨 IDENTIDADE VISUAL MESTRE - SEVENSHOWS (FIX COMPLETO DE EMPILHAMENTO) */
+/* ==================================================================== */
+.seven-portal {
+  --vz-primary: #ff6c22 !important;
+  --vz-primary-rgb: 255, 108, 34 !important;
+  --vz-success: #0ab39c !important;
+  --vz-body-bg: #0a0b10 !important;
+  --vz-body-color: #f3f4f6 !important;
+  --vz-card-bg: #131520 !important;
+  
+  background-color: #0a0b10 !important;
+  color: #f3f4f6 !important;
+  min-height: 100vh;
+}
+
+/* 🛠️ ENGENHARIA DE PROFUNDIDADE: Traz as seções e blocos do portal para a frente */
+.seven-portal .section, 
+.seven-portal .bg-light, 
+.seven-portal .custom-footer {
+  background-color: #0a0b10 !important;
+  color: #f3f4f6 !important;
+  position: relative;
+  z-index: 2 !important; /* Move para cima do plano de fundo */
+}
+
+/* 🛠️ CALIBRAÇÃO EXATA DO TOP: Força a Navbar e o Hero Públicos a aparecerem */
+.seven-portal .navbar-landing,
+.seven-portal #hero {
+  position: relative !important;
+  z-index: 9999 !important; /* Teto absoluto de empilhamento visual */
+  display: block !important;
+}
+
+/* Força a Navbar fixa no topo a manter-se visível e com fundo escuro de espetáculo */
+.seven-portal .navbar-landing.fixed-top {
+  position: fixed !important;
+  background-color: #0a0b10 !important;
+  z-index: 10000 !important;
+}
+
+/* Configura os cards, caixas e caixas de texto com o fundo grafite escuro */
+.seven-portal .card, 
+.seven-portal .plan-box, 
+.seven-portal .accordion-item {
+  background-color: #131520 !important;
+  border-color: rgba(255, 255, 255, 0.05) !important;
+  color: #ffffff !important;
+}
+
+.seven-portal .text-muted, 
+.seven-portal .text-white-50 {
+  color: #9ca3af !important;
+}
+
+.seven-portal .text-dark, 
+.seven-portal .ff-secondary {
+  color: #ffffff !important;
+}
+
+/* Ajuste dos botões de contorno para casar com o âmbar do logo */
+.seven-portal .btn-outline-primary {
+  color: #ff6c22 !important;
+  border-color: #ff6c22 !important;
+}
+.seven-portal .btn-outline-primary:hover {
+  background-color: #ff6c22 !important;
+  color: #ffffff !important;
+}
+
+/* ==================================================================== */
+/* ✨ REVOLUÇÃO VISUAL SEVENSHOWS: ELEMENTOS FLUÍDOS E ARREDONDADOS      */
+/* ==================================================================== */
+
+/* Transforma as caixas quadradas em cards modernos, fluidos e neon */
+/* ==================================================================== */
+/* ✨ REVOLUÇÃO VISUAL SEVENSHOWS - CALIBRAÇÃO DE CONTRASTE DOS BOXES    */
+/* ==================================================================== */
+
+/* Ajusta as bordas em repouso para ficarem visíveis e nítidas em qualquer tela */
+.seven-portal .modern-card {
+  background: linear-gradient(145deg, #141622, #0e1017) !important;
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.12) !important; /* Bordas nítidas em repouso */
+  border-radius: 18px !important;
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Efeito de flutuação e brilho neon laranja mantido e intensificado */
+.seven-portal .modern-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(255, 108, 34, 0.6) !important; /* Borda laranja acende no hover */
+  box-shadow: 0 12px 30px rgba(255, 108, 34, 0.15) !important;
+  background: #161926 !important;
+}
+
+/* Garante o contraste também nas caixas dos ícones em repouso */
+.seven-portal .modern-icon-wrapper {
+  width: 46px;
+  height: 46px;
+  background: rgba(255, 108, 34, 0.08) !important;
+  border: 1px solid rgba(255, 108, 34, 0.3) !important; /* Borda do ícone visível */
+  border-radius: 12px !important;
+  color: #ff6c22 !important;
+  transition: all 0.3s ease;
+}
+
+
+.seven-portal .modern-card:hover .modern-icon-wrapper {
+  background: #ff6c22 !important;
+  color: #ffffff !important;
+  border-color: #ff6c22 !important;
+  transform: scale(1.05);
+}
+
+/* Botão mestre super modernizado com cantos arredondados fluidos */
+.seven-portal .modern-action-button {
+  height: 54px;
+  border-radius: 27px !important; /* Formato pílula ultra-moderno */
+  padding-left: 40px !important;
+  padding-right: 40px !important;
+  box-shadow: 0 4px 20px rgba(255, 108, 34, 0.25) !important;
+  transition: all 0.3s ease;
+}
+
+.seven-portal .modern-action-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(255, 108, 34, 0.45) !important;
+}
+
+.seven-portal .modern-badge {
+  border-radius: 30px !important;
+  background: rgba(255, 108, 34, 0.05) !important;
+  backdrop-filter: blur(4px);
+}
+
+/* 📸 GESTÃO DE PROPORÇÃO DE IMAGEM DA GALERIA PUBLIC-SEVEN - VERSÃO CORRIGIDA */
+.seven-portal .artist-card-img {
+  object-fit: contain !important; /* 🛠️ RESOLUÇÃO: Garante que a imagem/logo fique INTEIRA na tela, sem cortes bruscos */
+  object-position: center !important; /* Mantém a atração centralizada horizontal e verticalmente */
+  padding: 8px !important; /* 🆕 Respiro visual premium nas bordas para o logotipo não colar nos cantos */
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* Efeito tridimensional de aproximação suave mantido de forma elegante */
+.seven-portal .modern-card:hover .artist-card-img {
+  transform: scale(1.03);
+}
+
+/* Animação suave para as imagens internas do portfólio público */
+.seven-portal .artist-portfolio-img {
+  transition: transform 0.3s ease-in-out !important;
+}
+.seven-portal .artist-portfolio-img:hover {
+  transform: scale(1.05);
+}

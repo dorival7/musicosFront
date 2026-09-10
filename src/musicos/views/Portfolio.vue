@@ -1,0 +1,439 @@
+<script>
+import axios from 'axios';
+import Cropper from 'cropperjs';
+import 'cropperjs/dist/cropper.css';
+
+export default {
+  name: "PortfolioMediaKit",
+  data() {
+    return {
+      loading: true,
+      savingCover: false,
+      savingPhoto: false,
+      savingVideo: false,
+      successMessage: null,
+      errorMessage: null,
+      coverUrl: null,
+      photosList: [],
+      videosList: [],
+      maxPhotosCount: 5, 
+      videoForm: { videoUrl: "", caption: "" },
+      editingItem: null,
+      editCaptionText: "",
+      cropper: null,
+      cropType: null,
+      imageSrcToCrop: null,
+      showCropModal: false
+    };
+  },
+  methods: {
+    async loadMediaInventory() {
+      this.loading = true;
+      this.successMessage = null;
+      this.errorMessage = null;
+      try {
+        const token = localStorage.getItem('jwt');
+        const config = { headers: { Authorization: `Bearer ${token}` } };
+        const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/tenants/media`, config);
+        this.coverUrl = response.data.coverUrl || null;
+        this.photosList = response.data.photos || [];
+        this.videosList = response.data.videos || [];
+        this.maxPhotosCount = response.data.maxPhotosCount || 5;
+        this.loading = false;
+      } catch (error) {
+        this.loading = false;
+        this.errorMessage = "Erro ao sincronizar mídias com o banco.";
+      }
+    },
+    handleFileSelection(event, type) {
+      const file = event.target.files[0];
+      if (!file) return;
+      if (file.size > 10 * 1024 * 1024) {
+        this.errorMessage = "Arquivo rejeitado! O limite máximo permitido é de 10MB.";
+        event.target.value = "";
+        return;
+      }
+      if (!file.type.match('image.*')) {
+        this.errorMessage = "Por favor, selecione arquivos de imagem válidos.";
+        event.target.value = "";
+        return;
+      }
+      this.cropType = type;
+      this.successMessage = null;
+      this.errorMessage = null;
+      this.imageSrcToCrop = URL.createObjectURL(file);
+      this.showCropModal = true;
+      event.target.value = "";
+      this.$nextTick(() => { this.initializeCropperInstance(); });
+    },
+    initializeCropperInstance() {
+      if (this.cropper) this.cropper.destroy();
+      const imageElement = this.$refs.imageToCropRef;
+      const targetAspectRatio = this.cropType === 'Cover' ? (16 / 5) : (1 / 1);
+      this.cropper = new Cropper(imageElement, {
+        aspectRatio: targetAspectRatio,
+        viewMode: 1,
+        dragMode: 'move',
+        background: true,
+        responsive: true,
+        autoCropArea: 1
+      });
+    }
+
+    ,
+    handleConfirmCrop() {
+      if (!this.cropper) return;
+      const canvasOptions = this.cropType === 'Cover' 
+        ? { width: 1920, height: 600, imageSmoothingQuality: 'high' }
+        : { width: 1080, height: 1080, imageSmoothingQuality: 'high' };
+
+      const croppedCanvas = this.cropper.getCroppedCanvas(canvasOptions);
+      croppedCanvas.toBlob(async (blob) => {
+        if (!blob) {
+          this.errorMessage = "Erro ao processar o recorte.";
+          return;
+        }
+        const finalFile = new File([blob], `${this.cropType.toLowerCase()}_processed.jpg`, { type: "image/jpeg" });
+        this.showCropModal = false;
+        if (this.cropper) this.cropper.destroy();
+        this.cropper = null;
+
+        if (this.cropType === 'Cover') {
+          await this.uploadCroppedCover(finalFile);
+        } else {
+          await this.uploadCroppedPhoto(finalFile);
+        }
+      }, "image/jpeg", 0.85);
+    },
+    async uploadCroppedCover(file) {
+      this.savingCover = true;
+      const formData = new FormData();
+      formData.append("file", file);
+      try {
+        const token = localStorage.getItem('jwt');
+        const config = { headers: { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data" } };
+        await axios.post(`${process.env.VUE_APP_API_BASE_URL}/tenants/media/cover`, formData, config);
+        this.successMessage = "Foto de capa recortada e aplicada com sucesso!";
+        await this.syncOnboardingStatus();
+      } catch (error) {
+        this.savingCover = false;
+        this.errorMessage = "Falha ao enviar arquivo de capa recortado.";
+      }
+    },
+    async uploadCroppedPhoto(file) {
+      this.savingPhoto = true;
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("caption", "");
+      try {
+        const token = localStorage.getItem('jwt');
+        const config = { headers: { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data" } };
+        await axios.post(`${process.env.VUE_APP_API_BASE_URL}/tenants/media/photos`, formData, config);
+        this.successMessage = "Foto quadrada processada e adicionada!";
+        await this.syncOnboardingStatus();
+      } catch (error) {
+        this.savingPhoto = false;
+        this.errorMessage = error.response?.data || "Erro ao subir imagem.";
+      }
+    },
+    handleCancelCrop() {
+      this.showCropModal = false;
+      if (this.cropper) this.cropper.destroy();
+      this.cropper = null;
+      this.imageSrcToCrop = null;
+    },
+    async handleAddVideo() {
+      this.savingVideo = true;
+      this.successMessage = null;
+      this.errorMessage = null;
+      try {
+        const token = localStorage.getItem('jwt');
+        const config = { headers: { Authorization: `Bearer ${token}` } };
+        await axios.post(`${process.env.VUE_APP_API_BASE_URL}/tenants/videos`, this.videoForm, config);
+        this.successMessage = "Vídeo do YouTube cadastrado com sucesso!";
+        this.videoForm.videoUrl = "";
+        this.videoForm.caption = "";
+        await this.syncOnboardingStatus();
+      } catch (error) {
+        this.savingVideo = false;
+        this.errorMessage = error.response?.data || "Erro ao salvar link do vídeo.";
+      }
+    },
+    startEditCaption(item) {
+      this.editingItem = item.id;
+      this.editCaptionText = item.caption || "";
+    },
+    async handleSaveEdit(item, type) {
+      this.successMessage = null;
+      this.errorMessage = null;
+      try {
+        const token = localStorage.getItem('jwt');
+        const config = { headers: { Authorization: `Bearer ${token}` } };
+        if (type === 'Photo') {
+          await axios.put(`${process.env.VUE_APP_API_BASE_URL}/tenants/media/photos/${item.id}`, { caption: this.editCaptionText }, config);
+        } else if (type === 'Video') {
+          await axios.put(`${process.env.VUE_APP_API_BASE_URL}/tenants/videos/${item.id}`, { videoUrl: item.mediaUrl, caption: this.editCaptionText }, config);
+        }
+        this.successMessage = "Informações atualizadas com sucesso!";
+        this.editingItem = null;
+        await this.loadMediaInventory();
+      } catch (error) {
+        this.errorMessage = "Erro ao tentar atualizar os dados.";
+      }
+    },
+    async handleDeleteMedia(id) {
+      if (!confirm("Tem certeza que deseja remover esta mídia do seu portfólio?")) return;
+      this.successMessage = null;
+      this.errorMessage = null;
+      try {
+        const token = localStorage.getItem('jwt');
+        const config = { headers: { Authorization: `Bearer ${token}` } };
+        await axios.delete(`${process.env.VUE_APP_API_BASE_URL}/tenants/media/${id}`, config);
+        this.successMessage = "Mídia removida com sucesso!";
+        await this.syncOnboardingStatus();
+      } catch (error) {
+        this.errorMessage = "Erro ao processar a remoção no servidor C#.";
+      }
+    },
+    async syncOnboardingStatus() {
+      const token = localStorage.getItem('jwt');
+      const config = { headers: { Authorization: `Bearer ${token}` } };
+      await this.loadMediaInventory();
+      const profileRes = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/tenants/me`, config);
+      const novoStatus = profileRes.data.profileStatus;
+      localStorage.setItem('profileStatus', novoStatus);
+      this.savingCover = false;
+      this.savingPhoto = false;
+      this.savingVideo = false;
+    }
+  },
+  mounted() {
+    this.loadMediaInventory();
+  }
+};
+</script>
+
+
+
+<template>
+  <div>
+    <!-- TÍTULO DA PÁGINA -->
+    <div class="row">
+      <div class="col-12">
+        <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+          <h4 class="mb-sm-0 text-primary">Portfólio / Media Kit</h4>
+        </div>
+      </div>
+    </div>
+
+    <!-- SINALIZAÇÕES E ALERTAS FEEDBACK -->
+    <div v-if="successMessage" class="alert alert-success alert-dismissible fade show border-0 shadow-sm" role="alert">
+      <i class="ri-checkbox-circle-line me-2 align-middle fs-16"></i>
+      {{ successMessage }}
+      <button type="button" class="btn-close" @click="successMessage = null" aria-label="Close"></button>
+    </div>
+
+    <div v-if="errorMessage" class="alert alert-danger alert-dismissible fade show border-0 shadow-sm" role="alert">
+      <i class="ri-error-warning-line me-2 align-middle fs-16"></i>
+      {{ errorMessage }}
+      <button type="button" class="btn-close" @click="errorMessage = null" aria-label="Close"></button>
+    </div>
+
+    <!-- ANIMAÇÃO DE CARREGAMENTO (LOADING) -->
+    <div v-if="loading" class="text-center py-5">
+      <div class="spinner-border text-primary avatar-sm" role="status"></div>
+      <p class="text-muted mt-2">Buscando mídias no banco de dados MySQL...</p>
+    </div>
+
+    <!-- CONTEÚDO OPERACIONAL INTEGRADO -->
+    <div v-else class="row">
+      
+      <!-- SEÇÃO 1: FOTO DE CAPA DO PORTFÓLIO (100% HORIZONTAL) -->
+      <div class="col-12 mb-4">
+        <div class="card overflow-hidden profile-project-card shadow-sm border-0">
+          <div class="card-header bg-light border-0 d-flex justify-content-between align-items-center p-3">
+            <div>
+              <h5 class="card-title mb-1 text-dark fw-bold"><i class="ri-image-line me-1 text-primary"></i> Imagem de Capa do Media Kit</h5>
+              <small class="text-muted d-block">Dimensão ideal: 1920x600px (Horizontal / Widescreen). Máximo 10MB.</small>
+            </div>
+            <div>
+              <!-- Redireciona o evento @change para a nossa função de validação e disparo do Crop -->
+              <input type="file" id="coverFileInput" class="d-none" @change="handleFileSelection($event, 'Cover')" accept="image/*" />
+              <label for="coverFileInput" class="btn btn-sm btn-primary mb-0 shadow-none" :disabled="savingCover">
+                <i class="ri-upload-cloud-2-line me-1 align-middle" v-if="!savingCover"></i>
+                {{ savingCover ? "Processando..." : (coverUrl ? "Trocar Imagem de Capa" : "Subir Imagem de Capa") }}
+              </label>
+            </div>
+          </div>
+          <!-- A tag <img> concatena a URL base da porta 5297 com o path do MySQL de forma estável -->
+          <div class="card-body p-0 position-relative bg-dark d-flex align-items-center justify-content-center" style="min-height: 240px; max-height: 300px; overflow: hidden;">
+            <img v-if="coverUrl" :src="`http://localhost:5297${coverUrl}`" class="img-fluid w-100 object-fit-cover h-100" style="position: absolute; top:0; left:0;" alt="Capa do Artista" />
+            <div v-else class="text-center p-5 text-white-50">
+              <i class="ri-image-add-line fs-36 d-block mb-2"></i>
+              <p class="mb-0 fs-13">Nenhuma imagem de capa cadastrada para este painel.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- SEÇÃO 2: GALERIA DE FOTOS DA EQUIPE OU SHOW (COLUNA ESQUERDA) -->
+      <div class="col-xl-7 col-lg-6 mb-4">
+        <div class="card h-100">
+          <div class="card-header bg-transparent border-0 d-flex justify-content-between align-items-center p-3">
+            <div>
+              <h5 class="card-title mb-1 text-dark fw-bold">
+                <i class="ri-gallery-line me-1 text-success"></i> Galeria de Fotos
+                <!-- TAG REATIVA DE CONTROLE DE VAGAS RESTANTES DO PLANO -->
+                <span :class="photosList.length >= maxPhotosCount ? 'badge bg-danger-subtle text-danger ms-2 fs-12' : 'badge bg-info-subtle text-info ms-2 fs-12'">
+                  {{ photosList.length >= maxPhotosCount ? 'Limite Atingido' : `Restam ${maxPhotosCount - photosList.length} vagas` }}
+                </span>
+              </h5>
+              <small class="text-muted d-block">Dimensão ideal: 1080x1080px (Quadrado / Instagram). Limite do seu plano: {{ maxPhotosCount }} fotos.</small>
+            </div>
+            <div>
+              <input type="file" id="photoFileInput" class="d-none" @change="handleFileSelection($event, 'Photo')" accept="image/*" :disabled="photosList.length >= maxPhotosCount" />
+              <!-- O BOTÃO DE UPLOAD FICA DESATIVADO E MUDA DE COR AUTOMATICAMENTE CASO RETORNE 0 VAGAS -->
+              <label for="photoFileInput" :class="photosList.length >= maxPhotosCount ? 'btn btn-sm btn-soft-secondary mb-0 disabled' : 'btn btn-sm btn-success mb-0 shadow-none'" :disabled="savingPhoto || photosList.length >= maxPhotosCount">
+                <i class="ri-add-line me-1 align-middle" v-if="!savingPhoto"></i>
+                {{ savingPhoto ? "Subindo Foto..." : "Adicionar à Galeria" }}
+              </label>
+            </div>
+          </div>
+          <div class="card-body">
+            
+            <!-- GRADE (GRID) DE FOTOS EM CARTÕES SEPARADOS -->
+            <div class="row row-cols-xxl-3 row-cols-md-2 row-cols-1 g-3" v-if="photosList.length > 0">
+              <div class="col" v-for="item in photosList" :key="item.id">
+                <div class="card border shadow-none mb-0 overflow-hidden h-100 project-card">
+                  <div class="bg-light d-flex align-items-center justify-content-center border-bottom" style="height: 160px; overflow: hidden; position: relative;">
+                    <img :src="`http://localhost:5297${item.mediaUrl}`" class="w-100 h-100 object-fit-cover" alt="Galeria" />
+                    <!-- Botão Flutuante de Exclusão Humanizado -->
+                    <button type="button" class="btn btn-danger btn-sm rounded-circle position-absolute top-0 end-0 m-2 p-0 d-flex align-items-center justify-content-center shadow" style="width: 26px; height: 26px;" @click="handleDeleteMedia(item.id)" title="Deletar da Galeria">
+                      <i class="ri-delete-bin-line fs-12"></i>
+                    </button>
+                  </div>
+                  <div class="p-2 card-body d-flex flex-column justify-content-between">
+                    
+                    <!-- EDIÇÃO INLINE COMPACTA DE LEGENDA -->
+                    <div v-if="editingItem === item.id" class="input-group input-group-sm">
+                      <input type="text" class="form-control" v-model="editCaptionText" placeholder="Digite a legenda..." @keyup.enter="handleSaveEdit(item, 'Photo')" />
+                      <button class="btn btn-success" type="button" @click="handleSaveEdit(item, 'Photo')"><i class="ri-check-line"></i></button>
+                      <button class="btn btn-light" type="button" @click="editingItem = null"><i class="ri-close-line"></i></button>
+                    </div>
+                    
+                    <div v-else class="d-flex justify-content-between align-items-center">
+                      <p class="text-muted small mb-0 text-truncate fw-medium pe-2">{{ item.caption || "Sem legenda ativa..." }}</p>
+                      <button type="button" class="btn btn-link btn-sm text-info p-0 shadow-none" @click="startEditCaption(item)" title="Editar Legenda">
+                        <i class="ri-pencil-line"></i>
+                      </button>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- PLACEHOLDER VAZIO -->
+            <div v-else class="text-center py-5 border rounded bg-light border-dashed">
+              <i class="ri-picture-in-picture-line text-muted fs-32 mb-2 d-block"></i>
+              <p class="text-muted mb-0 fs-13">Sua galeria está vazia. Adicione fotos marcantes da sua jornada!</p>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- SEÇÃO 3: CATÁLOGO DE LINKS DO YOUTUBE (COLUNA DIREITA) -->
+      <div class="col-xl-5 col-lg-6 mb-4">
+        <div class="card h-100">
+          <div class="card-header bg-transparent border-0 p-3">
+            <h5 class="card-title mb-1 text-dark fw-bold">
+              <i class="ri-youtube-line me-1 text-danger"></i> Vídeos de Divulgação
+              <!-- BADGE REATIVA DO LIMITE DE VÍDEOS -->
+              <span :class="videosList.length >= 3 ? 'badge bg-danger-subtle text-danger ms-2 fs-12' : 'badge bg-info-subtle text-info ms-2 fs-12'">
+                {{ videosList.length >= 3 ? 'Limite Atingido' : `Restam ${3 - videosList.length} vagas` }}
+              </span>
+            </h5>
+            <small class="text-muted d-block">Fixe até 3 links de apresentações ou clipes musicais no seu perfil.</small>
+          </div>
+          <div class="card-body">
+            
+            <!-- FORMULÁRIO TEXTUAL DE INSERÇÃO -->
+            <form v-if="videosList.length < 3" @submit.prevent="handleAddVideo" class="row g-2 mb-4 p-3 bg-light border rounded">
+              <div class="col-12">
+                <label class="form-label small fw-semibold text-muted mb-1">Link Completo do Vídeo</label>
+                <input type="url" class="form-control form-control-sm" v-model="videoForm.videoUrl" placeholder="Ex: https://youtube.com..." required />
+              </div>
+              <div class="col-12 mb-2">
+                <label class="form-label small fw-semibold text-muted mb-1">Título / Legenda Explicativa</label>
+                <input type="text" class="form-control form-control-sm" v-model="videoForm.caption" placeholder="Ex: Clipe Oficial, Ao vivo na Arena..." required />
+              </div>
+              <div class="col-12">
+                <button type="submit" class="btn btn-danger btn-sm w-100 shadow-sm" :disabled="savingVideo">
+                  <i class="ri-add-circle-line me-1 align-middle" v-if="!savingVideo"></i>
+                  {{ savingVideo ? "Processando no C#..." : "Adicionar Link do YouTube" }}
+                </button>
+              </div>
+            </form>
+
+            <!-- AVISO VISUAL SE O MÚSICO JÁ ENCHEU AS VAGAS DE VÍDEO -->
+            <div v-else class="alert alert-warning p-3 border-dashed border-warning rounded mb-4 text-center" role="alert">
+              <h6 class="fw-bold text-warning mb-1"><i class="ri-information-line me-1"></i> Catálogo de Vídeos Preenchido</h6>
+              <p class="fs-12 mb-0 text-muted">Você atingiu o limite de 3 links. Para adicionar um novo clipe, remova um dos links abaixo.</p>
+            </div>
+
+            <!-- LISTAGEM DE LINKS SALVOS NO MYSQL -->
+            <div class="d-flex flex-column gap-2" v-if="videosList.length > 0">
+              <div class="p-3 border rounded shadow-none bg-white d-flex align-items-center justify-content-between" v-for="item in videosList" :key="item.id">
+                <div class="flex-grow-1 pe-3 overflow-hidden">
+                  <h6 class="fs-13 mb-1 fw-bold text-dark text-truncate">{{ item.caption }}</h6>
+                  <a :href="item.mediaUrl" target="_blank" class="text-danger small font-monospace text-truncate d-block"><i class="ri-link-m me-1"></i>Link do YouTube</a>
+                </div>
+                <div class="flex-shrink-0">
+                  <button type="button" class="btn btn-sm btn-soft-danger shadow-none btn-icon rounded" @click="handleDeleteMedia(item.id)" title="Remover Link">
+                    <i class="ri-delete-bin-line"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- PLACEHOLDER VAZIO -->
+            <div v-else class="text-center py-5 border rounded bg-light border-dashed">
+              <i class="ri-video-line text-muted fs-32 mb-2 d-block"></i>
+              <p class="text-muted mb-0 fs-13">Nenhum vídeo cadastrado no catálogo.</p>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- JANELA MODAL DO BOOTSTRAP PARA CORTE VISUAL EM TEMPO REAL      -->
+    <!-- ============================================================== -->
+    <div class="modal fade show d-block" tabindex="-1" role="dialog" v-if="showCropModal" style="background: rgba(0,0,0,0.85); z-index: 1050;">
+      <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content border-0 shadow-lg bg-dark text-white">
+          <div class="modal-header border-secondary p-3">
+            <h5 class="modal-title fw-bold text-white">
+              <i class="ri-crop-2-line text-primary me-1"></i> 
+              Ajustar Enquadramento da {{ cropType === 'Cover' ? 'Imagem de Capa' : 'Foto da Galeria' }}
+            </h5>
+            <button type="button" class="btn-close btn-close-white" @click="handleCancelCrop" aria-label="Close"></button>
+          </div>
+          <div class="modal-body p-0 bg-black d-flex align-items-center justify-content-center" style="max-height: 500px; overflow: hidden;">
+            <!-- Tag alvo interceptada pelo ciclo de vida do CropperJS no script -->
+            <img ref="imageToCropRef" :src="imageSrcToCrop" class="img-fluid" style="max-width: 100%; display: block;" alt="Preview" />
+          </div>
+          <div class="modal-footer border-secondary p-2 d-flex justify-content-between">
+            <button type="button" class="btn btn-sm btn-outline-light" @click="handleCancelCrop">Cancelar</button>
+            <button type="button" class="btn btn-sm btn-primary px-4 fw-bold shadow" @click="handleConfirmCrop">
+              <i class="ri-scissors-cut-line me-1"></i> Confirmar Ajuste e Enviar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</template>
