@@ -121,10 +121,25 @@
           </BRow>
 
           <!-- TELA DE LOADING OU NENHUM RESULTADO -->
-          <div v-else class="text-center py-5 border border-dashed border-light border-opacity-10 rounded-4 modern-card m-2">
-            <i class="ri-user-search-line text-primary display-5 mb-3 d-block opacity-40"></i>
-            <h5 class="text-white font-monospace text-uppercase fs-14">Nenhum artista disponível no momento</h5>
-            <p class="text-muted small mb-0 px-3">Tente desmarcar algumas opções do painel lateral ou verifique se há músicos ativos no banco.</p>
+          <div v-else class="text-center py-5 border border-dashed border-light border-opacity-10 rounded-4 modern-card m-2" style="background-color: #131520 !important;">
+            <i class="ri-user-search-line text-primary display-5 mb-3 d-block opacity-40" style="color: #ff6c22 !important;"></i>
+            <h5 class="text-white font-monospace text-uppercase fs-14">Nenhum artista disponível nesta região no momento</h5>
+            <p class="text-muted small mb-0 px-3 font-monospace" style="color: #9ca3af !important;">
+              Não encontramos músicos cadastrados em um raio de 100 km de <span class="text-primary fw-bold">{{ this.$route.query.cidade }} - {{ this.$route.query.uf }}</span>.
+            </p>
+            <p class="text-muted small mb-3 px-3 font-monospace" style="color: #9ca3af !important; margin-top: 4px;">
+              Que tal expandir a sua busca para conferir bandas de outras regiões que atendem todo o Brasil?
+            </p>
+
+            <!-- 🎯 BOTÃO MESTRE DE RETORNO: Destrava a vitrine aberta sem recarregar a rede -->
+            <button 
+              type="button" 
+              @click="limparFiltroGeografico" 
+              class="btn btn-primary fw-bold text-uppercase font-monospace fs-13 px-4 py-2 mt-2 animate__animated animate__pulse animate__infinite" 
+              style="border-radius: 20px !important; background-color: #ff6c22 !important; border-color: #ff6c22 !important; box-shadow: 0 4px 12px rgba(255,108,34,0.2);"
+            >
+              <i class="ri-refresh-line me-1"></i> Ver Catálogo Completo do Brasil
+            </button>
           </div>
         </BCol>
 
@@ -191,6 +206,20 @@ export default {
     }
   },
   methods: {
+    limparFiltroGeografico() {
+      console.log("🧹 [VITRINE] Limpando filtros geográficos de raio por contingência de clique.");
+      
+      // Limpa os estados textuais locais de suporte
+      this.termoBuscaTexto = "";
+      this.filtrosAtivos.uf = "";
+      this.filtrosAtivos.estilos = [];
+
+      // Remove os parâmetros de query string da URL atual do navegador de forma limpa
+      this.$router.push({ path: '/artistas', query: {} }).then(() => {
+        // Dispara a re-execução da carga puxando a lista de bandas aberta geral do .NET 10
+        this.processarCargaCatalogo();
+      });
+    },
     obterUrlImagem(urlRelativa) {
       if (!urlRelativa) return "";
       if (urlRelativa.startsWith("http://") || urlRelativa.startsWith("https://")) {
