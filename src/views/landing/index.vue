@@ -78,7 +78,9 @@
                         <p class="text-muted small mb-0 d-flex align-items-center gap-1 fs-13 mt-auto"
                           style="color: #ced4da !important; margin-bottom: 0;">
                           <i class="ri-map-pin-line fs-15" style="color: #ff6c22;"></i> Atende:
-                          {{ artista.cidadeAtendida || artista.CidadeAtendida || 'Não informada' }}
+                          <!-- 🛠️ CORREÇÃO CIRÚRGICA: Consome a abrangência de mercado real enviada pelo .NET -->
+                          {{ artista.regiaoAtendida || artista.RegiaoAtendida || artista.cidadeAtendida ||
+                            artista.CidadeAtendida || 'Não informada' }}
                           <span v-if="artista.state || artista.State"> - {{ artista.state || artista.State }}</span>
                         </p>
                       </div>
@@ -373,131 +375,131 @@ import NavbarPublic from "@/components/public/NavbarPublic.vue";
 import HeroPublic from "@/components/public/HeroPublic.vue";
 
 export default {
-    data() {
-        return {
-            Autoplay, Navigation, Pagination,
-            artistasLista: [], // 🆕 DINÂMICO: Recebe a lista viva de bandas do MariaDB
-            loading: false
-        };
-    },
-    components: {
-        Swiper,
-        SwiperSlide,
-        NavbarPublic,
-        HeroPublic
-    },
-    methods: {
-        // 🆕 INTEGRADO: Varre a API pública e popula o carrossel reativamente
-        async carregarArtistasDestaque() {
-            this.loading = true;
-            try {
-                const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/public/artists`);
-                if (response.data) {
-                    // Filtra o administrador direto na recepção da carga para blindagem dupla
-                    this.artistasLista = response.data.filter(art => {
-                        const nomeReal = art.nomeBanda || art.NomeBanda || "";
-                        return !nomeReal.toUpperCase().includes("ADMINISTRADOR");
-                    });
-                }
-            } catch (error) {
-                console.error("Falha técnica ao tentar consumir a esteira de destaques na Home:", error);
-            } finally {
-                this.loading = false;
-            }
-        },
-
-        // 🆕 INTEGRADO: Formata o caminho físico de mídias de forma idêntica ao catálogo
-        obterUrlImagem(urlRelativa) {
-            if (!urlRelativa) return "";
-            if (urlRelativa.startsWith("http://") || urlRelativa.startsWith("https://")) {
-                return urlRelativa;
-            }
-            let base = process.env.VUE_APP_API_BASE_URL || "";
-            if (base.endsWith("/api")) {
-                base = base.substring(0, base.length - 4);
-            } else if (base.endsWith("/api/")) {
-                base = base.substring(0, base.length - 5);
-            }
-            const urlLimpa = urlRelativa.startsWith("/") ? urlRelativa : "/" + urlRelativa;
-            return `${base}${urlLimpa}`;
-        },
-
-        // 🆕 INTEGRADO: Redireciona o contratante para a tela interna do músico selecionado
-        handleNavigateToArtist(slug) {
-            if (!slug) return;
-            this.$router.push(`/artista/${slug}`);
-        },
-
-        topFunction() {
-            document.body.scrollTop = 0;
-            document.documentElement.scrollTop = 0;
-        },
-        monthly() {
-            const highlightedItems = document.querySelectorAll(".month");
-            highlightedItems.forEach(function (userItem) {
-                userItem.style.display = "block";
-            });
-            const highlightedItems2 = document.querySelectorAll(".annual");
-            highlightedItems2.forEach(function (userItem) {
-                userItem.style.display = "none";
-            });
-        },
-        anually() {
-            const highlightedItems = document.querySelectorAll(".month");
-            highlightedItems.forEach(function (userItem) {
-                userItem.style.display = "none";
-            });
-            const highlightedItems2 = document.querySelectorAll(".annual");
-            highlightedItems2.forEach(function (userItem) {
-                userItem.style.display = "block";
-            });
-        },
-        scrollToSection(sectionId) {
-            const element = document.getElementById(sectionId);
-            if (element) {
-                element.scrollIntoView({ behavior: 'smooth' });
-            }
+  data() {
+    return {
+      Autoplay, Navigation, Pagination,
+      artistasLista: [], // 🆕 DINÂMICO: Recebe a lista viva de bandas do MariaDB
+      loading: false
+    };
+  },
+  components: {
+    Swiper,
+    SwiperSlide,
+    NavbarPublic,
+    HeroPublic
+  },
+  methods: {
+    // 🆕 INTEGRADO: Varre a API pública e popula o carrossel reativamente
+    async carregarArtistasDestaque() {
+      this.loading = true;
+      try {
+        const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/public/artists`);
+        if (response.data) {
+          // Filtra o administrador direto na recepção da carga para blindagem dupla
+          this.artistasLista = response.data.filter(art => {
+            const nomeReal = art.nomeBanda || art.NomeBanda || "";
+            return !nomeReal.toUpperCase().includes("ADMINISTRADOR");
+          });
         }
+      } catch (error) {
+        console.error("Falha técnica ao tentar consumir a esteira de destaques na Home:", error);
+      } finally {
+        this.loading = false;
+      }
     },
-    unmounted() {
-        window.removeEventListener('scroll', this.setActiveSection);
+
+    // 🆕 INTEGRADO: Formata o caminho físico de mídias de forma idêntica ao catálogo
+    obterUrlImagem(urlRelativa) {
+      if (!urlRelativa) return "";
+      if (urlRelativa.startsWith("http://") || urlRelativa.startsWith("https://")) {
+        return urlRelativa;
+      }
+      let base = process.env.VUE_APP_API_BASE_URL || "";
+      if (base.endsWith("/api")) {
+        base = base.substring(0, base.length - 4);
+      } else if (base.endsWith("/api/")) {
+        base = base.substring(0, base.length - 5);
+      }
+      const urlLimpa = urlRelativa.startsWith("/") ? urlRelativa : "/" + urlRelativa;
+      return `${base}${urlLimpa}`;
     },
-    mounted() {
-        // 🚀 DISPARO AUTOMÁTICO: Consome a esteira do banco de dados na inicialização
-        this.carregarArtistasDestaque();
 
-        window.addEventListener('scroll', this.setActiveSection);
-        let backtoTop = document.getElementById("back-to-top");
+    // 🆕 INTEGRADO: Redireciona o contratante para a tela interna do músico selecionado
+    handleNavigateToArtist(slug) {
+      if (!slug) return;
+      this.$router.push(`/artista/${slug}`);
+    },
 
-        if (backtoTop) {
-            backtoTop = document.getElementById("back-to-top");
-            window.onscroll = function () {
-                if (document.body.scrollTop > 100 || document.documentElement.scrollTop > 100) {
-                    backtoTop.style.display = "block";
-                } else {
-                    backtoTop.style.display = "none";
-                }
-            };
+    topFunction() {
+      document.body.scrollTop = 0;
+      document.documentElement.scrollTop = 0;
+    },
+    monthly() {
+      const highlightedItems = document.querySelectorAll(".month");
+      highlightedItems.forEach(function (userItem) {
+        userItem.style.display = "block";
+      });
+      const highlightedItems2 = document.querySelectorAll(".annual");
+      highlightedItems2.forEach(function (userItem) {
+        userItem.style.display = "none";
+      });
+    },
+    anually() {
+      const highlightedItems = document.querySelectorAll(".month");
+      highlightedItems.forEach(function (userItem) {
+        userItem.style.display = "none";
+      });
+      const highlightedItems2 = document.querySelectorAll(".annual");
+      highlightedItems2.forEach(function (userItem) {
+        userItem.style.display = "block";
+      });
+    },
+    scrollToSection(sectionId) {
+      const element = document.getElementById(sectionId);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  },
+  unmounted() {
+    window.removeEventListener('scroll', this.setActiveSection);
+  },
+  mounted() {
+    // 🚀 DISPARO AUTOMÁTICO: Consome a esteira do banco de dados na inicialização
+    this.carregarArtistasDestaque();
+
+    window.addEventListener('scroll', this.setActiveSection);
+    let backtoTop = document.getElementById("back-to-top");
+
+    if (backtoTop) {
+      backtoTop = document.getElementById("back-to-top");
+      window.onscroll = function () {
+        if (document.body.scrollTop > 100 || document.documentElement.scrollTop > 100) {
+          backtoTop.style.display = "block";
+        } else {
+          backtoTop.style.display = "none";
         }
+      };
+    }
 
-        this.monthly();
+    this.monthly();
 
-        window.addEventListener('scroll', function (ev) {
-            ev.preventDefault();
-            var navbar = document.getElementById("navbar");
-            if (navbar) {
-                if (document.body.scrollTop >= 50 || document.documentElement.scrollTop >= 50) {
-                    navbar.classList.add("is-sticky");
-                } else {
-                    navbar.classList.remove("is-sticky");
-                }
-            }
-        });
-
-        const currentYearEl = document.querySelector('.currentyear');
-        if (currentYearEl) {
-            currentYearEl.innerHTML = new Date().getFullYear() + " © SevenShows";
+    window.addEventListener('scroll', function (ev) {
+      ev.preventDefault();
+      var navbar = document.getElementById("navbar");
+      if (navbar) {
+        if (document.body.scrollTop >= 50 || document.documentElement.scrollTop >= 50) {
+          navbar.classList.add("is-sticky");
+        } else {
+          navbar.classList.remove("is-sticky");
         }
-    },
+      }
+    });
+
+    const currentYearEl = document.querySelector('.currentyear');
+    if (currentYearEl) {
+      currentYearEl.innerHTML = new Date().getFullYear() + " © SevenShows";
+    }
+  },
 };
 </script>

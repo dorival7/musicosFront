@@ -94,15 +94,15 @@
                   <div class="mt-auto mb-3">
                     <p class="text-muted small mb-1 d-flex align-items-center gap-1 fs-13" style="color: #ced4da !important;">
                       <i class="ri-map-pin-line text-primary fs-15"></i> Atende: 
-                      {{ artista.cidadeAtendida || artista.CidadeAtendida || 'Não informada' }} 
+                      <!-- 🛠️ CORREÇÃO CIRÚRGICA: Exibe a Região Atendida Comercial no Card -->
+                      {{ artista.regiaoAtendida || artista.RegiaoAtendida || artista.cidadeAtendida || artista.CidadeAtendida }} 
                       <span v-if="artista.state || artista.State"> - {{ artista.state || artista.State }}</span>
                     </p>
                     
-                    <!-- 🚗 BADGE PREMIUM DE DISTÂNCIA LOGÍSTICA REAL CALCULADA PELO .NET 10 -->
+                    <!-- BADGE PREMIUM DE DISTÂNCIA LOGÍSTICA REAL CALCULADA PELO .NET 10 -->
                     <span 
                       v-if="artista.distanciaCalculada !== undefined || artista.DistanciaCalculada !== undefined" 
                       class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-20 fw-bold font-monospace fs-11 rounded d-inline-flex align-items-center gap-1 py-1 px-2 mt-1"
-                      style="background-color: rgba(10,179,156,0.1) !important; color: #0ab39c !important; border-color: rgba(10,179,156,0.2) !important;"
                     >
                       🚗 A {{ artista.distanciaCalculada ?? artista.DistanciaCalculada }} km do seu evento
                     </span>
