@@ -3,7 +3,7 @@
 <template>
   <nav class="navbar navbar-expand-lg navbar-landing bg-dark fixed-top" id="navbar" style="border-bottom: 1px solid rgba(255,255,255,0.06); padding: 15px 0;">
     <div class="container">
-      <router-link class="navbar-brand" to="/">
+      <router-link class="navbar-brand" to="/visualizar-lp">
         <img :src="logoSevenShows" alt="SevenShows Logo" style="height: 32px; width: auto; object-fit: contain;" />
       </router-link>
       
@@ -28,7 +28,7 @@
           <template v-if="!usuarioLogado">
             <!-- 🚀 ROTA ATUALIZADA: Agora direciona legitimamente para o login do cliente -->
             <router-link to="/login-cliente" class="btn btn-link fw-bold text-decoration-none text-white fs-14 px-3" style="opacity: 0.9;">Entrar</router-link>
-            <router-link to="/quero-vender" class="btn btn-primary btn-sm fw-bold px-3 shadow-sm rounded-2 text-uppercase fs-12 font-monospace" style="letter-spacing: 0.5px;">Quero Vender Shows</router-link>
+            <router-link to="/quero-vender" class="btn btn-primary btn-sm fw-bold px-3 shadow-sm rounded-2 text-uppercase fs-12 font-monospace" style="letter-spacing: 0.5px;">Sou Músico | Quero Vender Shows</router-link>
           </template>
 
           <!-- CENÁRIO B: DROPDOWN PREMIUM CORRIGIDO (MÁXIMA VISIBILIDADE) -->
