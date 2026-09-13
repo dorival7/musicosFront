@@ -90,12 +90,23 @@
                     {{ artista.slogan || artista.Slogan || 'Nenhum slogan comercial cadastrado.' }}
                   </p>
                   
-                  <!-- LOCALIZAÇÃO ASSENTADA NO RODAPÉ DO BLOCO -->
-                  <p class="text-muted small mb-3 d-flex align-items-center gap-1 fs-13 mt-auto" style="color: #ced4da !important;">
-                    <i class="ri-map-pin-line text-primary fs-15"></i> Atende: 
-                    {{ artista.cidadeAtendida || artista.CidadeAtendida || 'Não informada' }} 
-                    <span v-if="artista.state || artista.State"> - {{ artista.state || artista.State }}</span>
-                  </p>
+                  <!-- 🗺️ LOCALIZAÇÃO ASSENTADA E COMPUTAÇÃO DE DISTÂNCIA DINÂMICA -->
+                  <div class="mt-auto mb-3">
+                    <p class="text-muted small mb-1 d-flex align-items-center gap-1 fs-13" style="color: #ced4da !important;">
+                      <i class="ri-map-pin-line text-primary fs-15"></i> Atende: 
+                      {{ artista.cidadeAtendida || artista.CidadeAtendida || 'Não informada' }} 
+                      <span v-if="artista.state || artista.State"> - {{ artista.state || artista.State }}</span>
+                    </p>
+                    
+                    <!-- 🚗 BADGE PREMIUM DE DISTÂNCIA LOGÍSTICA REAL CALCULADA PELO .NET 10 -->
+                    <span 
+                      v-if="artista.distanciaCalculada !== undefined || artista.DistanciaCalculada !== undefined" 
+                      class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-20 fw-bold font-monospace fs-11 rounded d-inline-flex align-items-center gap-1 py-1 px-2 mt-1"
+                      style="background-color: rgba(10,179,156,0.1) !important; color: #0ab39c !important; border-color: rgba(10,179,156,0.2) !important;"
+                    >
+                      🚗 A {{ artista.distanciaCalculada ?? artista.DistanciaCalculada }} km do seu evento
+                    </span>
+                  </div>
                   
                   <div class="d-flex justify-content-between align-items-center pt-2 border-top border-light border-opacity-5">
                     <span class="text-white-50 font-monospace fs-11 text-uppercase" style="letter-spacing: 0.5px;">A partir de</span>
@@ -121,7 +132,6 @@
     </BContainer>
   </div>
 </template>
-
 <script>
 import "@/assets/scss/public-theme.css";
 import NavbarPublic from "@/components/public/NavbarPublic.vue";
@@ -133,7 +143,7 @@ export default {
   data() {
     return {
       loading: false,
-      artistasLista: [], // 🆕 DINÂMICO: Inicia o array zerado aguardando o payload do banco
+      artistasLista: [], // 🆕 DINÂMICO: Recebe a carga geral ou filtrada por raio geográfico
       filtrosDisponiveis: {
         estilos: ["Sertanejo", "Rock", "Pagode", "Pop", "MPB"],
         ufs: ["SP", "PR", "RJ", "MG", "SC"]
@@ -141,11 +151,13 @@ export default {
       filtrosAtivos: {
         estilos: [],
         uf: ""
-      }
+      },
+      // 🕵️‍♂️ REATIVIDADE TEXTUAL: Suporta buscas por nomes de bandas vindas da Home
+      termoBuscaTexto: ""
     };
   },
   computed: {
-    // 🛠️ REVISÃO DE REGRA DE NEGÓCIO: Adicionada a trava que esconde o administrador do catálogo
+    // 🛠️ FILTRAGEM HÍBRIDA EVOLUÍDA: Varre categorias laterais e pesquisa textual simultaneamente
     artistasFiltrados() {
       return this.artistasLista.filter(art => {
         const nomeReal = art.nomeBanda || art.NomeBanda || "";
@@ -157,49 +169,87 @@ export default {
 
         const estiloReal = art.estiloMusical || art.EstiloMusical || "";
         const stateReal = art.state || art.State || "";
+        const sloganReal = art.slogan || art.Slogan || "";
+        
+        // Se a busca já veio filtrada por Raio do C#, o front ignora a trava rígida de UF lateral
+        const possuiFiltroRaio = this.$route.query.cidade && this.$route.query.uf;
+        const bateUF = possuiFiltroRaio || !this.filtrosAtivos.uf || stateReal.toUpperCase() === this.filtrosAtivos.uf.toUpperCase();
         
         const bateEstilo = this.filtrosAtivos.estilos.length === 0 || this.filtrosAtivos.estilos.includes(estiloReal);
-        const bateUF = !this.filtrosAtivos.uf || stateReal === this.filtrosAtivos.uf;
         
-        return bateEstilo && bateUF;
+        // Validação da busca textual livre (Nome da banda, estilo ou slogan)
+        let bateTexto = true;
+        if (this.termoBuscaTexto) {
+          const termo = this.termoBuscaTexto.toUpperCase().trim();
+          bateTexto = nomeReal.toUpperCase().includes(termo) || 
+                      sloganReal.toUpperCase().includes(termo) || 
+                      estiloReal.toUpperCase().includes(termo);
+        }
+        
+        return bateEstilo && bateUF && bateTexto;
       });
     }
   },
   methods: {
     obterUrlImagem(urlRelativa) {
       if (!urlRelativa) return "";
-      
       if (urlRelativa.startsWith("http://") || urlRelativa.startsWith("https://")) {
         return urlRelativa;
       }
-      
-      // Captura a URL base (ex: http://localhost:5297/api ou http://localhost:5297)
       let base = process.env.VUE_APP_API_BASE_URL || "";
-      
-      // Se a variável terminar com /api ou /api/, arranca fora para acessar a pasta estática raiz
       if (base.endsWith("/api")) {
         base = base.substring(0, base.length - 4);
       } else if (base.endsWith("/api/")) {
         base = base.substring(0, base.length - 5);
       }
-      
       const urlLimpa = urlRelativa.startsWith("/") ? urlRelativa : "/" + urlRelativa;
       return `${base}${urlLimpa}`;
     },
-    // 🆕 INTEGRADO: Varre a API pública anônima do .NET 10 e despeja no array local
-    async carregarArtistasDoBanco() {
+
+    // 🧠 DISPARADOR LOGÍSTICO: Decide qual esteira de dados acionar com base na URL
+    async processarCargaCatalogo() {
       this.loading = true;
+      const queryCidade = this.$route.query.cidade;
+      const queryUf = this.$route.query.uf;
+      const queryTexto = this.$route.query.q;
+
+      if (queryTexto) {
+        this.termoBuscaTexto = queryTexto.trim();
+      }
+
       try {
-        const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/public/artists`);
-        if (response.data) {
-          this.artistasLista = response.data;
+        if (queryCidade && queryUf) {
+          console.log(`📡 [LOGÍSTICA] Buscando artistas num raio de 100km de: ${queryCidade} - ${queryUf}`);
+          
+          // 🛠️ SANITIZAÇÃO DE STRINGS: Remove acentos e caracteres especiais para casar 1:1 com o Seed do banco
+          const cidadeLimpa = queryCidade
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "") // Arranca os acentos (Ex: "Santo Antônio" vira "Santo Antonio")
+            .replace(/[^a-zA-Z0-9\s]/g, "") // Remove ruídos de pontuação
+            .trim();
+
+          // Codifica de forma segura para trafegar os espaços na rota HTTP (Ex: "Santo Antonio" vira "Santo%20Antonio")
+          const cidadeCodificada = encodeURIComponent(cidadeLimpa);
+          
+          const urlRaio = `${process.env.VUE_APP_API_BASE_URL}/public/artists/search-raio?cidade=${cidadeCodificada}&uf=${queryUf.trim()}`;
+          
+          const response = await axios.get(urlRaio);
+          this.artistasLista = response.data || [];
+          
+          // Sincroniza o seletor lateral com o estado pesquisado
+          this.filtrosAtivos.uf = queryUf.toUpperCase().trim();
+        } else {
+          // Busca aberta tradicional
+          const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/public/artists`);
+          this.artistasLista = response.data || [];
         }
       } catch (error) {
-        console.error("Falha técnica ao tentar consumir a esteira pública de artistas:", error);
+        console.error("Falha técnica ao tentar processar a esteira do catálogo público:", error);
       } finally {
         this.loading = false;
       }
     },
+
     formatCurrency(value) {
       if (!value || value === 0) return "Sob Consulta";
       return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(value);
@@ -210,8 +260,8 @@ export default {
     }
   },
   mounted() {
-    // 🚀 DISPARO AUTOMÁTICO: Consome o endpoint público do .NET assim que a tela abre
-    this.carregarArtistasDoBanco();
+    // 🚀 EXECUÇÃO ASSÍNCRONA: Avalia os parâmetros de rota e monta o grid na inicialização
+    this.processarCargaCatalogo();
   }
 };
 </script>
