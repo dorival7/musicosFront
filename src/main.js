@@ -5,6 +5,7 @@ import AOS from 'aos';
 import 'aos/dist/aos.css';
 import i18n from './i18n';
 import store from "./state/store";
+import VueKonva from "vue-konva";
 
 import VueSweetalert2 from 'vue-sweetalert2';
 import 'sweetalert2/dist/sweetalert2.min.css';
@@ -55,6 +56,7 @@ AOS.init({
 });
 
 createApp(App)
+    .use(VueKonva)
     .use(store)
     .use(router)
     .use(VueApexCharts)

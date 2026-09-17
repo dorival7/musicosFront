@@ -1,16 +1,11 @@
 <template>
-  <div
-    class="card cifra-main-card border border-light shadow-sm text-start bg-white mt-4"
-  >
+  <div class="card cifra-main-card border border-light shadow-sm text-start bg-white mt-4">
     <!-- ========================================================= -->
     <!-- CABEÇALHO -->
     <!-- ========================================================= -->
     <div class="cifra-header">
       <div>
-        <h5
-          class="text-dark fw-bold font-monospace text-uppercase mb-1 fs-15"
-          style="letter-spacing: 0.5px;"
-        >
+        <h5 class="text-dark fw-bold font-monospace text-uppercase mb-1 fs-15" style="letter-spacing: 0.5px;">
           <span class="header-guitar">🎸</span>
           Gerador & Transpositor de Cifras Inteligente
         </h5>
@@ -22,8 +17,7 @@
       </div>
 
       <span
-        class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-20 font-monospace px-3 py-1 fs-11 rounded-pill live-badge"
-      >
+        class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-20 font-monospace px-3 py-1 fs-11 rounded-pill live-badge">
         LIVE REQUERIMENTO / IA
       </span>
     </div>
@@ -42,13 +36,8 @@
             Nome da Música
           </label>
 
-          <input
-            type="text"
-            class="form-control control-input"
-            v-model="form.nomeMusica"
-            placeholder="Ex: Rumo a Goiânia"
-            @keyup.enter="gerarCifraMusicaReal"
-          />
+          <input type="text" class="form-control control-input" v-model="form.nomeMusica"
+            placeholder="Ex: Rumo a Goiânia" @keyup.enter="gerarCifraMusicaReal" />
         </div>
 
 
@@ -62,34 +51,19 @@
             </span>
           </label>
 
-          <input
-            type="text"
-            class="form-control control-input"
-            v-model="form.nomeArtista"
-            placeholder="Ex: Leandro e Leonardo"
-            @keyup.enter="gerarCifraMusicaReal"
-          />
+          <input type="text" class="form-control control-input" v-model="form.nomeArtista"
+            placeholder="Ex: Leandro e Leonardo" @keyup.enter="gerarCifraMusicaReal" />
         </div>
 
 
         <!-- BOTÃO BUSCAR -->
         <div class="col-lg-4 col-md-12">
-          <button
-            type="button"
-            @click="gerarCifraMusicaReal"
-            class="btn btn-primary search-button w-100"
-            :disabled="loadingCifra"
-          >
-            <span
-              v-if="loadingCifra && !carregandoRelacionada"
-              class="spinner-border spinner-border-sm me-2"
-              role="status"
-            ></span>
+          <button type="button" @click="gerarCifraMusicaReal" class="btn btn-primary search-button w-100"
+            :disabled="loadingCifra">
+            <span v-if="loadingCifra && !carregandoRelacionada" class="spinner-border spinner-border-sm me-2"
+              role="status"></span>
 
-            <i
-              v-else
-              class="ri-music-fill me-2"
-            ></i>
+            <i v-else class="ri-music-fill me-2"></i>
 
             {{
               loadingCifra && !carregandoRelacionada
@@ -124,10 +98,7 @@
             </div>
           </div>
 
-          <div
-            v-if="cifraResultado && form.tomDesejado"
-            class="current-tone-info"
-          >
+          <div v-if="cifraResultado && form.tomDesejado" class="current-tone-info">
             <span class="current-tone-label">
               TOM ATUAL
             </span>
@@ -141,18 +112,11 @@
 
         <!-- 12 TONS -->
         <div class="tone-grid">
-          <button
-            type="button"
-            v-for="tom in listaTonsDisponiveis"
-            :key="tom"
-            @click="transporCifraTomIa(tom)"
-            class="tone-button"
-            :class="{
+          <button type="button" v-for="tom in listaTonsDisponiveis" :key="tom" @click="transporCifraTomIa(tom)"
+            class="tone-button" :class="{
               'tone-button-active':
-                form.tomDesejado === tom
-            }"
-            :disabled="!podeTranspor || loadingCifra"
-          >
+                normalizarTomParaBotao(form.tomDesejado) === tom
+            }" :disabled="!podeTranspor || loadingCifra">
             {{ tom }}
           </button>
         </div>
@@ -165,14 +129,11 @@
     <!-- ========================================================= -->
     <!-- MÚSICAS RELACIONADAS -->
     <!-- ========================================================= -->
-    <div
-      v-if="
-        cifraResultado &&
-        cifraResultado.relacionadas &&
-        cifraResultado.relacionadas.length > 0
-      "
-      class="related-section"
-    >
+    <div v-if="
+      cifraResultado &&
+      cifraResultado.relacionadas &&
+      cifraResultado.relacionadas.length > 0
+    " class="related-section">
       <div class="related-header">
         <div>
           <div class="related-title">
@@ -195,17 +156,10 @@
       <!-- FAIXA HORIZONTAL -->
       <div class="related-scroll">
 
-        <button
-          v-for="(item, index) in cifraResultado.relacionadas"
-          :key="item.url || index"
-          type="button"
-          class="related-song-card"
-          :class="{
+        <button v-for="(item, index) in cifraResultado.relacionadas" :key="item.url || index" type="button"
+          class="related-song-card" :class="{
             'related-song-disabled': loadingCifra
-          }"
-          @click="carregarMusicaRelacionada(item)"
-          :disabled="loadingCifra"
-        >
+          }" @click="carregarMusicaRelacionada(item)" :disabled="loadingCifra">
           <div class="related-song-content">
 
             <div class="related-song-text">
@@ -237,10 +191,7 @@
       <!-- ======================================================= -->
       <!-- ESTADO INICIAL -->
       <!-- ======================================================= -->
-      <div
-        v-if="!cifraResultado && !loadingCifra"
-        class="empty-state"
-      >
+      <div v-if="!cifraResultado && !loadingCifra" class="empty-state">
         <div class="empty-icon">
           <i class="ri-file-music-line"></i>
         </div>
@@ -259,15 +210,8 @@
       <!-- ======================================================= -->
       <!-- CARREGAMENTO -->
       <!-- ======================================================= -->
-      <div
-        v-if="loadingCifra"
-        class="loading-state"
-      >
-        <div
-          class="spinner-border mb-3"
-          role="status"
-          style="color: #ff6c22;"
-        ></div>
+      <div v-if="loadingCifra" class="loading-state">
+        <div class="spinner-border mb-3" role="status" style="color: #ff6c22;"></div>
 
         <div class="loading-title">
           {{
@@ -290,10 +234,7 @@
       <!-- ======================================================= -->
       <!-- CIFRA CARREGADA -->
       <!-- ======================================================= -->
-      <div
-        v-if="cifraResultado && !loadingCifra"
-        class="cifra-document animate__animated animate__fadeIn"
-      >
+      <div v-if="cifraResultado && !loadingCifra" class="cifra-document animate__animated animate__fadeIn">
 
         <!-- CABEÇALHO DA MÚSICA -->
         <div class="song-header">
@@ -330,9 +271,7 @@
         <!-- ===================================================== -->
         <div class="cifra-scroll">
 
-          <pre
-            class="cifra-pre"
-          >{{ cifraResultado.cifraCompleta }}</pre>
+          <pre class="cifra-pre">{{ cifraResultado.cifraCompleta }}</pre>
 
         </div>
 
@@ -879,13 +818,41 @@ export default {
         this.loadingCifra =
           false;
       }
-    }
+    },
+    normalizarTomParaBotao(tom) {
+      if (!tom) {
+        return "";
+      }
+
+      const equivalencias = {
+        "Db": "C#",
+        "Eb": "D#",
+        "Gb": "F#",
+        "Ab": "G#",
+        "Bb": "A#",
+
+        "C#": "C#",
+        "D#": "D#",
+        "F#": "F#",
+        "G#": "G#",
+        "A#": "A#",
+
+        "C": "C",
+        "D": "D",
+        "E": "E",
+        "F": "F",
+        "G": "G",
+        "A": "A",
+        "B": "B"
+      };
+
+      return equivalencias[tom] || tom;
+    },
   }
 };
 </script>
 
 <style scoped>
-
 /* ================================================================ */
 /* CARD PRINCIPAL */
 /* ================================================================ */
@@ -895,11 +862,9 @@ export default {
   overflow: hidden;
 
   background:
-    linear-gradient(
-      180deg,
+    linear-gradient(180deg,
       #ffffff 0%,
-      #fbfcfd 100%
-    ) !important;
+      #fbfcfd 100%) !important;
 
   border: 1px solid #e6eaee !important;
 
@@ -922,12 +887,10 @@ export default {
   gap: 20px;
 
   background:
-    linear-gradient(
-      90deg,
+    linear-gradient(90deg,
       #ffffff 0%,
       #fff8f4 52%,
-      #f2fbfc 100%
-    );
+      #f2fbfc 100%);
 
   border-bottom: 1px solid #edf0f2;
 }
@@ -1004,11 +967,9 @@ export default {
   padding: 21px;
 
   background:
-    linear-gradient(
-      135deg,
+    linear-gradient(135deg,
       #f7fafb 0%,
-      #f1f8f9 100%
-    );
+      #f1f8f9 100%);
 
   border: 1px solid #dfe8eb;
 
@@ -1085,8 +1046,7 @@ export default {
   border-color: #ff8a50 !important;
 
   box-shadow:
-    0 0 0 3px
-    rgba(255, 108, 34, 0.10) !important;
+    0 0 0 3px rgba(255, 108, 34, 0.10) !important;
 }
 
 
@@ -1098,11 +1058,9 @@ export default {
   height: 46px;
 
   background:
-    linear-gradient(
-      135deg,
+    linear-gradient(135deg,
       #ff742f,
-      #ff5f14
-    ) !important;
+      #ff5f14) !important;
 
   border-color: #ff6c22 !important;
 
@@ -1121,8 +1079,7 @@ export default {
   letter-spacing: 0.2px;
 
   box-shadow:
-    0 6px 15px
-    rgba(255, 108, 34, 0.20);
+    0 6px 15px rgba(255, 108, 34, 0.20);
 
   transition:
     transform 0.15s ease,
@@ -1137,8 +1094,7 @@ export default {
   transform: translateY(-1px);
 
   box-shadow:
-    0 8px 18px
-    rgba(255, 108, 34, 0.27);
+    0 8px 18px rgba(255, 108, 34, 0.27);
 }
 
 
@@ -1284,26 +1240,22 @@ export default {
   transform: translateY(-2px);
 
   box-shadow:
-    0 4px 8px
-    rgba(0, 166, 178, 0.12);
+    0 4px 8px rgba(0, 166, 178, 0.12);
 }
 
 
 .tone-button-active {
   background:
-    linear-gradient(
-      135deg,
+    linear-gradient(135deg,
       #00aab6,
-      #00959f
-    ) !important;
+      #00959f) !important;
 
   border-color: #009ca7 !important;
 
   color: #ffffff !important;
 
   box-shadow:
-    0 4px 10px
-    rgba(0, 166, 178, 0.25) !important;
+    0 4px 10px rgba(0, 166, 178, 0.25) !important;
 
   transform: translateY(-1px);
 }
@@ -1330,12 +1282,10 @@ export default {
   border-radius: 11px;
 
   background:
-    linear-gradient(
-      135deg,
+    linear-gradient(135deg,
       #fffaf7 0%,
       #ffffff 42%,
-      #f5fbfc 100%
-    );
+      #f5fbfc 100%);
 
   box-shadow:
     0 3px 11px rgba(31, 41, 55, 0.035);
@@ -1427,8 +1377,7 @@ export default {
   scrollbar-width: thin;
 
   scrollbar-color:
-    #aebbc0
-    #edf2f3;
+    #aebbc0 #edf2f3;
 }
 
 
@@ -1474,8 +1423,7 @@ export default {
   cursor: pointer;
 
   box-shadow:
-    0 2px 5px
-    rgba(16, 24, 40, 0.035);
+    0 2px 5px rgba(16, 24, 40, 0.035);
 
   transition:
     background-color 0.15s ease,
@@ -1508,8 +1456,7 @@ export default {
   transform: translateY(-2px);
 
   box-shadow:
-    0 6px 14px
-    rgba(31, 41, 55, 0.09);
+    0 6px 14px rgba(31, 41, 55, 0.09);
 }
 
 
@@ -1592,8 +1539,7 @@ export default {
 }
 
 
-.related-song-card:hover
-.related-song-arrow {
+.related-song-card:hover .related-song-arrow {
   background: #fff0e8;
 
   color: #ff6c22;
@@ -1623,17 +1569,14 @@ export default {
   border-radius: 12px;
 
   background:
-    linear-gradient(
-      145deg,
+    linear-gradient(145deg,
       #eaf4f6 0%,
-      #f3f8f9 100%
-    );
+      #f3f8f9 100%);
 
   overflow: hidden;
 
   box-shadow:
-    inset 0 1px 3px
-    rgba(31, 41, 55, 0.025);
+    inset 0 1px 3px rgba(31, 41, 55, 0.025);
 }
 
 
@@ -1681,8 +1624,7 @@ export default {
   font-size: 31px;
 
   box-shadow:
-    0 5px 15px
-    rgba(31, 41, 55, 0.06);
+    0 5px 15px rgba(31, 41, 55, 0.06);
 }
 
 
@@ -1726,8 +1668,7 @@ export default {
   border-radius: 9px;
 
   box-shadow:
-    0 4px 13px
-    rgba(16, 24, 40, 0.055);
+    0 4px 13px rgba(16, 24, 40, 0.055);
 
   overflow: hidden;
 }
@@ -1749,12 +1690,10 @@ export default {
   padding: 17px 20px;
 
   background:
-    linear-gradient(
-      90deg,
+    linear-gradient(90deg,
       #ffffff 0%,
       #ffffff 70%,
-      #f4fbf8 100%
-    );
+      #f4fbf8 100%);
 
   border-bottom: 1px solid #e1e7e9;
 }
@@ -1824,11 +1763,9 @@ export default {
   padding: 10px 16px;
 
   background:
-    linear-gradient(
-      135deg,
+    linear-gradient(135deg,
       #1b925c,
-      #137c4d
-    );
+      #137c4d);
 
   color: #ffffff;
 
@@ -1843,8 +1780,7 @@ export default {
   text-transform: uppercase;
 
   box-shadow:
-    0 4px 10px
-    rgba(25, 135, 84, 0.20);
+    0 4px 10px rgba(25, 135, 84, 0.20);
 }
 
 
@@ -1858,17 +1794,14 @@ export default {
   overflow: auto;
 
   background:
-    linear-gradient(
-      180deg,
+    linear-gradient(180deg,
       #f1f8f9 0%,
-      #edf6f7 100%
-    );
+      #edf6f7 100%);
 
   scrollbar-width: thin;
 
   scrollbar-color:
-    #8f9fa4
-    #dfeaec;
+    #8f9fa4 #dfeaec;
 }
 
 
@@ -2119,5 +2052,4 @@ export default {
   }
 
 }
-
 </style>
