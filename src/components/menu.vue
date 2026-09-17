@@ -185,8 +185,15 @@ export default {
             <i class="mdi mdi-credit-card-clock-outline"></i>
             <span>Minha Assinatura</span>
           </router-link>
+        </li>]<!-- CATEGORIA INDEPENDENTE DE RECURSOS DE INTELIGÊNCIA ARTIFICIAL -->
+        <li class="menu-title"><span data-key="t-ia">Inteligência Artificial</span></li>
+    
+        <li class="nav-item">
+            <router-link to="/musicos/recursos-ia" class="nav-link menu-link d-flex align-items-center gap-2">
+                <i class="ri-brain-line text-primary" style="color: #ff6c22 !important;"></i> 
+                <span data-key="t-recursos-ia" class="font-monospace text-uppercase fs-12 text-white">Recursos de IA</span>
+            </router-link>
         </li>
-
       </ul>
     </template>
   </BContainer>

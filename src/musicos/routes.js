@@ -11,6 +11,12 @@ export default [
         component: () => import("../musicos/views/Dashboard.vue")
       },
       {
+        path: "recursos-ia",
+        name: "musicos-recursos-ia",
+        meta: { title: "Recursos de IA", authRequired: true },
+        component: () => import("../musicos/views/ia/HubRecursosIA.vue")
+      },
+      {
         path: "minha-vitrine",
         name: "MinhaVitrineAdmin",
         component: () => import("../musicos/views/VitrineView.vue"),
