@@ -197,74 +197,9 @@ async function arquivoParaRawImage(
  * CRIAR PNG TRANSPARENTE
  * ================================================================
  */
-
-/*
- * Recupera "buracos" internos que o MODNet pode classificar como fundo
- * dentro da silhueta (ex.: cajón, violão ou instrumento entre braços/pernas).
- *
- * Estratégia conservadora:
- * - cria máscara binária do primeiro plano;
- * - marca como fundo real tudo que é alcançável a partir das bordas;
- * - regiões transparentes internas NÃO conectadas à borda são tratadas como
- *   objeto enclausurado e recebem alpha alto.
- *
- * Isso evita simplesmente tornar todo o fundo visível novamente.
- */
-function preservarObjetosInternos(mascara, width, height) {
-  const total = width * height;
-  const foreground = new Uint8Array(total);
-  const exterior = new Uint8Array(total);
-  const fila = new Int32Array(total);
-  let inicio = 0;
-  let fim = 0;
-
-  // Threshold baixo para considerar bordas suaves como parte da silhueta.
-  for (let p = 0, i = 0; p < total; p++, i += 4) {
-    foreground[p] = mascara.data[i] >= 32 ? 1 : 0;
-  }
-
-  const adicionar = (p) => {
-    if (p < 0 || p >= total || foreground[p] || exterior[p]) return;
-    exterior[p] = 1;
-    fila[fim++] = p;
-  };
-
-  // Fundo conectado às quatro bordas da imagem.
-  for (let x = 0; x < width; x++) {
-    adicionar(x);
-    adicionar((height - 1) * width + x);
-  }
-  for (let y = 0; y < height; y++) {
-    adicionar(y * width);
-    adicionar(y * width + width - 1);
-  }
-
-  while (inicio < fim) {
-    const p = fila[inicio++];
-    const x = p % width;
-    const y = (p / width) | 0;
-
-    if (x > 0) adicionar(p - 1);
-    if (x + 1 < width) adicionar(p + 1);
-    if (y > 0) adicionar(p - width);
-    if (y + 1 < height) adicionar(p + width);
-  }
-
-  // Buracos internos: transparente, mas sem caminho até a borda.
-  for (let p = 0, i = 0; p < total; p++, i += 4) {
-    if (!foreground[p] && !exterior[p]) {
-      mascara.data[i] = Math.max(mascara.data[i], 238);
-      mascara.data[i + 1] = Math.max(mascara.data[i + 1], 238);
-      mascara.data[i + 2] = Math.max(mascara.data[i + 2], 238);
-      mascara.data[i + 3] = 255;
-    }
-  }
-}
-
 async function criarImagemTransparente(
   arquivo,
-  mask,
-  intensidade = "normal"
+  mask
 ) {
 
   /*
@@ -382,14 +317,6 @@ async function criarImagemTransparente(
       canvas.height
     );
 
-  if (intensidade === "objeto") {
-    preservarObjetosInternos(
-      mascara,
-      canvas.width,
-      canvas.height
-    );
-  }
-
 
   /*
    * ==============================================================
@@ -406,24 +333,10 @@ async function criarImagemTransparente(
     i += 4
   ) {
 
-    const alphaOriginal = mascara.data[i] / 255;
-
-    // "suave" preserva mais detalhes semitransparentes (instrumentos,
-    // cabelo e bordas). "forte" elimina mais fundo residual.
-    let alphaAjustado = alphaOriginal;
-
-    if (intensidade === "objeto") {
-      alphaAjustado = Math.pow(alphaOriginal, 0.50);
-    }
-    else if (intensidade === "suave") {
-      alphaAjustado = Math.pow(alphaOriginal, 0.62);
-    }
-    else if (intensidade === "forte") {
-      alphaAjustado = Math.pow(alphaOriginal, 1.55);
-    }
-
-    imagemOriginal.data[i + 3] =
-      Math.max(0, Math.min(255, Math.round(alphaAjustado * 255)));
+    imagemOriginal.data[
+      i + 3
+    ] =
+      mascara.data[i];
 
   }
 
@@ -515,17 +428,8 @@ export async function removerBackground(
 
 
   const {
-    onProgress = null,
-    intensidade = "normal"
+    onProgress = null
   } = options;
-
-  const progresso = (valor, etapa) => {
-    if (typeof onProgress === "function") {
-      onProgress({ progress: valor, etapa });
-    }
-  };
-
-  progresso(0.03, "Preparando");
 
 
   /*
@@ -538,10 +442,8 @@ export async function removerBackground(
     processor: processador
   } =
     await carregarModelo(
-      null
+      onProgress
     );
-
-  progresso(0.18, "Modelo pronto");
 
 
   /*
@@ -553,8 +455,6 @@ export async function removerBackground(
     await arquivoParaRawImage(
       arquivo
     );
-
-  progresso(0.28, "Imagem carregada");
 
 
   /*
@@ -575,8 +475,6 @@ export async function removerBackground(
     await processador(
       imagem
     );
-
-  progresso(0.42, "Preparando imagem");
 
 
   if (!pixel_values) {
@@ -607,8 +505,6 @@ export async function removerBackground(
       input:
         pixel_values
     });
-
-  progresso(0.78, "Analisando recorte");
 
 
   if (!output) {
@@ -645,8 +541,6 @@ export async function removerBackground(
         imagem.height
       );
 
-  progresso(0.88, "Gerando máscara");
-
 
   /*
    * ==============================================================
@@ -656,11 +550,8 @@ export async function removerBackground(
   const blob =
     await criarImagemTransparente(
       arquivo,
-      mask,
-      intensidade
+      mask
     );
-
-  progresso(0.96, "Finalizando");
 
 
   /*
@@ -673,8 +564,6 @@ export async function removerBackground(
       blob
     );
 
-
-  progresso(1, "Concluído");
 
   return {
 

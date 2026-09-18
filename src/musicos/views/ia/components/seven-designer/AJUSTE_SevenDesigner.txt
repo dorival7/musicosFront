@@ -1,0 +1,69 @@
+ALTERAÇÕES NECESSÁRIAS EM SevenDesigner.vue
+
+1) No componente <DesignerCanvas ...>, adicione:
+
+@remover-imagem="removerImagemPorId"
+
+Exemplo:
+
+<DesignerCanvas
+  ref="canvas"
+  :dados="cartaz"
+  :imagens="imagensCartaz"
+  :estilos="estilosTexto"
+  @selecionar="selecionar"
+  @atualizar-imagem="atualizarImagem"
+  @atualizar-texto-layout="atualizarTextoLayout"
+  @pedir-upload="$refs.inputUpload?.click()"
+  @remover-imagem="removerImagemPorId"
+/>
+
+2) SUBSTITUA o método selecionar(payload) por:
+
+selecionar(payload) {
+  if (!payload?.id || !payload?.tipo) {
+    this.selecionado = null;
+    return;
+  }
+
+  if (payload.tipo === "imagem") {
+    this.selecionado =
+      this.imagensCartaz.find(i => i.elementId === payload.id) || null;
+    return;
+  }
+
+  const estilo = this.estilosTexto[payload.id];
+  if (!estilo) {
+    this.selecionado = null;
+    return;
+  }
+
+  this.selecionado = {
+    tipo: "texto",
+    id: payload.id,
+    texto: payload.texto,
+    fontId: estilo.fontId,
+    corTexto: estilo.corTexto,
+    corFundo: estilo.corFundo,
+    temFundo: estilo.temFundo
+  };
+},
+
+3) Adicione este método:
+
+removerImagemPorId(elementId) {
+  this.imagensCartaz =
+    this.imagensCartaz.filter(i => i.elementId !== elementId);
+
+  if (this.selecionado?.elementId === elementId) {
+    this.selecionado = null;
+  }
+},
+
+RESULTADO:
+- clique em texto passa a selecionar;
+- clicar em outro texto troca seleção;
+- clicar em área vazia remove Transformer;
+- clicar em texto remove Transformer da imagem;
+- Delete/Backspace remove imagem selecionada do CARTAZ, não dos uploads;
+- botão "Remover" da barra contextual continua funcionando.

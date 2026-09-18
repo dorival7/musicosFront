@@ -1,0 +1,202 @@
+[
+  {
+    "id": "01-rock-stage",
+    "nome": "Rock Stage",
+    "arquivo": "01-rock-stage.jpg",
+    "categoria": "rock",
+    "tipo": "imagem",
+    "recomendadoPara": [
+      "sertanejo-sunset"
+    ]
+  },
+  {
+    "id": "02-rock-vintage",
+    "nome": "Rock Vintage",
+    "arquivo": "02-rock-vintage.jpg",
+    "categoria": "rock",
+    "tipo": "imagem",
+    "recomendadoPara": [
+      "sertanejo-sunset"
+    ]
+  },
+  {
+    "id": "03-rock-grunge",
+    "nome": "Rock Grunge",
+    "arquivo": "03-rock-grunge.jpg",
+    "categoria": "rock",
+    "tipo": "imagem",
+    "recomendadoPara": [
+      "sertanejo-sunset"
+    ]
+  },
+  {
+    "id": "04-pesqueiro",
+    "nome": "Pesqueiro Sunset",
+    "arquivo": "04-pesqueiro.jpg",
+    "categoria": "pesqueiro",
+    "tipo": "imagem",
+    "recomendadoPara": [
+      "sertanejo-sunset"
+    ]
+  },
+  {
+    "id": "05-restaurante-rustico",
+    "nome": "Restaurante Rústico",
+    "arquivo": "05-restaurante-rustico.jpg",
+    "categoria": "restaurante",
+    "tipo": "imagem",
+    "recomendadoPara": [
+      "sertanejo-sunset"
+    ]
+  },
+  {
+    "id": "06-restaurante-moderno",
+    "nome": "Restaurante Moderno",
+    "arquivo": "06-restaurante-moderno.jpg",
+    "categoria": "restaurante",
+    "tipo": "imagem",
+    "recomendadoPara": [
+      "sertanejo-sunset"
+    ]
+  },
+  {
+    "id": "07-pub-rustico",
+    "nome": "Pub Rústico",
+    "arquivo": "07-pub-rustico.jpg",
+    "categoria": "bar",
+    "tipo": "imagem",
+    "recomendadoPara": [
+      "sertanejo-sunset"
+    ]
+  },
+  {
+    "id": "08-bar-urbano",
+    "nome": "Bar Urbano",
+    "arquivo": "08-bar-urbano.jpg",
+    "categoria": "bar",
+    "tipo": "imagem",
+    "recomendadoPara": [
+      "sertanejo-sunset"
+    ]
+  },
+  {
+    "id": "09-churrascaria",
+    "nome": "Churrascaria",
+    "arquivo": "09-churrascaria.jpg",
+    "categoria": "gastronomia",
+    "tipo": "imagem",
+    "recomendadoPara": [
+      "sertanejo-sunset"
+    ]
+  },
+  {
+    "id": "10-sertanejo",
+    "nome": "Sertanejo Rústico",
+    "arquivo": "10-sertanejo.jpg",
+    "categoria": "sertanejo",
+    "tipo": "imagem",
+    "recomendadoPara": [
+      "sertanejo-sunset"
+    ]
+  },
+  {
+    "id": "11-country-sunset",
+    "nome": "Country Sunset",
+    "arquivo": "11-country-sunset.jpg",
+    "categoria": "country",
+    "tipo": "imagem",
+    "recomendadoPara": [
+      "sertanejo-sunset"
+    ]
+  },
+  {
+    "id": "12-festa",
+    "nome": "Festa",
+    "arquivo": "12-festa.jpg",
+    "categoria": "evento",
+    "tipo": "imagem",
+    "recomendadoPara": [
+      "sertanejo-sunset"
+    ]
+  },
+  {
+    "id": "13-evento-elegante",
+    "nome": "Evento Elegante",
+    "arquivo": "13-evento-elegante.jpg",
+    "categoria": "evento",
+    "tipo": "imagem",
+    "recomendadoPara": [
+      "sertanejo-sunset"
+    ]
+  },
+  {
+    "id": "14-balada-neon",
+    "nome": "Balada Neon",
+    "arquivo": "14-balada-neon.jpg",
+    "categoria": "balada",
+    "tipo": "imagem",
+    "recomendadoPara": [
+      "sertanejo-sunset"
+    ]
+  },
+  {
+    "id": "15-palco-azul",
+    "nome": "Palco Azul",
+    "arquivo": "15-palco-azul.jpg",
+    "categoria": "palco",
+    "tipo": "imagem",
+    "recomendadoPara": [
+      "sertanejo-sunset"
+    ]
+  },
+  {
+    "id": "16-palco-vermelho",
+    "nome": "Palco Vermelho",
+    "arquivo": "16-palco-vermelho.jpg",
+    "categoria": "palco",
+    "tipo": "imagem",
+    "recomendadoPara": [
+      "sertanejo-sunset"
+    ]
+  },
+  {
+    "id": "17-palco-verde",
+    "nome": "Palco Verde",
+    "arquivo": "17-palco-verde.jpg",
+    "categoria": "palco",
+    "tipo": "imagem",
+    "recomendadoPara": [
+      "sertanejo-sunset"
+    ]
+  },
+  {
+    "id": "18-palco-roxo",
+    "nome": "Palco Roxo",
+    "arquivo": "18-palco-roxo.jpg",
+    "categoria": "palco",
+    "tipo": "imagem",
+    "recomendadoPara": [
+      "sertanejo-sunset"
+    ]
+  },
+  {
+    "id": "19-luzes-bokeh",
+    "nome": "Luzes & Bokeh",
+    "arquivo": "19-luzes-bokeh.jpg",
+    "categoria": "abstrato",
+    "tipo": "imagem",
+    "recomendadoPara": [
+      "sertanejo-sunset"
+    ]
+  },
+  {
+    "id": "20-madeira-escura",
+    "nome": "Madeira Escura",
+    "arquivo": "20-madeira-escura.jpg",
+    "categoria": "textura",
+    "tipo": "imagem",
+    "recomendadoPara": [
+      "sertanejo-sunset"
+    ]
+  }
+]

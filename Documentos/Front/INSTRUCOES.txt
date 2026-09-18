@@ -1,0 +1,64 @@
+SEVEN DESIGNER - FRONTEND ETAPA 2
+
+ARQUIVOS PARA SUBSTITUIR:
+1) SevenDesigner.vue
+2) DesignerCanvas.vue
+
+ARQUIVO NOVO:
+3) services/designerAssetsService.js
+
+ARQUIVOS INCLUÍDOS NO ZIP APENAS PARA REFERÊNCIA (não precisam ser alterados):
+- services/backgroundRemovalService.js
+- templates/sertanejoSunset.js
+- backgrounds/backgrounds.js
+- fonts/fonts.js
+
+IMPORTANTE - TOKEN:
+Abra services/designerAssetsService.js.
+A função obterToken() tenta:
+token, authToken, accessToken e tokenMusico,
+além de objetos user/auth/usuario.
+Se o seu login usa outra chave no localStorage/sessionStorage,
+troque SOMENTE essa função.
+
+API configurada:
+http://localhost:5297
+
+O QUE ESTA ETAPA ENTREGA:
+- Meus Uploads consumindo GET real do backend.
+- contador usado/limite.
+- upload real via POST multipart/form-data.
+- exclusão real via DELETE.
+- clicar na miniatura adiciona a imagem ao cartaz.
+- até 5 imagens simultâneas no cartaz (limite visual inicial).
+- primeira imagem entra na área recomendada do template.
+- imagens adicionais entram deslocadas.
+- clique na imagem seleciona.
+- Transformer: arrastar, redimensionar proporcionalmente e rotacionar.
+- barra contextual para imagem.
+- Remover fundo usa o MODNet já existente.
+- Original / Sem fundo.
+- Duplicar.
+- Remover do cartaz não exclui dos uploads.
+- Excluir dos uploads exige que a imagem não esteja no cartaz.
+- template continua abrindo pronto com seus textos e posições.
+
+AINDA NÃO PERSISTE NO BACKEND:
+A versão PNG sem fundo gerada pelo MODNet continua temporária no navegador.
+O campo BackgroundRemovedUrl do backend já está preparado; faremos o endpoint
+de persistência após validar esta interface.
+
+TESTE:
+1) npm run serve (ou seu comando normal).
+2) Abra Seven Designer.
+3) Confirme que a imagem já enviada aparece em Meus Uploads (1/10).
+4) Clique nela -> deve entrar no cartaz.
+5) Clique na imagem no cartaz -> aparecem alças amarelas.
+6) Arraste.
+7) Redimensione por um canto.
+8) Rotacione.
+9) Clique Remover fundo.
+10) Teste Original / Sem fundo.
+11) Envie uma segunda imagem e adicione ao cartaz.
+
+Se aparecer erro de token, envie a parte do login onde o frontend salva o JWT.

@@ -1,2123 +1,1021 @@
 <template>
   <div class="seven-designer">
-
-    <!-- CABEÇALHO -->
     <div class="card border-0 shadow-sm mb-3">
-      <div class="card-body px-4 py-3">
-
-        <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
-          <div>
-            <div class="d-flex align-items-center gap-2 mb-1">
-              <span class="designer-icon">
-                🎨
-              </span>
-
-              <h5 class="mb-0 fw-bold text-dark">
-                Seven Designer
-              </h5>
-
-              <span class="badge designer-badge">
-                NOVO
-              </span>
-            </div>
-
-            <p class="text-muted mb-0 small">
-              Crie cartazes profissionais para divulgar
-              seus shows no WhatsApp e Instagram.
-            </p>
+      <div class="card-body px-4 py-3 d-flex justify-content-between align-items-center flex-wrap gap-3">
+        <div>
+          <div class="d-flex align-items-center gap-2">
+            <span class="fs-4">🎨</span>
+            <h5 class="mb-0 fw-bold">Seven Designer</h5>
+            <span class="badge bg-warning text-dark">NOVO</span>
           </div>
-
-          <div class="designer-format">
-            <span class="text-muted small">
-              Formato
-            </span>
-
-            <strong>
-              Story 1080 × 1920
-            </strong>
-          </div>
+          <small class="text-muted">Clique diretamente nos elementos do cartaz para editar.</small>
         </div>
-
+        <strong class="small">Story 1080 × 1920</strong>
       </div>
     </div>
 
-    <!-- ÁREA PRINCIPAL -->
     <div class="row g-3">
-
-      <!-- CONTROLES -->
-      <div class="col-xl-4 col-lg-5">
-
-        <div class="card border-0 shadow-sm h-100">
-          <div class="card-body p-4">
-
-            <div class="mb-4">
-              <span class="step-label">
-                PASSO 1
-              </span>
-
-              <h6 class="fw-bold text-dark mt-2 mb-1">
-                Informações do cartaz
-              </h6>
-
-              <p class="text-muted small mb-0">
-                Nesta primeira versão vamos utilizar
-                informações preenchidas manualmente.
-              </p>
-            </div>
-
-            <!-- ARTISTA -->
-            <div class="mb-3">
-              <label class="form-label designer-label">
-                Nome artístico
-              </label>
-
-              <input
-                v-model="cartaz.artista"
-                type="text"
-                class="form-control"
-                placeholder="Ex.: Banda Quatro"
-              />
-            </div>
-
-            <!-- DATA / HORÁRIO -->
-            <div class="row">
-
-              <div class="col-md-7">
-                <div class="mb-3">
-                  <label class="form-label designer-label">
-                    Data
-                  </label>
-
-                  <input
-                    v-model="cartaz.data"
-                    type="date"
-                    class="form-control"
-                  />
-                </div>
-              </div>
-
-              <div class="col-md-5">
-                <div class="mb-3">
-                  <label class="form-label designer-label">
-                    Horário
-                  </label>
-
-                  <input
-                    v-model="cartaz.horario"
-                    type="time"
-                    class="form-control"
-                  />
-                </div>
-              </div>
-
-            </div>
-
-            <!-- LOCAL -->
-            <div class="mb-3">
-              <label class="form-label designer-label">
-                Local do show
-              </label>
-
-              <input
-                v-model="cartaz.local"
-                type="text"
-                class="form-control"
-                placeholder="Ex.: Fazenda Monte Belo"
-              />
-            </div>
-
-            <!-- CIDADE -->
-            <div class="mb-3">
-              <label class="form-label designer-label">
-                Cidade
-              </label>
-
-              <input
-                v-model="cartaz.cidade"
-                type="text"
-                class="form-control"
-                placeholder="Ex.: Maringá - PR"
-              />
-            </div>
-
-            <!-- CHAMADA -->
-            <div class="mb-3">
-              <label class="form-label designer-label">
-                Chamada
-              </label>
-
-              <input
-                v-model="cartaz.chamada"
-                type="text"
-                class="form-control"
-                maxlength="60"
-                placeholder="Ex.: Música boa é aqui!"
-              />
-            </div>
-
-            <!-- EXTRA -->
-            <div class="mb-4">
-              <label class="form-label designer-label">
-                Informação adicional
-              </label>
-
-              <input
-                v-model="cartaz.extra"
-                type="text"
-                class="form-control"
-                maxlength="60"
-                placeholder="Ex.: Entrada gratuita"
-              />
-            </div>
-
-            <!-- =====================================================
-                 FOTO DO ARTISTA
-                 ===================================================== -->
-            <div class="designer-photo-control">
-
-              <label class="form-label designer-label">
-                Foto do artista
-              </label>
-
-              <input
-                ref="inputFotoArtista"
-                type="file"
-                accept="image/png,image/jpeg,image/webp"
-                class="d-none"
-                @change="selecionarFotoArtista"
-              />
-
-              <!-- SEM FOTO -->
-              <button
-                v-if="!fotoArtista.src"
-                type="button"
-                class="photo-upload-button"
-                @click="abrirSeletorFoto"
-              >
-                <span class="photo-upload-icon">
-                  📷
-                </span>
-
-                <strong>
-                  Escolher foto do artista
-                </strong>
-
-                <small>
-                  JPG, PNG ou WEBP
-                </small>
+      <div class="col-xl-3 col-lg-4">
+        <div class="card border-0 shadow-sm designer-sidebar-sticky">
+          <div class="card-body p-3">
+            <div class="designer-sidebar-section">
+              <strong class="d-block mb-2">Ferramentas</strong>
+              <button class="btn btn-dark w-100 fw-bold mb-2"
+                      type="button"
+                      @click.stop="menuAdicionarTexto = !menuAdicionarTexto">
+                T＋ Adicionar texto
               </button>
+              <div v-if="menuAdicionarTexto" class="sidebar-text-menu" @click.stop>
+                <button @click="adicionarTextoLivre('titulo')"><b>Título</b><small>Destaque principal</small></button>
+                <button @click="adicionarTextoLivre('subtitulo')"><b>Subtítulo</b><small>Informação secundária</small></button>
+                <button @click="adicionarTextoLivre('texto')"><b>Texto</b><small>Texto livre</small></button>
+              </div>
+            </div>
 
-              <!-- COM FOTO -->
-              <div
-                v-else
-                class="photo-editor"
-              >
+            <div class="designer-sidebar-section">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <strong>Fundo do cartaz</strong>
+                <small class="text-muted">{{ backgroundAtualNome }}</small>
+              </div>
+              <div class="sidebar-backgrounds">
+                <button v-for="bg in backgrounds"
+                        :key="bg.id"
+                        type="button"
+                        class="sidebar-bg-choice"
+                        :class="{ active: backgroundId === bg.id }"
+                        @click="backgroundId = bg.id">
+                  <span v-if="bg.tipo === 'procedural'" class="sidebar-procedural-thumb"></span>
+                  <img v-else :src="bg.src" :alt="bg.nome" />
+                  <small>{{ bg.nome }}</small>
+                </button>
+              </div>
+            </div>
 
-                <!-- ARQUIVO -->
-                <div class="photo-selected">
+            <div class="designer-sidebar-section uploads-section">
+              <div class="d-flex justify-content-between align-items-start mb-2">
+              <div>
+                <strong class="d-block">Meus uploads</strong>
+                <small class="text-muted">Fotos, logos e imagens.</small>
+              </div>
+              <span class="badge bg-light text-dark border">{{ usados }}/{{ limite }}</span>
+            </div>
 
-                  <div class="photo-file-info">
-                    <strong>
-                      Foto selecionada
-                    </strong>
+            <input ref="inputUpload" type="file" class="d-none"
+                   accept="image/png,image/jpeg,image/webp" @change="enviarUpload" />
+            <input ref="inputFotoArtista" type="file" class="d-none"
+                   accept="image/png,image/jpeg,image/webp" @change="enviarFotoArtista" />
 
-                    <small>
-                      {{ fotoArtista.nomeArquivo }}
-                    </small>
+            <button class="btn btn-warning w-100 fw-bold mb-3"
+                    :disabled="enviando || !podeEnviar"
+                    @click="$refs.inputUpload?.click()">
+              {{ enviando ? "Enviando..." : "+ Enviar nova imagem" }}
+            </button>
+
+            <div v-if="erroUploads" class="alert alert-danger py-2 small">{{ erroUploads }}</div>
+            <div v-if="carregando" class="text-muted small text-center py-3">Carregando...</div>
+
+            <div v-else class="uploads-grid">
+              <div v-for="asset in assets" :key="asset.id" class="upload-item">
+                <button class="upload-thumb" @click="adicionarAoCartaz(asset)" title="Adicionar ao cartaz">
+                  <img :src="urlAsset(asset.originalUrl)" :alt="asset.originalFileName" />
+                  <span>+ Cartaz</span>
+                </button>
+                <button class="upload-delete" @click.stop="excluirUpload(asset)" title="Excluir upload">×</button>
+              </div>
+            </div>
+
+            <div v-if="assets.length === 0 && !carregando" class="empty-box">
+              Envie a primeira foto ou logo.
+            </div>
+            <div v-if="!podeEnviar" class="alert alert-warning py-2 small mt-2 mb-0">
+              Limite atingido. Exclua um upload para liberar espaço.
+            </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xl-9 col-lg-8">
+        <div class="card border-0 shadow-sm">
+          <div class="card-body p-3 p-md-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <div>
+                <small class="text-muted fw-bold">EDITOR VISUAL</small>
+                <h6 class="fw-bold mb-0 mt-1">Seu cartaz</h6>
+              </div>
+              <span class="badge bg-light text-muted border">Sertanejo Sunset</span>
+            </div>
+
+            <div v-if="selecionado" class="designer-floating-toolbar" @click.stop>
+              <template v-if="selecionado.tipo === 'texto'">
+                <input
+                  v-model="selecionado.texto"
+                  class="form-control floating-text-input"
+                  title="Texto selecionado"
+                  @input="sincronizarTexto"
+                />
+
+                <div class="font-picker">
+                  <button
+                    type="button"
+                    class="font-picker-button"
+                    :style="{ fontFamily: fonteSelecionada?.family || 'Arial' }"
+                    @click.stop="fontMenuAberto = !fontMenuAberto; posicaoMenuAberto = false"
+                  >
+                    <span>{{ fonteSelecionada?.nome || "Fonte" }}</span>
+                    <span class="font-picker-arrow">⌄</span>
+                  </button>
+
+                  <div v-if="fontMenuAberto" class="font-picker-menu">
+                    <button
+                      v-for="fonte in fontes"
+                      :key="fonte.id"
+                      type="button"
+                      class="font-option"
+                      :class="{ active: selecionado.fontId === fonte.id }"
+                      :style="{ fontFamily: fonte.family }"
+                      @click.stop="selecionarFonte(fonte)"
+                    >
+                      <span class="font-option-preview">Aa</span>
+                      <span>{{ fonte.nome }}</span>
+                    </button>
                   </div>
-
-                  <button
-                    type="button"
-                    class="btn btn-sm btn-light border"
-                    :disabled="removendoBackground"
-                    @click="abrirSeletorFoto"
-                  >
-                    Trocar
-                  </button>
-
                 </div>
 
-                <!-- =================================================
-                     REMOÇÃO DE FUNDO
-                     ================================================= -->
+                <label class="floating-color" title="Cor do texto">
+                  <span class="floating-color-letter">A</span>
+                  <input v-model="selecionado.corTexto" type="color" @input="sincronizarTexto" />
+                </label>
 
-                <!-- AINDA NÃO PROCESSADA -->
-                <div
-                  v-if="
-                    !fotoArtista.backgroundRemovedSrc &&
-                    !removendoBackground
-                  "
-                  class="background-removal-area"
-                >
+                <label v-if="selecionado.temFundo" class="floating-color" title="Cor do fundo">
+                  <span>▰</span>
+                  <input v-model="selecionado.corFundo" type="color" @input="sincronizarTexto" />
+                </label>
 
+                <div class="position-picker">
                   <button
                     type="button"
-                    class="remove-background-button"
-                    @click="removerFundoFoto"
+                    class="toolbar-action"
+                    @click.stop="alternarMenuPosicao"
                   >
-                    <span class="remove-background-icon">
-                      ✨
-                    </span>
-
-                    <span>
-                      <strong>
-                        Remover fundo
-                      </strong>
-
-                      <small>
-                        Processamento feito no seu dispositivo
-                      </small>
-                    </span>
+                    <span class="toolbar-icon">▱</span>
+                    Posição
                   </button>
 
-                </div>
+                  <div v-if="posicaoMenuAberto" class="position-menu">
+                    <div class="position-title">Camadas</div>
+                    <button @click="executarPosicao('top')"><span>▣</span> Trazer para frente</button>
+                    <button @click="executarPosicao('up')"><span>↑</span> Avançar uma camada</button>
+                    <button @click="executarPosicao('down')"><span>↓</span> Recuar uma camada</button>
+                    <button @click="executarPosicao('bottom')"><span>▤</span> Enviar para trás</button>
 
-                <!-- PROCESSANDO -->
-                <div
-                  v-if="removendoBackground"
-                  class="background-processing"
-                >
-
-                  <div class="processing-header">
-
-                    <div>
-                      <strong>
-                        ✨ Removendo fundo...
-                      </strong>
-
-                      <small>
-                        {{ mensagemProcessamento }}
-                      </small>
+                    <div class="position-separator"></div>
+                    <div class="position-title">Alinhar no cartaz</div>
+                    <div class="align-grid">
+                      <button title="Esquerda" @click="alinharSelecionado('left')">⇤</button>
+                      <button title="Centro horizontal" @click="alinharSelecionado('center')">↔</button>
+                      <button title="Direita" @click="alinharSelecionado('right')">⇥</button>
+                      <button title="Topo" @click="alinharSelecionado('top')">⇡</button>
+                      <button title="Centro vertical" @click="alinharSelecionado('middle')">↕</button>
+                      <button title="Base" @click="alinharSelecionado('bottom')">⇣</button>
                     </div>
-
-                    <span
-                      v-if="progressoBackground !== null"
-                      class="processing-percent"
-                    >
-                      {{ progressoBackground }}%
-                    </span>
-
                   </div>
-
-                  <div class="designer-progress">
-                    <div
-                      class="designer-progress-bar"
-                      :class="{
-                        'designer-progress-indeterminate':
-                          progressoBackground === null
-                      }"
-                      :style="
-                        progressoBackground !== null
-                          ? {
-                              width:
-                                progressoBackground + '%'
-                            }
-                          : {}
-                      "
-                    ></div>
-                  </div>
-
-                  <p class="processing-help mb-0">
-                    No primeiro uso o modelo precisa ser
-                    carregado no navegador. Os próximos
-                    processamentos tendem a ser mais rápidos.
-                  </p>
-
                 </div>
 
-                <!-- PROCESSADA -->
-                <div
-                  v-if="
-                    fotoArtista.backgroundRemovedSrc &&
-                    !removendoBackground
-                  "
-                  class="background-success"
-                >
+                <button class="toolbar-action toolbar-danger" @click="excluirSelecionado">
+                  🗑 Excluir
+                </button>
+              </template>
 
-                  <div class="background-success-title">
-                    <span class="success-check">
-                      ✓
-                    </span>
+              <template v-else-if="selecionado.tipo === 'imagem'">
+                <span class="selected-image-name">{{ selecionado.nome }}</span>
 
-                    <div>
-                      <strong>
-                        Fundo removido
-                      </strong>
-
-                      <small>
-                        Escolha qual versão deseja usar no cartaz.
-                      </small>
-                    </div>
-                  </div>
-
-                  <div class="photo-version-switch">
-
-                    <button
-                      type="button"
-                      :class="{
-                        active:
-                          !fotoArtista.usarSemFundo
-                      }"
-                      @click="usarFotoOriginal"
-                    >
-                      Original
-                    </button>
-
-                    <button
-                      type="button"
-                      :class="{
-                        active:
-                          fotoArtista.usarSemFundo
-                      }"
-                      @click="usarFotoSemFundo"
-                    >
-                      Sem fundo
-                    </button>
-
-                  </div>
-
-                </div>
-
-                <!-- ERRO -->
-                <div
-                  v-if="
-                    erroBackground &&
-                    !removendoBackground
-                  "
-                  class="background-error"
-                >
-                  <strong>
-                    Não foi possível remover o fundo.
-                  </strong>
-
-                  <span>
-                    {{ erroBackground }}
-                  </span>
-
-                  <button
-                    type="button"
-                    class="btn btn-sm btn-outline-danger mt-2"
-                    @click="removerFundoFoto"
-                  >
-                    Tentar novamente
-                  </button>
-                </div>
-
-                <!-- =================================================
-                     ZOOM
-                     ================================================= -->
-                <div class="photo-setting">
-
-                  <div class="photo-setting-header">
-                    <span>
-                      Zoom
-                    </span>
-
-                    <strong>
-                      {{ Math.round(fotoArtista.zoom * 100) }}%
-                    </strong>
-                  </div>
-
-                  <input
-                    v-model.number="fotoArtista.zoom"
-                    type="range"
-                    min="0.25"
-                    max="3"
-                    step="0.05"
-                    class="form-range"
-                  />
-
-                </div>
-
-                <!-- =================================================
-                     POSIÇÃO
-                     ================================================= -->
-                <div class="photo-setting">
-
-                  <div class="photo-setting-header">
-                    <span>
-                      Posição da foto
-                    </span>
-                  </div>
-
-                  <div class="photo-position-controls">
-
-                    <div></div>
-
-                    <button
-                      type="button"
-                      title="Mover para cima"
-                      @click="moverFoto(0, -15)"
-                    >
-                      ↑
-                    </button>
-
-                    <div></div>
-
-                    <button
-                      type="button"
-                      title="Mover para esquerda"
-                      @click="moverFoto(-15, 0)"
-                    >
-                      ←
-                    </button>
-
-                    <button
-                      type="button"
-                      class="center-button"
-                      title="Centralizar"
-                      @click="centralizarFoto"
-                    >
-                      ●
-                    </button>
-
-                    <button
-                      type="button"
-                      title="Mover para direita"
-                      @click="moverFoto(15, 0)"
-                    >
-                      →
-                    </button>
-
-                    <div></div>
-
-                    <button
-                      type="button"
-                      title="Mover para baixo"
-                      @click="moverFoto(0, 15)"
-                    >
-                      ↓
-                    </button>
-
-                    <div></div>
-
-                  </div>
-
-                </div>
-
-                <!-- REMOVER FOTO -->
                 <button
-                  type="button"
-                  class="btn btn-sm btn-outline-danger w-100 mt-3"
+                  v-if="!selecionado.backgroundRemovedSrc"
+                  class="toolbar-action toolbar-dark"
                   :disabled="removendoBackground"
-                  @click="removerFotoArtista"
+                  @click="removerFundoSelecionada"
                 >
-                  Remover foto
+                  {{ removendoBackground ? "Processando..." : "✨ Remover fundo" }}
+                </button>
+                <template v-else>
+                  <button class="toolbar-action" @click="usarOriginal">Original</button>
+                  <button class="toolbar-action" @click="usarSemFundo">Sem fundo</button>
+                </template>
+
+                <select v-model="intensidadeRecorte" class="form-select recorte-select" title="Preservação do recorte">
+                  <option value="objeto">Preservar instrumento</option>
+                  <option value="suave">Recorte suave</option>
+                  <option value="normal">Recorte normal</option>
+                  <option value="forte">Recorte forte</option>
+                </select>
+
+                <button class="toolbar-action" @click="duplicarImagem">⧉ Duplicar</button>
+
+                <div class="position-picker">
+                  <button
+                    type="button"
+                    class="toolbar-action"
+                    @click.stop="alternarMenuPosicao"
+                  >
+                    <span class="toolbar-icon">▱</span>
+                    Posição
+                  </button>
+
+                  <div v-if="posicaoMenuAberto" class="position-menu">
+                    <div class="position-title">Camadas</div>
+                    <button @click="executarPosicao('top')"><span>▣</span> Trazer para frente</button>
+                    <button @click="executarPosicao('up')"><span>↑</span> Avançar uma camada</button>
+                    <button @click="executarPosicao('down')"><span>↓</span> Recuar uma camada</button>
+                    <button @click="executarPosicao('bottom')"><span>▤</span> Enviar para trás</button>
+
+                    <div class="position-separator"></div>
+                    <div class="position-title">Alinhar no cartaz</div>
+                    <div class="align-grid">
+                      <button title="Esquerda" @click="alinharSelecionado('left')">⇤</button>
+                      <button title="Centro horizontal" @click="alinharSelecionado('center')">↔</button>
+                      <button title="Direita" @click="alinharSelecionado('right')">⇥</button>
+                      <button title="Topo" @click="alinharSelecionado('top')">⇡</button>
+                      <button title="Centro vertical" @click="alinharSelecionado('middle')">↕</button>
+                      <button title="Base" @click="alinharSelecionado('bottom')">⇣</button>
+                    </div>
+                  </div>
+                </div>
+
+                <button class="toolbar-action toolbar-danger" @click="removerImagemCartaz">
+                  🗑 Excluir
                 </button>
 
-              </div>
-
+                <div v-if="removendoBackground" class="remove-bg-progress" title="Removendo fundo">
+                  <div class="remove-bg-progress-bar" :style="{ width: progressoBackground + '%' }"></div>
+                  <small>{{ etapaBackground || "Processando" }} · {{ Math.round(progressoBackground) }}%</small>
+                </div>
+              </template>
             </div>
 
+            <div v-if="erroBackground" class="alert alert-danger py-2 small">{{ erroBackground }}</div>
+
+            <div :class="{ 'designer-processing': removendoBackground }"><DesignerCanvas
+              ref="canvas"
+              :dados="cartaz"
+              :imagens="imagensCartaz"
+              :estilos="estilosTexto"
+              :textos-livres="textosLivres"
+              :background-id="backgroundId"
+              @selecionar="selecionar"
+              @atualizar-imagem="atualizarImagem"
+              @atualizar-texto-layout="atualizarTextoLayout"
+              @editar-texto="editarTextoDireto"
+              @remover-imagem="removerImagemPorId"
+              @pedir-upload="$refs.inputFotoArtista?.click()"
+            /></div>
           </div>
         </div>
-
       </div>
-
-      <!-- =========================================================
-           PREVIEW
-           ========================================================= -->
-      <div class="col-xl-8 col-lg-7">
-
-        <div class="card border-0 shadow-sm">
-          <div class="card-body p-4">
-
-            <div class="d-flex justify-content-between align-items-center mb-3">
-
-              <div>
-                <span class="step-label">
-                  PREVIEW
-                </span>
-
-                <h6 class="fw-bold text-dark mt-2 mb-0">
-                  Seu cartaz
-                </h6>
-              </div>
-
-              <span class="badge bg-light text-muted border">
-                Sertanejo Sunset
-              </span>
-
-            </div>
-
-            <div class="preview-workspace">
-              <DesignerCanvas
-                :dados="cartaz"
-                :foto-artista="fotoArtista"
-              />
-            </div>
-
-            <div class="designer-notice mt-3">
-              <span>
-                ℹ️
-              </span>
-
-              <div>
-                <strong>
-                  Protótipo do Seven Designer
-                </strong>
-
-                <p class="mb-0">
-                  O motor do cartaz trabalha em 1080 × 1920
-                  e será evoluído com templates profissionais,
-                  camadas gráficas e recursos de composição.
-                </p>
-              </div>
-            </div>
-
-          </div>
-        </div>
-
-      </div>
-
     </div>
-
   </div>
 </template>
 
-
 <script>
 import DesignerCanvas from "./DesignerCanvas.vue";
-
+import backgrounds from "./backgrounds/backgrounds";
+import fonts from "./fonts/fonts";
+import { removerBackground, liberarBackgroundUrl } from "./services/backgroundRemovalService";
 import {
-  removerBackground,
-  liberarBackgroundUrl
-} from "./services/backgroundRemovalService";
+  listarDesignerAssets, enviarDesignerAsset, excluirDesignerAsset, urlDesignerAsset
+} from "./services/designerAssetsService";
 
+const DEFAULTS = {
+  data: { fontId:"bebas-neue", corTexto:"#FFE000", corFundo:"#000000", temFundo:false },
+  weekday: { fontId:"oswald", corTexto:"#111111", corFundo:"#FFE000", temFundo:true },
+  chamada: { fontId:"pacifico", corTexto:"#FFFFFF", corFundo:"#000000", temFundo:false },
+  showLabel: { fontId:"permanent-marker", corTexto:"#FFFFFF", corFundo:"#000000", temFundo:true },
+  artista: { fontId:"permanent-marker", corTexto:"#FFFFFF", corFundo:"#000000", temFundo:true },
+  estabelecimento: { fontId:"oswald", corTexto:"#FFFFFF", corFundo:"#4A2818", temFundo:true },
+  cidadeHorario: { fontId:"oswald", corTexto:"#FFFFFF", corFundo:"#000000", temFundo:false },
+  extra: { fontId:"bangers", corTexto:"#FFFFFF", corFundo:"#ED1C24", temFundo:true }
+};
 
 export default {
-
   name: "SevenDesigner",
-
-  components: {
-    DesignerCanvas
-  },
-
+  components: { DesignerCanvas },
 
   data() {
     return {
-
+      fontes: fonts,
+      backgrounds,
+      backgroundId: "show-luzes-01",
       cartaz: {
-        artista: "Banda Quatro",
-        data: "2026-09-18",
-        horario: "20:30",
-        local: "Fazenda Monte Belo",
-        cidade: "Maringá - PR",
-        chamada: "Música boa é aqui!",
-        extra: "Show ao vivo"
+        artista:"Banda Quatro", data:"2026-09-18", horario:"20:30",
+        local:"Fazenda Monte Belo", cidade:"Maringá - PR",
+        chamada:"Música boa é aqui!", extra:"Show ao vivo"
       },
-
-
-      /*
-       * ============================================================
-       * FOTO DO ARTISTA
-       * ============================================================
-       *
-       * A estrutura já está preparada para persistência futura.
-       *
-       * arquivo:
-       *   File original enquanto estivermos trabalhando localmente.
-       *
-       * originalSrc:
-       *   URL temporária da foto original.
-       *
-       * backgroundRemovedSrc:
-       *   URL temporária do PNG transparente produzido pelo MODNet.
-       *
-       * src:
-       *   versão atualmente exibida pelo DesignerCanvas.
-       */
-      fotoArtista: {
-
-        arquivo: null,
-
-        nomeArquivo: "",
-
-        originalSrc: null,
-
-        backgroundRemovedSrc: null,
-
-        usarSemFundo: false,
-
-        /*
-         * Mantemos src porque o DesignerCanvas
-         * atual já trabalha com essa propriedade.
-         */
-        src: null,
-
-        zoom: 1,
-
-        x: 0,
-
-        y: 0
-      },
-
-
-      /*
-       * ============================================================
-       * REMOÇÃO DE FUNDO
-       * ============================================================
-       */
-      removendoBackground: false,
-
-      progressoBackground: null,
-
-      mensagemProcessamento:
-        "Preparando o modelo...",
-
-      erroBackground: null
+      estilosTexto: JSON.parse(JSON.stringify(DEFAULTS)),
+      assets: [], usados:0, limite:10, podeEnviar:true,
+      carregando:false, enviando:false, erroUploads:null,
+      imagensCartaz: [],
+      selecionado:null,
+      fontMenuAberto:false,
+      posicaoMenuAberto:false,
+      removendoBackground:false,
+      progressoBackground:0,
+      erroBackground:null,
+      textosLivres:[],
+      menuAdicionarTexto:false,
+      intensidadeRecorte:"objeto",
+      etapaBackground:""
     };
   },
 
-
   computed: {
-
-    dataFormatada() {
-
-      if (!this.cartaz.data) {
-        return "00/00";
-      }
-
-      const partes =
-        this.cartaz.data.split("-");
-
-      if (partes.length !== 3) {
-        return this.cartaz.data;
-      }
-
-      return `${partes[2]}/${partes[1]}`;
+    fonteSelecionada() {
+      if (!this.selecionado || this.selecionado.tipo !== "texto") return null;
+      return this.fontes.find(f => f.id === this.selecionado.fontId) || null;
     },
-
-
-    diaSemana() {
-
-      if (!this.cartaz.data) {
-        return "";
-      }
-
-      const partes =
-        this.cartaz.data.split("-");
-
-      if (partes.length !== 3) {
-        return "";
-      }
-
-      const ano =
-        Number(partes[0]);
-
-      const mes =
-        Number(partes[1]) - 1;
-
-      const dia =
-        Number(partes[2]);
-
-      const data =
-        new Date(
-          ano,
-          mes,
-          dia
-        );
-
-      const dias = [
-        "DOMINGO",
-        "SEGUNDA-FEIRA",
-        "TERÇA-FEIRA",
-        "QUARTA-FEIRA",
-        "QUINTA-FEIRA",
-        "SEXTA-FEIRA",
-        "SÁBADO"
-      ];
-
-      return dias[
-        data.getDay()
-      ];
+    backgroundAtualNome() {
+      return this.backgrounds.find(b => b.id === this.backgroundId)?.nome || "";
     }
-
   },
 
+  mounted() {
+    this.carregarUploads();
+    document.addEventListener("click", this.fecharMenusContextuais);
+  },
+
+  beforeUnmount() {
+    document.removeEventListener("click", this.fecharMenusContextuais);
+    this.imagensCartaz.forEach(i => {
+      if (i.backgroundRemovedSrc?.startsWith("blob:")) liberarBackgroundUrl(i.backgroundRemovedSrc);
+    });
+  },
 
   methods: {
+    urlAsset(url) { return urlDesignerAsset(url); },
 
-    /*
-     * ============================================================
-     * ABRIR SELETOR
-     * ============================================================
-     */
-    abrirSeletorFoto() {
-
-      if (this.removendoBackground) {
-        return;
-      }
-
-      const input =
-        this.$refs.inputFotoArtista;
-
-      if (input) {
-        input.click();
-      }
-
+    fecharMenusContextuais() {
+      this.fontMenuAberto = false;
+      this.posicaoMenuAberto = false;
+      this.menuAdicionarTexto = false;
     },
 
-
-    /*
-     * ============================================================
-     * SELECIONAR FOTO
-     * ============================================================
-     */
-    selecionarFotoArtista(event) {
-
-      const arquivo =
-        event.target.files &&
-        event.target.files[0];
-
-      if (!arquivo) {
-        return;
-      }
-
-
-      const tiposPermitidos = [
-        "image/jpeg",
-        "image/png",
-        "image/webp"
-      ];
-
-
-      if (
-        !tiposPermitidos.includes(
-          arquivo.type
-        )
-      ) {
-
-        alert(
-          "Selecione uma imagem JPG, PNG ou WEBP."
-        );
-
-        event.target.value = "";
-
-        return;
-      }
-
-
-      const tamanhoMaximo =
-        12 * 1024 * 1024;
-
-
-      if (
-        arquivo.size >
-        tamanhoMaximo
-      ) {
-
-        alert(
-          "A imagem deve possuir no máximo 12 MB."
-        );
-
-        event.target.value = "";
-
-        return;
-      }
-
-
-      /*
-       * Antes de carregar uma nova foto,
-       * liberamos as URLs da anterior.
-       */
-      this.liberarUrlsFoto();
-
-
-      const originalSrc =
-        URL.createObjectURL(
-          arquivo
-        );
-
-
-      this.fotoArtista.arquivo =
-        arquivo;
-
-      this.fotoArtista.nomeArquivo =
-        arquivo.name;
-
-      this.fotoArtista.originalSrc =
-        originalSrc;
-
-      this.fotoArtista.backgroundRemovedSrc =
-        null;
-
-      this.fotoArtista.usarSemFundo =
-        false;
-
-      /*
-       * O Canvas continua trabalhando
-       * apenas com fotoArtista.src.
-       */
-      this.fotoArtista.src =
-        originalSrc;
-
-
-      /*
-       * Novo arquivo = novo enquadramento.
-       */
-      this.fotoArtista.zoom = 1;
-
-      this.fotoArtista.x = 0;
-
-      this.fotoArtista.y = 0;
-
-
-      /*
-       * Limpa estados anteriores.
-       */
-      this.removendoBackground =
-        false;
-
-      this.progressoBackground =
-        null;
-
-      this.mensagemProcessamento =
-        "Preparando o modelo...";
-
-      this.erroBackground =
-        null;
-
-
-      /*
-       * Permite selecionar novamente
-       * o mesmo arquivo posteriormente.
-       */
-      event.target.value = "";
+    selecionarFonte(fonte) {
+      if (!this.selecionado || this.selecionado.tipo !== "texto") return;
+      this.selecionado.fontId = fonte.id;
+      this.fontMenuAberto = false;
+      this.sincronizarTexto();
     },
 
+    alternarMenuPosicao() {
+      this.posicaoMenuAberto = !this.posicaoMenuAberto;
+      this.fontMenuAberto = false;
+    },
 
-    /*
-     * ============================================================
-     * REMOVER FUNDO
-     * ============================================================
-     */
-    async removerFundoFoto() {
+    executarPosicao(direcao) {
+      this.moverSelecionado(direcao);
+      this.posicaoMenuAberto = false;
+    },
 
-      if (
-        !this.fotoArtista.arquivo ||
-        this.removendoBackground
-      ) {
-        return;
-      }
+    alinharSelecionado(alinhamento) {
+      this.$refs.canvas?.alinharSelecionado?.(alinhamento);
+      this.posicaoMenuAberto = false;
+    },
 
+    async carregarUploads() {
+      this.carregando = true; this.erroUploads = null;
+      try {
+        const r = await listarDesignerAssets();
+        this.assets = r?.items || [];
+        this.usados = Number(r?.used || 0);
+        this.limite = Number(r?.limit || 0);
+        this.podeEnviar = Boolean(r?.canUpload);
+      } catch(e) { this.erroUploads = e?.message || "Erro ao carregar uploads."; }
+      finally { this.carregando = false; }
+    },
 
-      this.removendoBackground =
-        true;
+    async enviarUpload(e) {
+      const file=e.target.files?.[0]; e.target.value="";
+      if(!file) return;
+      this.enviando=true; this.erroUploads=null;
+      try { await enviarDesignerAsset(file); await this.carregarUploads(); }
+      catch(err){ this.erroUploads=err?.message || "Erro no upload."; }
+      finally { this.enviando=false; }
+    },
 
-      this.erroBackground =
-        null;
+    async enviarFotoArtista(e) {
+      const file = e.target.files?.[0];
+      e.target.value = "";
+      if (!file) return;
 
-      this.progressoBackground =
-        null;
-
-      this.mensagemProcessamento =
-        "Preparando o modelo...";
-
+      this.enviando = true;
+      this.erroUploads = null;
 
       try {
+        const enviado = await enviarDesignerAsset(file);
+        await this.carregarUploads();
 
-        const resultado =
-          await removerBackground(
-            this.fotoArtista.arquivo,
-            {
-              onProgress:
-                this.atualizarProgressoBackground
-            }
-          );
+        // O endpoint pode retornar o asset diretamente ou embrulhado.
+        const asset =
+          enviado?.item ||
+          enviado?.asset ||
+          enviado ||
+          this.assets.find(a => a.originalFileName === file.name) ||
+          this.assets[0];
 
+        if (asset?.id) {
+          this.adicionarAoCartaz(asset, { fotoPrincipal: true });
+        }
+      } catch (err) {
+        this.erroUploads = err?.message || "Erro ao enviar a foto do artista.";
+      } finally {
+        this.enviando = false;
+      }
+    },
 
-        /*
-         * Caso já exista uma versão
-         * processada, libera a antiga.
-         */
-        if (
-          this.fotoArtista.backgroundRemovedSrc &&
-          this.fotoArtista.backgroundRemovedSrc !==
-            resultado.url
-        ) {
+    async excluirUpload(asset) {
+      if(this.imagensCartaz.some(i=>i.assetId===asset.id)){
+        alert("Remova primeiro essa imagem do cartaz."); return;
+      }
+      if(!confirm(`Excluir "${asset.originalFileName}" dos uploads?`)) return;
+      try { await excluirDesignerAsset(asset.id); await this.carregarUploads(); }
+      catch(e){ this.erroUploads=e?.message || "Erro ao excluir."; }
+    },
 
-          liberarBackgroundUrl(
-            this.fotoArtista.backgroundRemovedSrc
-          );
+    adicionarAoCartaz(asset, options = {}) {
+      if(this.imagensCartaz.length>=5){ alert("Máximo de 5 imagens no cartaz nesta versão."); return; }
+      const n=this.imagensCartaz.length;
+      const fotoPrincipal = Boolean(options.fotoPrincipal);
+      const id=`img-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+      const item={
+        elementId:id, tipo:"imagem", assetId:asset.id, nome:asset.originalFileName,
+        originalSrc:this.urlAsset(asset.originalUrl),
+        backgroundRemovedSrc:asset.backgroundRemovedUrl ? this.urlAsset(asset.backgroundRemovedUrl) : null,
+        src:this.urlAsset(asset.backgroundRemovedUrl || asset.originalUrl),
+        usarSemFundo:Boolean(asset.backgroundRemovedUrl),
+        x: fotoPrincipal ? 110 : 110+n*35,
+        y: fotoPrincipal ? 300 : 300+n*35,
+        width: fotoPrincipal ? 860 : (n===0?860:520),
+        height: fotoPrincipal ? 920 : (n===0?920:620),
+        rotation:0
+      };
+      this.imagensCartaz.push(item);
+      this.selecionado=item;
+      this.$nextTick(()=>this.$refs.canvas?.selecionarExterno?.(id,"imagem"));
+    },
 
+    selecionar(payload) {
+      this.fontMenuAberto = false;
+      this.posicaoMenuAberto = false;
+
+      if (!payload?.id || !payload?.tipo) {
+        this.selecionado = null;
+        return;
+      }
+
+      if (payload.tipo === "imagem") {
+        this.selecionado =
+          this.imagensCartaz.find(i => i.elementId === payload.id) || null;
+        return;
+      }
+
+      const estilo = this.estilosTexto[payload.id];
+      if (!estilo) {
+        this.selecionado = null;
+        return;
+      }
+
+      this.selecionado = {
+        tipo: "texto",
+        id: payload.id,
+        texto: payload.texto,
+        fontId: estilo.fontId,
+        corTexto: estilo.corTexto,
+        corFundo: estilo.corFundo,
+        temFundo: estilo.temFundo
+      };
+    },
+
+    editarTextoDireto(payload) {
+      if (!payload?.id || payload.cancelado) return;
+
+      this.selecionar({
+        id: payload.id,
+        tipo: "texto",
+        texto: payload.texto
+      });
+
+      if (this.selecionado?.tipo === "texto") {
+        this.selecionado.texto = payload.texto;
+        this.sincronizarTexto();
+      }
+    },
+
+    removerImagemPorId(elementId) {
+      this.imagensCartaz =
+        this.imagensCartaz.filter(i => i.elementId !== elementId);
+
+      if (this.selecionado?.elementId === elementId) {
+        this.selecionado = null;
+      }
+    },
+
+    sincronizarTexto() {
+      const s = this.selecionado;
+      if (!s || s.tipo !== "texto") return;
+
+      const estilo = this.estilosTexto[s.id];
+      if (!estilo) return;
+
+      estilo.fontId = s.fontId;
+      estilo.corTexto = s.corTexto;
+      estilo.corFundo = s.corFundo;
+
+      // Data é estrutural: nunca gravar "18/09" sobre YYYY-MM-DD.
+      if (s.id === "data") {
+        // Apenas estilo/layout da data é editável aqui.
+      } else if (s.id === "weekday") {
+        // O dia continua derivado da data. Só cria override se o usuário
+        // realmente alterar o texto mostrado.
+        const derivado = this.$refs.canvas?.weekday;
+        if (s.texto && s.texto !== derivado) estilo.textoOverride = s.texto;
+      } else if (s.id === "chamada") this.cartaz.chamada = s.texto;
+      else if (s.id === "showLabel") estilo.textoOverride = s.texto;
+      else if (s.id === "artista") this.cartaz.artista = s.texto;
+      else if (s.id === "estabelecimento") this.cartaz.local = s.texto;
+      else if (s.id === "cidadeHorario") estilo.textoOverride = s.texto;
+      else if (s.id === "extra") this.cartaz.extra = s.texto;
+      else if (s.id.startsWith("livre-")) {
+        const livre = this.textosLivres.find(t => t.id === s.id);
+        if (livre) livre.texto = s.texto;
+        estilo.textoOverride = s.texto;
+      }
+
+      this.$forceUpdate();
+    },
+
+    atualizarTextoLayout(p){ this.estilosTexto[p.id]={...this.estilosTexto[p.id],...p.layout}; },
+
+    atualizarImagem(p){
+      const i=this.imagensCartaz.findIndex(x=>x.elementId===p.elementId);
+      if(i<0)return;
+      this.imagensCartaz[i]={...this.imagensCartaz[i],...p};
+      if(this.selecionado?.elementId===p.elementId) this.selecionado=this.imagensCartaz[i];
+    },
+
+    async obterArquivo(imagem){
+      const r=await fetch(imagem.originalSrc);
+      if(!r.ok) throw new Error("Não foi possível carregar a imagem original.");
+      const blob=await r.blob();
+      return new File([blob],imagem.nome||"imagem.jpg",{type:blob.type||"image/jpeg"});
+    },
+
+    async removerFundoSelecionada(){
+      const i=this.selecionado;
+      if(!i||i.tipo!=="imagem"||this.removendoBackground)return;
+
+      this.removendoBackground=true;
+      this.progressoBackground=0;
+      this.etapaBackground="Preparando";
+      this.erroBackground=null;
+
+      try{
+        const file=await this.obterArquivo(i);
+        const r=await removerBackground(file,{
+          intensidade:this.intensidadeRecorte,
+          onProgress:(p)=>{
+            const valor=Number(p?.progress ?? 0);
+            this.progressoBackground=Math.max(0,Math.min(100,valor<=1?valor*100:valor));
+            this.etapaBackground=p?.etapa || this.etapaBackground;
+          }
+        });
+        this.atualizarImagem({
+          elementId:i.elementId,
+          backgroundRemovedSrc:r.url,
+          src:r.url,
+          usarSemFundo:true
+        });
+      }catch(e){
+        this.erroBackground=e?.message||"Erro ao remover fundo.";
+      }finally{
+        this.removendoBackground=false;
+        this.etapaBackground="";
+      }
+    },
+
+    usarOriginal(){const i=this.selecionado;if(i?.tipo==="imagem")this.atualizarImagem({elementId:i.elementId,src:i.originalSrc,usarSemFundo:false});},
+    usarSemFundo(){const i=this.selecionado;if(i?.backgroundRemovedSrc)this.atualizarImagem({elementId:i.elementId,src:i.backgroundRemovedSrc,usarSemFundo:true});},
+
+    duplicarImagem(){
+      const i=this.selecionado;if(!i||i.tipo!=="imagem")return;
+      const c={...i,elementId:`img-${Date.now()}`,x:i.x+45,y:i.y+45};
+      this.imagensCartaz.push(c);this.selecionado=c;
+      this.$nextTick(()=>this.$refs.canvas?.selecionarExterno?.(c.elementId,"imagem"));
+    },
+
+    moverSelecionado(direcao){
+      this.$refs.canvas?.moverSelecionado?.(direcao);
+    },
+
+    adicionarTextoLivre(tipo = "texto") {
+      this.menuAdicionarTexto = false;
+      const id = `livre-${Date.now()}`;
+      const fonte = this.fontes[0]?.id || null;
+      const presets = {
+        titulo: { texto: "Novo título", size: 84, w: 620, h: 120 },
+        subtitulo: { texto: "Novo subtítulo", size: 58, w: 560, h: 100 },
+        texto: { texto: "Novo texto", size: 42, w: 500, h: 90 }
+      };
+      const preset = presets[tipo] || presets.texto;
+
+      this.estilosTexto[id] = {
+        fontId: fonte,
+        corTexto: "#ffffff",
+        corFundo: "#000000",
+        temFundo: false,
+        textoOverride: preset.texto,
+        layout: { x: 270, y: 900, w: preset.w, h: preset.h, size: preset.size, align: "center", rotation: 0 }
+      };
+
+      this.textosLivres.push({ id, texto: preset.texto });
+      this.$forceUpdate();
+
+      this.$nextTick(() => {
+        this.$refs.canvas?.selecionarExterno?.(id, "texto");
+        this.selecionar({ id, tipo: "texto", texto: preset.texto });
+        this.$nextTick(() => this.$refs.canvas?.iniciarEdicaoInline?.(id));
+      });
+    },
+
+    excluirSelecionado() {
+      const s = this.selecionado;
+      if (!s) return;
+
+      if (s.tipo === "imagem") {
+        this.removerImagemCartaz();
+        return;
+      }
+
+      if (s.tipo === "texto") {
+        // Elementos do template são ocultados; textos livres são removidos.
+        if (s.id.startsWith("livre-")) {
+          this.textosLivres = this.textosLivres.filter(t => t.id !== s.id);
+          delete this.estilosTexto[s.id];
+        } else {
+          this.estilosTexto[s.id].oculto = true;
         }
 
-
-        this.fotoArtista.backgroundRemovedSrc =
-          resultado.url;
-
-
-        /*
-         * Assim que termina, já mostramos
-         * automaticamente a versão recortada.
-         */
-        this.fotoArtista.usarSemFundo =
-          true;
-
-        this.fotoArtista.src =
-          resultado.url;
-
-
-        this.progressoBackground =
-          100;
-
-        this.mensagemProcessamento =
-          "Fundo removido com sucesso.";
-
+        this.selecionado = null;
+        this.$forceUpdate();
+        this.$nextTick(() => this.$refs.canvas?.selecionarExterno?.(null, null));
       }
-      catch (erro) {
-
-        console.error(
-          "[SEVEN DESIGNER] Erro na remoção de fundo:",
-          erro
-        );
-
-
-        this.erroBackground =
-          this.obterMensagemErroBackground(
-            erro
-          );
-
-
-        /*
-         * Em caso de erro, mantemos
-         * a fotografia original.
-         */
-        this.fotoArtista.usarSemFundo =
-          false;
-
-        this.fotoArtista.src =
-          this.fotoArtista.originalSrc;
-
-      }
-      finally {
-
-        this.removendoBackground =
-          false;
-
-      }
-
     },
 
-
-    /*
-     * ============================================================
-     * PROGRESSO DO MODELO
-     * ============================================================
-     */
-    atualizarProgressoBackground(evento) {
-
-      if (!evento) {
-        return;
-      }
-
-
-      /*
-       * Transformers.js pode emitir eventos
-       * diferentes durante download/carregamento.
-       */
-      const status =
-        evento.status || "";
-
-
-      if (
-        status === "initiate"
-      ) {
-
-        this.mensagemProcessamento =
-          "Preparando arquivos do modelo...";
-
-      }
-      else if (
-        status === "download"
-      ) {
-
-        this.mensagemProcessamento =
-          "Baixando modelo de remoção de fundo...";
-
-      }
-      else if (
-        status === "progress"
-      ) {
-
-        this.mensagemProcessamento =
-          "Baixando modelo de remoção de fundo...";
-
-      }
-      else if (
-        status === "done"
-      ) {
-
-        this.mensagemProcessamento =
-          "Processando a fotografia...";
-
-      }
-      else if (
-        status === "ready"
-      ) {
-
-        this.mensagemProcessamento =
-          "Modelo carregado. Processando fotografia...";
-
-      }
-
-
-      /*
-       * Algumas versões fornecem progress.
-       */
-      if (
-        typeof evento.progress ===
-        "number"
-      ) {
-
-        const valor =
-          Math.round(
-            evento.progress
-          );
-
-
-        this.progressoBackground =
-          Math.max(
-            0,
-            Math.min(
-              100,
-              valor
-            )
-          );
-
-
-        return;
-      }
-
-
-      /*
-       * Outras fornecem loaded / total.
-       */
-      if (
-        typeof evento.loaded ===
-          "number" &&
-        typeof evento.total ===
-          "number" &&
-        evento.total > 0
-      ) {
-
-        const percentual =
-          Math.round(
-            (
-              evento.loaded /
-              evento.total
-            ) * 100
-          );
-
-
-        this.progressoBackground =
-          Math.max(
-            0,
-            Math.min(
-              100,
-              percentual
-            )
-          );
-
-
-        return;
-      }
-
-
-      /*
-       * Sem informação numérica:
-       * usamos barra indeterminada.
-       */
-      this.progressoBackground =
-        null;
-    },
-
-
-    /*
-     * ============================================================
-     * MENSAGEM DE ERRO AMIGÁVEL
-     * ============================================================
-     */
-    obterMensagemErroBackground(
-      erro
-    ) {
-
-      if (!erro) {
-
-        return (
-          "Ocorreu um erro inesperado durante o processamento."
-        );
-
-      }
-
-
-      const mensagem =
-        erro.message ||
-        String(erro);
-
-
-      if (
-        mensagem
-          .toLowerCase()
-          .includes("memory")
-      ) {
-
-        return (
-          "O navegador não possui memória suficiente para processar esta imagem."
-        );
-
-      }
-
-
-      if (
-        mensagem
-          .toLowerCase()
-          .includes("network") ||
-        mensagem
-          .toLowerCase()
-          .includes("fetch")
-      ) {
-
-        return (
-          "Não foi possível carregar o modelo. Verifique sua conexão e tente novamente."
-        );
-
-      }
-
-
-      return mensagem;
-    },
-
-
-    /*
-     * ============================================================
-     * ALTERNAR ORIGINAL / SEM FUNDO
-     * ============================================================
-     */
-    usarFotoOriginal() {
-
-      if (
-        !this.fotoArtista.originalSrc
-      ) {
-        return;
-      }
-
-
-      this.fotoArtista.usarSemFundo =
-        false;
-
-      this.fotoArtista.src =
-        this.fotoArtista.originalSrc;
-    },
-
-
-    usarFotoSemFundo() {
-
-      if (
-        !this.fotoArtista.backgroundRemovedSrc
-      ) {
-        return;
-      }
-
-
-      this.fotoArtista.usarSemFundo =
-        true;
-
-      this.fotoArtista.src =
-        this.fotoArtista.backgroundRemovedSrc;
-    },
-
-
-    /*
-     * ============================================================
-     * POSICIONAMENTO
-     * ============================================================
-     */
-    moverFoto(x, y) {
-
-      this.fotoArtista.x += x;
-
-      this.fotoArtista.y += y;
-
-    },
-
-
-    centralizarFoto() {
-
-      this.fotoArtista.x = 0;
-
-      this.fotoArtista.y = 0;
-
-    },
-
-
-    /*
-     * ============================================================
-     * LIBERAR URLs
-     * ============================================================
-     */
-    liberarUrlsFoto() {
-
-      const original =
-        this.fotoArtista.originalSrc;
-
-      const removida =
-        this.fotoArtista.backgroundRemovedSrc;
-
-
-      if (
-        original &&
-        original.startsWith("blob:")
-      ) {
-
-        URL.revokeObjectURL(
-          original
-        );
-
-      }
-
-
-      if (
-        removida &&
-        removida.startsWith("blob:") &&
-        removida !== original
-      ) {
-
-        liberarBackgroundUrl(
-          removida
-        );
-
-      }
-
-    },
-
-
-    /*
-     * ============================================================
-     * REMOVER FOTO
-     * ============================================================
-     */
-    removerFotoArtista() {
-
-      if (
-        this.removendoBackground
-      ) {
-        return;
-      }
-
-
-      this.liberarUrlsFoto();
-
-
-      this.fotoArtista.arquivo =
-        null;
-
-      this.fotoArtista.nomeArquivo =
-        "";
-
-      this.fotoArtista.originalSrc =
-        null;
-
-      this.fotoArtista.backgroundRemovedSrc =
-        null;
-
-      this.fotoArtista.usarSemFundo =
-        false;
-
-      this.fotoArtista.src =
-        null;
-
-      this.fotoArtista.zoom =
-        1;
-
-      this.fotoArtista.x =
-        0;
-
-      this.fotoArtista.y =
-        0;
-
-
-      this.progressoBackground =
-        null;
-
-      this.mensagemProcessamento =
-        "Preparando o modelo...";
-
-      this.erroBackground =
-        null;
-
+    removerImagemCartaz(){
+      const i=this.selecionado;if(!i||i.tipo!=="imagem")return;
+      this.imagensCartaz=this.imagensCartaz.filter(x=>x.elementId!==i.elementId);
+      this.selecionado=null;
+      this.$nextTick(()=>this.$refs.canvas?.limparSelecao?.());
     }
-
-  },
-
-
-  /*
-   * ==============================================================
-   * LIMPEZA AO SAIR DO COMPONENTE
-   * ==============================================================
-   */
-  beforeUnmount() {
-
-    this.liberarUrlsFoto();
-
   }
-
 };
 </script>
 
-
 <style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Bangers&family=Bebas+Neue&family=Black+Ops+One&family=Oswald:wght@400;700&family=Pacifico&family=Permanent+Marker&family=Righteous&family=Rock+Salt&display=swap');
 
-/* ================================================================
-   BASE
-   ================================================================ */
+.uploads-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}
+.upload-item{position:relative}.upload-thumb{width:100%;aspect-ratio:1;border:1px solid #dee2e6;border-radius:10px;padding:0;overflow:hidden;position:relative;background:#f8f9fa}
+.upload-thumb img{width:100%;height:100%;object-fit:cover}.upload-thumb span{position:absolute;left:5px;right:5px;bottom:5px;background:rgba(0,0,0,.7);color:#fff;border-radius:5px;font-size:10px;padding:3px}
+.upload-delete{position:absolute;right:-5px;top:-5px;width:24px;height:24px;border:2px solid #fff;border-radius:50%;background:#dc3545;color:#fff;font-weight:bold}
+.empty-box{padding:25px 8px;text-align:center;border:1px dashed #ced4da;border-radius:8px;color:#6c757d;font-size:12px}
+.context-toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:10px;border:1px solid #dee2e6;border-radius:10px;background:#f8f9fa}
+.context-text{flex:1 1 240px}.context-font{width:auto;min-width:190px}.color-control{display:flex;align-items:center;gap:4px;border:1px solid #ced4da;background:#fff;border-radius:6px;padding:4px 7px;font-weight:bold}
+.layer-controls{display:flex;gap:4px;align-items:center}
+.color-control input{width:28px;height:28px;border:0;padding:0;background:transparent}
 
-.seven-designer {
-  width: 100%;
+.designer-preview-column{
+  position:relative;
 }
-
-
-.designer-icon {
-  font-size: 24px;
+.designer-floating-toolbar{
+  position:sticky;
+  top:68px;
+  z-index:120;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  flex-wrap:wrap;
+  width:max-content;
+  max-width:calc(100% - 24px);
+  min-height:48px;
+  margin:0 auto -56px auto;
+  transform:translateY(10px);
+  padding:6px 8px;
+  border:1px solid rgba(208,213,221,.95);
+  border-radius:13px;
+  background:rgba(255,255,255,.98);
+  box-shadow:0 8px 24px rgba(16,24,40,.18);
+  backdrop-filter:blur(12px);
 }
-
-
-.designer-badge {
-  background: #ff6c22;
-  color: #fff;
-
-  font-size: 9px;
-  letter-spacing: 0.8px;
+.floating-text-input{
+  width:165px;
+  min-width:125px;
+  height:36px;
+  border-radius:8px;
+  font-size:13px;
 }
-
-
-.designer-format {
-  display: flex;
-  flex-direction: column;
-
-  text-align: right;
-
-  line-height: 1.3;
+.font-picker,.position-picker{position:relative}
+.font-picker-button,.toolbar-action{
+  height:36px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  border:1px solid #d0d5dd;
+  border-radius:9px;
+  padding:0 11px;
+  background:#fff;
+  color:#20242b;
+  font-weight:700;
+  white-space:nowrap;
 }
-
-
-.designer-format strong {
-  color: #ff6c22;
-
-  font-size: 13px;
+.font-picker-button{min-width:170px;justify-content:space-between;font-size:17px}
+.font-picker-arrow{font-family:Arial,sans-serif;color:#667085}
+.font-picker-menu{
+  position:absolute;
+  top:44px;
+  left:0;
+  z-index:250;
+  width:250px;
+  max-height:360px;
+  overflow:auto;
+  padding:7px;
+  border:1px solid #e4e7ec;
+  border-radius:12px;
+  background:#fff;
+  box-shadow:0 16px 38px rgba(16,24,40,.20);
 }
-
-
-.step-label {
-  color: #ff6c22;
-
-  font-size: 10px;
-  font-weight: 800;
-
-  letter-spacing: 1.2px;
+.font-option{
+  width:100%;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:9px 10px;
+  border:0;
+  border-radius:8px;
+  background:transparent;
+  text-align:left;
+  font-size:18px;
 }
-
-
-.designer-label {
-  color: #495057;
-
-  font-size: 12px;
-  font-weight: 700;
+.font-option:hover,.font-option.active{background:#f2efff}
+.font-option.active{outline:1px solid #8b5cf6}
+.font-option-preview{
+  width:44px;
+  flex:0 0 44px;
+  text-align:center;
+  font-size:24px;
 }
-
-
-.form-control:focus {
-  border-color: #ff9a66;
-
-  box-shadow:
-    0 0 0 0.2rem
-    rgba(255, 108, 34, 0.12);
+.floating-color{
+  height:36px;
+  display:flex;
+  align-items:center;
+  gap:5px;
+  padding:0 8px;
+  border:1px solid #d0d5dd;
+  border-radius:9px;
+  background:#fff;
+  font-weight:800;
 }
-
-
-/* ================================================================
-   FOTO
-   ================================================================ */
-
-.designer-photo-control {
-  width: 100%;
+.floating-color input{
+  width:25px;
+  height:25px;
+  padding:0;
+  border:0;
+  background:transparent;
 }
-
-
-.photo-upload-button {
-  width: 100%;
-  min-height: 125px;
-
-  border:
-    2px dashed
-    #d7dce2;
-
-  border-radius: 8px;
-
-  background: #f8f9fa;
-
-  display: flex;
-  flex-direction: column;
-
-  align-items: center;
-  justify-content: center;
-
-  cursor: pointer;
-
-  transition:
-    all 0.2s ease;
+.floating-color-letter{text-decoration:underline;text-decoration-thickness:3px}
+.toolbar-dark{background:#25272b;color:#fff;border-color:#25272b}
+.toolbar-danger{color:#b42318;border-color:#f3b7b2}
+.toolbar-danger:hover{background:#fff1f0}
+.toolbar-action:hover,.font-picker-button:hover{background:#f7f7f9}
+.selected-image-name{
+  max-width:170px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  font-weight:700;
+  color:#475467;
 }
-
-
-.photo-upload-button:hover {
-  border-color: #ff6c22;
-
-  background: #fff8f4;
+.position-menu{
+  position:absolute;
+  top:44px;
+  right:0;
+  z-index:250;
+  width:245px;
+  padding:8px;
+  border:1px solid #e4e7ec;
+  border-radius:12px;
+  background:#fff;
+  box-shadow:0 16px 38px rgba(16,24,40,.20);
 }
-
-
-.photo-upload-icon {
-  font-size: 28px;
-
-  margin-bottom: 5px;
+.position-title{
+  padding:5px 8px;
+  color:#667085;
+  font-size:11px;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.05em;
 }
-
-
-.photo-upload-button strong {
-  color: #343a40;
-
-  font-size: 13px;
+.position-menu>button{
+  width:100%;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:8px 9px;
+  border:0;
+  border-radius:8px;
+  background:transparent;
+  text-align:left;
+  font-weight:600;
 }
-
-
-.photo-upload-button small {
-  color: #878a99;
-
-  margin-top: 3px;
+.position-menu>button:hover,.align-grid button:hover{background:#f2efff}
+.position-separator{height:1px;background:#eaecf0;margin:7px 2px}
+.align-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:5px;
+  padding:4px;
 }
-
-
-.photo-editor {
-  border:
-    1px solid
-    #e1e5e9;
-
-  border-radius: 8px;
-
-  background: #f8f9fa;
-
-  padding: 14px;
+.align-grid button{
+  height:36px;
+  border:1px solid #eaecf0;
+  border-radius:8px;
+  background:#fff;
+  font-size:18px;
 }
-
-
-.photo-selected {
-  display: flex;
-
-  align-items: center;
-  justify-content: space-between;
-
-  gap: 10px;
-
-  padding-bottom: 12px;
-
-  border-bottom:
-    1px solid
-    #e1e5e9;
-}
-
-
-.photo-file-info {
-  min-width: 0;
-
-  flex: 1;
-}
-
-
-.photo-selected strong,
-.photo-selected small {
-  display: block;
-}
-
-
-.photo-selected strong {
-  color: #343a40;
-
-  font-size: 12px;
-}
-
-
-.photo-selected small {
-  max-width: 210px;
-
-  color: #878a99;
-
-  overflow: hidden;
-
-  text-overflow: ellipsis;
-
-  white-space: nowrap;
-}
-
-
-/* ================================================================
-   REMOVER BACKGROUND
-   ================================================================ */
-
-.background-removal-area {
-  margin-top: 14px;
-}
-
-
-.remove-background-button {
-  width: 100%;
-
-  border:
-    1px solid
-    #ffcfb6;
-
-  border-radius: 7px;
-
-  background: #fff8f4;
-
-  color: #343a40;
-
-  padding: 11px 12px;
-
-  display: flex;
-
-  align-items: center;
-
-  gap: 10px;
-
-  text-align: left;
-
-  cursor: pointer;
-
-  transition:
-    all 0.2s ease;
-}
-
-
-.remove-background-button:hover {
-  border-color: #ff6c22;
-
-  background: #fff1e9;
-}
-
-
-.remove-background-icon {
-  width: 35px;
-  height: 35px;
-
-  border-radius: 50%;
-
-  background: #ff6c22;
-
-  display: flex;
-
-  align-items: center;
-  justify-content: center;
-
-  flex-shrink: 0;
-
-  font-size: 16px;
-}
-
-
-.remove-background-button strong {
-  display: block;
-
-  color: #343a40;
-
-  font-size: 12px;
-}
-
-
-.remove-background-button small {
-  display: block;
-
-  color: #878a99;
-
-  font-size: 10px;
-
-  margin-top: 1px;
-}
-
-
-/* ================================================================
-   PROCESSAMENTO
-   ================================================================ */
-
-.background-processing {
-  margin-top: 14px;
-
-  padding: 12px;
-
-  border:
-    1px solid
-    #ffe0cf;
-
-  border-radius: 7px;
-
-  background: #fff8f4;
-}
-
-
-.processing-header {
-  display: flex;
-
-  align-items: flex-start;
-  justify-content: space-between;
-
-  gap: 10px;
-}
-
-
-.processing-header strong {
-  display: block;
-
-  color: #343a40;
-
-  font-size: 12px;
-}
-
-
-.processing-header small {
-  display: block;
-
-  color: #878a99;
-
-  font-size: 10px;
-
-  margin-top: 2px;
-}
-
-
-.processing-percent {
-  color: #ff6c22;
-
-  font-size: 11px;
-  font-weight: 800;
-}
-
-
-.designer-progress {
-  position: relative;
-
-  width: 100%;
-  height: 6px;
-
-  overflow: hidden;
-
-  margin-top: 10px;
-
-  border-radius: 10px;
-
-  background: #ffe0cf;
-}
-
-
-.designer-progress-bar {
-  height: 100%;
-
-  border-radius: 10px;
-
-  background: #ff6c22;
-
-  transition:
-    width 0.2s ease;
-}
-
-
-.designer-progress-indeterminate {
-  position: absolute;
-
-  width: 35%;
-
-  animation:
-    sevenDesignerProgress
-    1.2s
-    ease-in-out
-    infinite;
-}
-
-
-@keyframes sevenDesignerProgress {
-
-  0% {
-    left: -35%;
+@media(max-width:768px){
+  .designer-floating-toolbar{
+    top:62px;
+    width:calc(100% - 12px);
+    max-width:calc(100% - 12px);
+    justify-content:flex-start;
+    flex-wrap:nowrap;
+    overflow-x:auto;
+    overflow-y:visible;
+    margin-bottom:-54px;
   }
+  .floating-text-input{width:145px;min-width:145px}
+  .font-picker-button{min-width:145px}
+}
 
-  100% {
-    left: 100%;
+
+.designer-add-text-btn{
+  position:sticky;
+  top:68px;
+  z-index:119;
+  float:right;
+  margin:10px 12px -48px 0;
+  height:36px;
+  padding:0 12px;
+  border:1px solid #d0d5dd;
+  border-radius:9px;
+  background:#fff;
+  font-weight:800;
+  box-shadow:0 5px 16px rgba(16,24,40,.12);
+}
+.remove-bg-progress{
+  position:absolute;
+  left:12px;
+  right:12px;
+  bottom:-28px;
+  height:20px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:3px 7px;
+  border-radius:8px;
+  background:#fff;
+  box-shadow:0 4px 12px rgba(16,24,40,.14);
+}
+.remove-bg-progress::before{
+  content:"";
+  position:absolute;
+  left:7px; right:42px; top:8px;
+  height:5px;
+  border-radius:99px;
+  background:#eaecf0;
+}
+.remove-bg-progress-bar{
+  position:relative;
+  z-index:1;
+  max-width:calc(100% - 42px);
+  height:5px;
+  border-radius:99px;
+  background:#7c3aed;
+}
+.remove-bg-progress small{margin-left:auto;position:relative;z-index:1;font-weight:800}
+
+
+.designer-add-menu{position:relative;z-index:118}
+.designer-add-text-popup{
+  position:sticky;
+  top:110px;
+  z-index:220;
+  float:right;
+  clear:right;
+  width:245px;
+  margin:4px 12px -170px 0;
+  padding:7px;
+  border:1px solid #e4e7ec;
+  border-radius:12px;
+  background:#fff;
+  box-shadow:0 14px 34px rgba(16,24,40,.20);
+}
+.designer-add-text-popup button{
+  width:100%;display:flex;align-items:center;gap:12px;
+  border:0;background:transparent;border-radius:8px;padding:9px;text-align:left;
+}
+.designer-add-text-popup button:hover{background:#f2efff}
+.designer-add-text-popup strong{font-size:24px;width:32px;text-align:center}
+.designer-add-text-popup span{display:flex;flex-direction:column}
+.designer-add-text-popup small{color:#667085}
+.recorte-select{width:auto;min-width:140px;height:36px;font-size:12px;font-weight:700}
+.designer-processing,.designer-processing *{cursor:progress !important}
+.remove-bg-progress small{white-space:nowrap}
+
+
+.designer-sidebar-sticky{
+  position:sticky;
+  top:72px;
+  max-height:calc(100vh - 88px);
+  overflow-y:auto;
+  scrollbar-width:thin;
+}
+.designer-sidebar-section{
+  position:relative;
+  padding-bottom:14px;
+  margin-bottom:14px;
+  border-bottom:1px solid #eaecf0;
+}
+.designer-sidebar-section:last-child{border-bottom:0;margin-bottom:0}
+.sidebar-text-menu{
+  position:absolute;
+  left:0;
+  right:0;
+  top:43px;
+  z-index:230;
+  padding:6px;
+  border:1px solid #e4e7ec;
+  border-radius:10px;
+  background:#fff;
+  box-shadow:0 12px 30px rgba(16,24,40,.18);
+}
+.sidebar-text-menu button{
+  width:100%;
+  display:flex;
+  flex-direction:column;
+  border:0;
+  border-radius:8px;
+  padding:8px 10px;
+  background:transparent;
+  text-align:left;
+}
+.sidebar-text-menu button:hover{background:#f2efff}
+.sidebar-text-menu small{color:#667085}
+.sidebar-backgrounds{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:8px;
+}
+.sidebar-bg-choice{
+  display:flex;
+  flex-direction:column;
+  gap:5px;
+  align-items:center;
+  border:2px solid transparent;
+  border-radius:10px;
+  padding:5px;
+  background:#fff;
+  font-weight:700;
+}
+.sidebar-bg-choice.active{border-color:#f5b400;background:#fffaf0}
+.sidebar-bg-choice img,.sidebar-procedural-thumb{
+  display:block;
+  width:100%;
+  height:82px;
+  object-fit:cover;
+  border-radius:7px;
+}
+.sidebar-procedural-thumb{
+  background:linear-gradient(#2b160f,#8a4322,#120b09);
+}
+@media(max-width:991px){
+  .designer-sidebar-sticky{
+    position:relative;
+    top:auto;
+    max-height:none;
+    overflow:visible;
   }
-
-}
-
-
-.processing-help {
-  color: #878a99;
-
-  font-size: 9px;
-
-  line-height: 1.4;
-
-  margin-top: 8px;
-}
-
-
-/* ================================================================
-   BACKGROUND REMOVIDO
-   ================================================================ */
-
-.background-success {
-  margin-top: 14px;
-
-  padding: 12px;
-
-  border:
-    1px solid
-    #bfe6ce;
-
-  border-radius: 7px;
-
-  background: #f2fbf5;
-}
-
-
-.background-success-title {
-  display: flex;
-
-  align-items: center;
-
-  gap: 8px;
-}
-
-
-.success-check {
-  width: 28px;
-  height: 28px;
-
-  border-radius: 50%;
-
-  background: #198754;
-
-  color: #fff;
-
-  display: flex;
-
-  align-items: center;
-  justify-content: center;
-
-  flex-shrink: 0;
-
-  font-size: 14px;
-  font-weight: 900;
-}
-
-
-.background-success-title strong {
-  display: block;
-
-  color: #24643c;
-
-  font-size: 12px;
-}
-
-
-.background-success-title small {
-  display: block;
-
-  color: #6c8d77;
-
-  font-size: 10px;
-
-  margin-top: 1px;
-}
-
-
-.photo-version-switch {
-  display: grid;
-
-  grid-template-columns:
-    1fr 1fr;
-
-  gap: 6px;
-
-  margin-top: 11px;
-}
-
-
-.photo-version-switch button {
-  border:
-    1px solid
-    #cfd6dc;
-
-  border-radius: 5px;
-
-  background: #fff;
-
-  color: #6c757d;
-
-  padding: 7px 8px;
-
-  font-size: 10px;
-  font-weight: 800;
-
-  cursor: pointer;
-
-  transition:
-    all 0.15s ease;
-}
-
-
-.photo-version-switch button:hover {
-  border-color: #ff6c22;
-
-  color: #ff6c22;
-}
-
-
-.photo-version-switch button.active {
-  border-color: #ff6c22;
-
-  background: #ff6c22;
-
-  color: #fff;
-}
-
-
-/* ================================================================
-   ERRO
-   ================================================================ */
-
-.background-error {
-  margin-top: 14px;
-
-  padding: 11px;
-
-  border:
-    1px solid
-    #f2c2c7;
-
-  border-radius: 7px;
-
-  background: #fff5f6;
-}
-
-
-.background-error strong {
-  display: block;
-
-  color: #a52a35;
-
-  font-size: 11px;
-}
-
-
-.background-error span {
-  display: block;
-
-  color: #8a6266;
-
-  font-size: 10px;
-
-  line-height: 1.4;
-
-  margin-top: 3px;
-}
-
-
-/* ================================================================
-   ZOOM / POSIÇÃO
-   ================================================================ */
-
-.photo-setting {
-  margin-top: 15px;
-}
-
-
-.photo-setting-header {
-  display: flex;
-
-  align-items: center;
-  justify-content: space-between;
-
-  margin-bottom: 8px;
-
-  color: #495057;
-
-  font-size: 11px;
-}
-
-
-.photo-position-controls {
-  width: 120px;
-
-  margin: 0 auto;
-
-  display: grid;
-
-  grid-template-columns:
-    repeat(3, 36px);
-
-  gap: 6px;
-}
-
-
-.photo-position-controls button {
-  width: 36px;
-  height: 36px;
-
-  border:
-    1px solid
-    #d7dce2;
-
-  border-radius: 5px;
-
-  background: #fff;
-
-  color: #495057;
-
-  font-size: 16px;
-  font-weight: bold;
-
-  cursor: pointer;
-}
-
-
-.photo-position-controls button:hover {
-  border-color: #ff6c22;
-
-  color: #ff6c22;
-}
-
-
-.photo-position-controls .center-button {
-  color: #ff6c22;
-}
-
-
-/* ================================================================
-   PREVIEW
-   ================================================================ */
-
-.preview-workspace {
-  min-height: 650px;
-
-  background:
-    linear-gradient(
-      45deg,
-      #eceef1 25%,
-      transparent 25%
-    ),
-    linear-gradient(
-      -45deg,
-      #eceef1 25%,
-      transparent 25%
-    ),
-    linear-gradient(
-      45deg,
-      transparent 75%,
-      #eceef1 75%
-    ),
-    linear-gradient(
-      -45deg,
-      transparent 75%,
-      #eceef1 75%
-    );
-
-  background-size:
-    20px 20px;
-
-  background-position:
-    0 0,
-    0 10px,
-    10px -10px,
-    -10px 0;
-
-  border-radius: 8px;
-
-  display: flex;
-
-  align-items: center;
-  justify-content: center;
-
-  padding: 25px;
-}
-
-
-/* ================================================================
-   AVISO
-   ================================================================ */
-
-.designer-notice {
-  display: flex;
-
-  gap: 10px;
-
-  background: #fff8f4;
-
-  border:
-    1px solid
-    #ffe0cf;
-
-  border-radius: 6px;
-
-  padding: 12px 14px;
-
-  color: #6c757d;
-
-  font-size: 11px;
-}
-
-
-.designer-notice strong {
-  display: block;
-
-  color: #495057;
-
-  margin-bottom: 2px;
-}
-
-
-/* ================================================================
-   RESPONSIVO
-   ================================================================ */
-
-@media (max-width: 991px) {
-
-  .preview-workspace {
-    min-height: 560px;
-  }
-
-}
-
-
-@media (max-width: 575px) {
-
-  .preview-workspace {
-    min-height: auto;
-
-    padding: 15px;
-  }
-
-
-  .designer-format {
-    text-align: left;
-  }
-
-
-  .photo-selected {
-    align-items: flex-start;
-  }
-
-
-  .photo-selected small {
-    max-width: 160px;
-  }
-
 }
 
 </style>
+

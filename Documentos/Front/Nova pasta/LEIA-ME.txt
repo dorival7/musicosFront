@@ -1,0 +1,11 @@
+SEVEN DESIGNER — PACOTE DE 20 FUNDOS
+Dimensão: 1080 x 1920 px
+Formato: JPG
+
+Copie os JPGs e backgrounds.js para:
+src/musicos/views/ia/components/seven-designer/backgrounds/
+
+O arquivo backgrounds.js já registra os 20 fundos e mantém o fundo procedural Clássico.
+O backgrounds.json acompanha o pacote como catálogo/manifesto.
+
+Fundos criados especificamente para este pacote, sem textos, logos ou pessoas.
