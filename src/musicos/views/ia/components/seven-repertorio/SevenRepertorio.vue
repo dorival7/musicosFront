@@ -1,22 +1,33 @@
 <template>
   <div class="sr-wrap">
-    <div class="sr-top">
-      <div><h5>🎵 Seven Repertório</h5><p>Crie repertórios e salve cada cifra exatamente no tom que será usado no show.</p></div>
-      <button class="btn-main" @click="novoRepertorio">+ Criar Repertório</button>
-    </div>
+    <template v-if="!repertorioAtivo">
+      <div class="sr-top">
+        <div><h5>🎵 Seven Repertório</h5><p>Crie repertórios e salve cada cifra exatamente no tom que será usado no show.</p></div>
+        <button class="btn-primary-action" @click="abrirModalCriar">+ Criar Repertório</button>
+      </div>
 
-    <div v-if="!repertorioAtivo" class="sr-grid">
-      <button v-for="r in repertorios" :key="r.id" class="rep-card" @click="abrir(r.id)">
-        <strong>{{ r.nome }}</strong><span>{{ r.quantidadeMusicas }} música(s)</span><small>{{ r.descricao || 'Sem descrição' }}</small>
-      </button>
-      <div v-if="!carregando && !repertorios.length" class="empty">Você ainda não possui repertórios. Clique em <b>+ Criar Repertório</b>.</div>
-    </div>
+      <div class="sr-grid">
+        <button v-for="r in repertorios" :key="r.id" class="rep-card" @click="abrir(r.id)">
+          <strong>{{ r.nome }}</strong><span>{{ r.quantidadeMusicas }} música(s)</span><small v-if="r.descricao">{{ r.descricao }}</small>
+        </button>
+        <div v-if="!carregando && !repertorios.length" class="empty">Você ainda não possui repertórios. Clique em <b>+ Criar Repertório</b>.</div>
+      </div>
+    </template>
 
-    <div v-else>
+    <template v-else>
       <div class="editor-head">
-        <button class="btn-light" @click="fechar">← Meus repertórios</button>
-        <div class="editor-title"><h5>{{ repertorioAtivo.nome }}</h5><span>{{ musicas.length }} música(s)</span></div>
-        <div class="editor-actions"><button class="btn-pdf" :disabled="!musicas.length" @click="exportarRepertorioPdf">📄 Exportar PDF</button><button class="btn-danger-soft" @click="removerRepertorio">Excluir repertório</button></div>
+        <button class="btn-light" @click="fechar">← Meus Repertórios</button>
+        <div class="editor-context">
+          <div class="context-label">REPERTÓRIO ATUAL</div>
+          <h4>🎵 {{ repertorioAtivo.nome }}</h4>
+          <p v-if="repertorioAtivo.descricao">{{ repertorioAtivo.descricao }}</p>
+          <span>{{ musicas.length }} música(s)</span>
+        </div>
+        <div class="editor-actions">
+          <button class="btn-light" @click="abrirModalEditar">✏️ Editar</button>
+          <button class="btn-pdf" :disabled="!musicas.length" @click="exportarRepertorioPdf">📄 Exportar PDF</button>
+          <button class="btn-danger-soft" @click="removerRepertorio">Excluir</button>
+        </div>
       </div>
 
       <div class="search-box">
@@ -24,20 +35,22 @@
         <div class="search-row">
           <input v-model="busca.nomeMusica" placeholder="Nome da música" @keyup.enter="buscarCifra" />
           <input v-model="busca.nomeArtista" placeholder="Artista (opcional)" @keyup.enter="buscarCifra" />
-          <button class="btn-main" :disabled="buscando" @click="buscarCifra">{{ buscando ? 'Buscando...' : 'Buscar cifra' }}</button>
+          <button class="btn-primary-action" :disabled="buscando" @click="buscarCifra">{{ buscando ? 'Buscando...' : 'Buscar cifra' }}</button>
         </div>
       </div>
 
       <div v-if="cifra" class="cifra-card">
         <div class="cifra-head">
           <div><h5>{{ cifra.musica }}</h5><span>{{ cifra.artista }}</span></div>
-          <div class="tone">TOM: {{ tomAtual }}</div>
+          <div class="cifra-actions-top">
+            <div class="tone">TOM: {{ tomAtual }}</div>
+            <button class="btn-primary-action" :disabled="salvando" @click="salvarNoRepertorio">{{ salvando ? 'Salvando...' : '+ Adicionar ao Repertório' }}</button>
+          </div>
         </div>
         <div class="tons">
           <button v-for="tom in tons" :key="tom" :class="{ ativo: tom === tomAtual }" @click="transpor(tom)">{{ tom }}</button>
         </div>
         <pre>{{ cifra.cifraCompleta }}</pre>
-        <div class="save-row"><button class="btn-main" :disabled="salvando" @click="salvarNoRepertorio">{{ salvando ? 'Salvando...' : '+ Adicionar ao repertório' }}</button></div>
       </div>
 
       <div class="songs">
@@ -52,29 +65,68 @@
         </div>
         <div v-if="!musicas.length" class="empty small-empty">Pesquise uma cifra acima e adicione a primeira música.</div>
       </div>
+    </template>
+
+    <div v-if="modalRepertorio.aberto" class="modal-backdrop-custom" @mousedown.self="fecharModal">
+      <div class="rep-modal" role="dialog" aria-modal="true" :aria-label="modalRepertorio.modo === 'editar' ? 'Editar repertório' : 'Criar novo repertório'">
+        <div class="modal-head">
+          <div><span class="modal-kicker">SEVEN REPERTÓRIO</span><h5>{{ modalRepertorio.modo === 'editar' ? 'Editar repertório' : 'Criar novo repertório' }}</h5></div>
+          <button class="modal-close" type="button" @click="fecharModal">×</button>
+        </div>
+        <form @submit.prevent="salvarModalRepertorio">
+          <label>Nome do repertório <b>*</b></label>
+          <input ref="nomeRepertorioInput" v-model="modalRepertorio.nome" maxlength="120" placeholder="Ex.: Show de sábado" @keydown.esc.prevent="fecharModal" />
+          <label>Descrição <span>(opcional)</span></label>
+          <textarea v-model="modalRepertorio.descricao" maxlength="500" rows="3" placeholder="Ex.: Repertório sertanejo para o show de sábado" @keydown.esc.prevent="fecharModal"></textarea>
+          <div class="modal-actions">
+            <button type="button" class="btn-light" @click="fecharModal">Cancelar</button>
+            <button type="submit" class="btn-primary-action" :disabled="modalRepertorio.salvando || !modalRepertorio.nome.trim()">{{ modalRepertorio.salvando ? 'Salvando...' : (modalRepertorio.modo === 'editar' ? 'Salvar alterações' : 'Criar Repertório') }}</button>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 import axios from "axios";
-import { listarRepertorios, obterRepertorio, criarRepertorio, excluirRepertorio, adicionarMusica, excluirMusica, reordenarMusicas } from "./services/repertoriosService";
+import { listarRepertorios, obterRepertorio, criarRepertorio, atualizarRepertorio, excluirRepertorio, adicionarMusica, excluirMusica, reordenarMusicas } from "./services/repertoriosService";
 
 export default {
   name: "SevenRepertorio",
-  data() { return { repertorios: [], repertorioAtivo: null, musicas: [], carregando: false, buscando: false, salvando: false, cifra: null, tomAtual: "", busca: { nomeMusica: "", nomeArtista: "" }, tons: ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"] }; },
+  data() { return { repertorios: [], repertorioAtivo: null, musicas: [], carregando: false, buscando: false, salvando: false, cifra: null, tomAtual: "", tomOriginalBusca: "", busca: { nomeMusica: "", nomeArtista: "" }, modalRepertorio: { aberto: false, modo: "criar", nome: "", descricao: "", salvando: false }, tons: ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"] }; },
   mounted() { this.carregar(); },
   methods: {
     base() { return (process.env.VUE_APP_API_BASE_URL || "http://localhost:5297").replace(/\/$/, ""); },
     config() { const token = localStorage.getItem("jwt"); return { headers: { Authorization: `Bearer ${String(token || "").replace(/^Bearer\s+/i, "")}`, "Content-Type": "application/json" } }; },
     async carregar() { this.carregando = true; try { this.repertorios = await listarRepertorios(); } catch (e) { this.erro(e); } finally { this.carregando = false; } },
-    async novoRepertorio() { const nome = window.prompt("Nome do repertório:"); if (!nome || !nome.trim()) return; try { const novo = await criarRepertorio({ nome: nome.trim(), descricao: null }); await this.carregar(); await this.abrir(novo.id); } catch (e) { this.erro(e); } },
+    abrirModalCriar() { this.modalRepertorio = { aberto: true, modo: "criar", nome: "", descricao: "", salvando: false }; this.$nextTick(() => this.$refs.nomeRepertorioInput?.focus()); },
+    abrirModalEditar() { this.modalRepertorio = { aberto: true, modo: "editar", nome: this.repertorioAtivo?.nome || "", descricao: this.repertorioAtivo?.descricao || "", salvando: false }; this.$nextTick(() => this.$refs.nomeRepertorioInput?.focus()); },
+    fecharModal() { if (this.modalRepertorio.salvando) return; this.modalRepertorio.aberto = false; },
+    async salvarModalRepertorio() {
+      const nome = this.modalRepertorio.nome.trim();
+      if (!nome) return;
+      this.modalRepertorio.salvando = true;
+      try {
+        const payload = { nome, descricao: this.modalRepertorio.descricao.trim() || null };
+        if (this.modalRepertorio.modo === "editar") {
+          await atualizarRepertorio(this.repertorioAtivo.id, payload);
+          await this.abrir(this.repertorioAtivo.id);
+          await this.carregar();
+        } else {
+          const novo = await criarRepertorio(payload);
+          await this.carregar();
+          await this.abrir(novo.id);
+        }
+        this.modalRepertorio.aberto = false;
+      } catch (e) { this.erro(e); } finally { this.modalRepertorio.salvando = false; }
+    },
     async abrir(id) { try { const r = await obterRepertorio(id); this.repertorioAtivo = r; this.musicas = r.musicas || []; this.cifra = null; } catch (e) { this.erro(e); } },
     fechar() { this.repertorioAtivo = null; this.musicas = []; this.cifra = null; this.carregar(); },
     async removerRepertorio() { if (!confirm(`Excluir o repertório "${this.repertorioAtivo.nome}"?`)) return; try { await excluirRepertorio(this.repertorioAtivo.id); this.fechar(); } catch (e) { this.erro(e); } },
-    async buscarCifra() { if (!this.busca.nomeMusica.trim()) return alert("Informe o nome da música."); this.buscando = true; this.cifra = null; try { const r = await axios.post(`${this.base()}/artists/ia/generate-cifra`, { nomeMusica: this.busca.nomeMusica, nomeArtista: this.busca.nomeArtista }, this.config()); this.cifra = r.data; this.tomAtual = r.data.tomOriginal || ""; } catch (e) { this.erro(e); } finally { this.buscando = false; } },
+    async buscarCifra() { if (!this.busca.nomeMusica.trim()) return alert("Informe o nome da música."); this.buscando = true; this.cifra = null; try { const r = await axios.post(`${this.base()}/artists/ia/generate-cifra`, { nomeMusica: this.busca.nomeMusica, nomeArtista: this.busca.nomeArtista }, this.config()); this.cifra = r.data; this.tomAtual = r.data.tomOriginal || ""; this.tomOriginalBusca = r.data.tomOriginal || ""; } catch (e) { this.erro(e); } finally { this.buscando = false; } },
     async transpor(tom) { if (!this.cifra || !this.cifra.htmlEstruturado || tom === this.tomAtual) return; this.buscando = true; try { const html = this.cifra.htmlEstruturado.replace(/\sdata-chord-(index|scope-id|original-text)="[^"]*"/g, ""); const r = await axios.post(`${this.base()}/artists/ia/transpose-cifra`, { htmlEstruturado: html, tomOriginal: this.tomAtual, tomDesejado: tom }, this.config()); this.cifra.cifraCompleta = r.data.cifraTransposta; if (r.data.htmlEstruturado) this.cifra.htmlEstruturado = r.data.htmlEstruturado; this.tomAtual = tom; } catch (e) { this.erro(e); } finally { this.buscando = false; } },
-    async salvarNoRepertorio() { if (!this.cifra) return; this.salvando = true; try { await adicionarMusica(this.repertorioAtivo.id, { musica: this.cifra.musica, artista: this.cifra.artista, tomOriginal: this.cifra.tomOriginal || this.tomAtual, tomEscolhido: this.tomAtual, cifraCompleta: this.cifra.cifraCompleta, htmlEstruturado: this.cifra.htmlEstruturado }); await this.abrir(this.repertorioAtivo.id); this.busca = { nomeMusica: "", nomeArtista: "" }; } catch (e) { this.erro(e); } finally { this.salvando = false; } },
+    async salvarNoRepertorio() { if (!this.cifra) return; this.salvando = true; try { await adicionarMusica(this.repertorioAtivo.id, { musica: this.cifra.musica, artista: this.cifra.artista, tomOriginal: this.tomOriginalBusca || this.cifra.tomOriginal || this.tomAtual, tomEscolhido: this.tomAtual, cifraCompleta: this.cifra.cifraCompleta, htmlEstruturado: this.cifra.htmlEstruturado }); await this.abrir(this.repertorioAtivo.id); this.busca = { nomeMusica: "", nomeArtista: "" }; } catch (e) { this.erro(e); } finally { this.salvando = false; } },
     async removerMusica(m) { if (!confirm(`Remover "${m.musica}" deste repertório?`)) return; try { await excluirMusica(this.repertorioAtivo.id, m.id); await this.abrir(this.repertorioAtivo.id); } catch (e) { this.erro(e); } },
     exportarRepertorioPdf() {
       if (!this.repertorioAtivo || !this.musicas.length) return alert("Adicione músicas ao repertório antes de exportar.");
@@ -138,7 +190,7 @@ export default {
   function executar(){document.querySelectorAll('.musica').forEach(ajustar);}
   if(document.fonts && document.fonts.ready){document.fonts.ready.then(executar);}else{setTimeout(executar,50);}
 })();
-</scr${""}ipt></body></html>`);
+${"<" + "/script>"}</body></html>`);
       janela.document.close();
     },
     async mover(index, delta) { const destino = index + delta; if (destino < 0 || destino >= this.musicas.length) return; const copia = [...this.musicas]; [copia[index], copia[destino]] = [copia[destino], copia[index]]; this.musicas = copia; try { await reordenarMusicas(this.repertorioAtivo.id, copia.map(x => x.id)); } catch (e) { this.erro(e); await this.abrir(this.repertorioAtivo.id); } },
@@ -148,5 +200,6 @@ export default {
 </script>
 
 <style scoped>
-.sr-wrap{font-family:monospace;color:#263238}.sr-top,.editor-head,.cifra-head,.songs-title{display:flex;align-items:center;justify-content:space-between;gap:16px}.sr-top{background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:20px;margin-bottom:18px}.sr-top h5,.editor-title h5,.cifra-head h5{margin:0;font-weight:800}.sr-top p{margin:5px 0 0;color:#7a8290}.btn-main{border:0;border-radius:8px;background:#ff6c22;color:#fff;font-weight:800;padding:11px 18px}.btn-main:disabled{opacity:.55}.sr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}.rep-card{background:#fff;border:1px solid #e3e6ec;border-radius:12px;padding:18px;text-align:left;display:flex;flex-direction:column;gap:7px}.rep-card:hover{border-color:#ff6c22}.rep-card strong{font-size:15px}.rep-card span{color:#ff6c22;font-weight:800}.rep-card small{color:#7a8290}.empty{grid-column:1/-1;background:#fff;border:1px dashed #cfd5df;border-radius:12px;padding:35px;text-align:center;color:#7a8290}.editor-head{margin-bottom:14px}.editor-title{text-align:center}.editor-title span{color:#7a8290}.editor-actions{display:flex;gap:8px;align-items:center}.btn-pdf{border:1px solid #198754;background:#198754;color:#fff;border-radius:8px;padding:9px 12px;font-weight:800}.btn-pdf:disabled{opacity:.45;cursor:not-allowed}.btn-light,.btn-danger-soft{border:1px solid #dfe3e8;background:#fff;border-radius:8px;padding:9px 12px;font-weight:700}.btn-danger-soft{color:#c0392b}.search-box,.cifra-card,.songs{background:#fff;border:1px solid #e3e6ec;border-radius:12px;padding:18px;margin-bottom:16px}.search-row{display:grid;grid-template-columns:1fr 1fr auto;gap:10px}.search-row input{border:1px solid #d9dee7;border-radius:8px;padding:10px 12px}.tone,.song-tone{background:#edf8ef;color:#198754;border-radius:7px;padding:7px 10px;font-weight:900}.tons{display:flex;flex-wrap:wrap;gap:6px;margin:14px 0}.tons button{border:1px solid #dfe3e8;background:#fff;border-radius:6px;padding:6px 9px}.tons button.ativo{background:#198754;color:#fff;border-color:#198754}.cifra-card pre{white-space:pre;overflow:auto;font-family:"Courier New",monospace;font-size:14px;line-height:1.25;background:#fafafa;border-radius:8px;padding:16px}.save-row{text-align:right;margin-top:12px}.songs-title{margin-bottom:12px}.songs-title span{font-size:11px;color:#7a8290}.song-row{display:grid;grid-template-columns:44px 1fr 70px auto;align-items:center;gap:10px;border-top:1px solid #eef0f3;padding:11px 4px}.order{font-weight:900;color:#8a919d}.song-info{display:flex;flex-direction:column}.song-info span{font-size:11px;color:#7a8290}.song-actions{display:flex;gap:5px}.song-actions button{border:1px solid #dfe3e8;background:#fff;border-radius:6px;min-width:32px;height:32px}.song-actions .trash{color:#c0392b}.small-empty{padding:22px}@media(max-width:768px){.sr-top,.editor-head{align-items:stretch;flex-direction:column}.search-row{grid-template-columns:1fr}.song-row{grid-template-columns:32px 1fr 55px}.song-actions{grid-column:2/4;justify-content:flex-end}.cifra-card pre{font-size:12px}}
+.sr-wrap{font-family:monospace;color:#263238}.sr-top,.cifra-head,.songs-title{display:flex;align-items:center;justify-content:space-between;gap:16px}.sr-top{background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:20px;margin-bottom:18px}.sr-top h5,.cifra-head h5{margin:0;font-weight:800}.sr-top p{margin:5px 0 0;color:#7a8290}.btn-primary-action{border:0;border-radius:8px;background:#4f46e5;color:#fff;font-weight:800;padding:11px 18px;transition:.18s}.btn-primary-action:hover:not(:disabled){background:#4338ca;transform:translateY(-1px)}.btn-primary-action:disabled{opacity:.55;cursor:not-allowed}.sr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}.rep-card{background:#fff;border:1px solid #e3e6ec;border-radius:12px;padding:18px;text-align:left;display:flex;flex-direction:column;gap:7px;transition:.18s}.rep-card:hover{border-color:#6366f1;box-shadow:0 5px 15px rgba(79,70,229,.08);transform:translateY(-1px)}.rep-card strong{font-size:15px}.rep-card span{color:#4f46e5;font-weight:800}.rep-card small{color:#7a8290}.empty{grid-column:1/-1;background:#fff;border:1px dashed #cfd5df;border-radius:12px;padding:35px;text-align:center;color:#7a8290}.editor-head{display:grid;grid-template-columns:minmax(145px,1fr) minmax(260px,2fr) minmax(320px,1fr);align-items:center;gap:18px;background:#fff;border:1px solid #e3e6ec;border-radius:14px;padding:16px 18px;margin-bottom:16px}.editor-context{text-align:center}.editor-context .context-label{font-size:10px;font-weight:900;letter-spacing:1px;color:#6366f1;margin-bottom:4px}.editor-context h4{margin:0;font-size:20px;font-weight:900}.editor-context p{margin:5px 0 2px;color:#667085;font-size:12px}.editor-context span{color:#7a8290;font-size:12px}.editor-actions{display:flex;justify-content:flex-end;gap:8px;align-items:center}.btn-pdf{border:1px solid #198754;background:#198754;color:#fff;border-radius:8px;padding:9px 12px;font-weight:800}.btn-pdf:disabled{opacity:.45;cursor:not-allowed}.btn-light,.btn-danger-soft{border:1px solid #dfe3e8;background:#fff;border-radius:8px;padding:9px 12px;font-weight:700}.btn-light:hover{background:#f8f9fc}.btn-danger-soft{color:#c0392b}.btn-danger-soft:hover{background:#fff5f4;border-color:#f2c6c1}.search-box,.cifra-card,.songs{background:#fff;border:1px solid #e3e6ec;border-radius:12px;padding:18px;margin-bottom:16px}.search-box h6,.songs-title h6{margin:0 0 10px}.search-row{display:grid;grid-template-columns:1fr 1fr auto;gap:10px}.search-row input{border:1px solid #d9dee7;border-radius:8px;padding:10px 12px}.cifra-actions-top{display:flex;align-items:center;gap:10px}.tone,.song-tone{background:#edf8ef;color:#198754;border-radius:7px;padding:7px 10px;font-weight:900}.tons{display:flex;flex-wrap:wrap;gap:6px;margin:14px 0}.tons button{border:1px solid #dfe3e8;background:#fff;border-radius:6px;padding:6px 9px}.tons button.ativo{background:#198754;color:#fff;border-color:#198754}.cifra-card pre{white-space:pre;overflow:auto;font-family:"Courier New",monospace;font-size:14px;line-height:1.25;background:#fafafa;border-radius:8px;padding:16px}.songs-title{margin-bottom:12px}.songs-title span{font-size:11px;color:#7a8290}.song-row{display:grid;grid-template-columns:44px 1fr 70px auto;align-items:center;gap:10px;border-top:1px solid #eef0f3;padding:11px 4px}.order{font-weight:900;color:#8a919d}.song-info{display:flex;flex-direction:column}.song-info span{font-size:11px;color:#7a8290}.song-actions{display:flex;gap:5px}.song-actions button{border:1px solid #dfe3e8;background:#fff;border-radius:6px;min-width:32px;height:32px}.song-actions button:hover:not(:disabled){background:#f8f9fc}.song-actions .trash{color:#c0392b}.song-actions .trash:hover{background:#fff5f4}.small-empty{padding:22px}.modal-backdrop-custom{position:fixed;inset:0;z-index:10550;background:rgba(15,23,42,.56);display:flex;align-items:center;justify-content:center;padding:20px}.rep-modal{width:min(520px,100%);background:#fff;border-radius:16px;box-shadow:0 24px 70px rgba(15,23,42,.25);padding:22px}.modal-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:18px}.modal-head h5{margin:3px 0 0;font-weight:900}.modal-kicker{font-size:10px;color:#6366f1;font-weight:900;letter-spacing:1px}.modal-close{border:0;background:#f3f4f6;border-radius:8px;width:34px;height:34px;font-size:22px;line-height:1}.rep-modal form{display:flex;flex-direction:column;gap:8px}.rep-modal label{font-weight:800;font-size:12px;margin-top:4px}.rep-modal label b{color:#c0392b}.rep-modal label span{font-weight:400;color:#7a8290}.rep-modal input,.rep-modal textarea{width:100%;border:1px solid #d9dee7;border-radius:9px;padding:11px 12px;outline:none}.rep-modal input:focus,.rep-modal textarea:focus{border-color:#6366f1;box-shadow:0 0 0 3px rgba(99,102,241,.12)}.rep-modal textarea{resize:vertical;min-height:84px}.modal-actions{display:flex;justify-content:flex-end;gap:9px;margin-top:12px}
+@media(max-width:1000px){.editor-head{grid-template-columns:1fr}.editor-context{text-align:left}.editor-actions{justify-content:flex-start;flex-wrap:wrap}}@media(max-width:768px){.sr-top,.cifra-head{align-items:stretch;flex-direction:column}.search-row{grid-template-columns:1fr}.cifra-actions-top{align-items:stretch;flex-direction:column}.song-row{grid-template-columns:32px 1fr 55px}.song-actions{grid-column:2/4;justify-content:flex-end}.cifra-card pre{font-size:12px}.modal-actions{flex-direction:column-reverse}.modal-actions button{width:100%}}
 </style>

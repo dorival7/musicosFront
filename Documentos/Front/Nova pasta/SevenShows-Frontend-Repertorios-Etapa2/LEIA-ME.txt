@@ -1,12 +1,10 @@
-Seven Shows — Repertórios Etapa 2.3 — PDF A4 / 2 colunas
+Seven Shows - Etapa 2.6 - Palco 7 UX
 
-Correção do exportador PDF:
-- página física fixa em A4: 210mm x 297mm;
-- @page A4 sem margem externa do navegador; margens controladas dentro da folha;
-- cada música é medida após a renderização real no navegador;
-- tenta 1 coluna com redução controlada de fonte;
-- se não couber, divide automaticamente em 2 colunas;
-- divisão ocorre somente entre linhas completas, preservando espaços/acordes;
-- preview usa exatamente as mesmas dimensões da impressão.
+Ajustes desta versão:
+- Botão do rodapé: "Ver lista de músicas".
+- Seletor de repertório customizado no painel lateral.
+- Trocar o repertório no seletor altera apenas a lista consultada.
+- A música exibida no palco permanece intacta até o usuário clicar em outra música.
+- Ao clicar em uma música de outro repertório, esse repertório passa a ser o repertório ativo para Anterior/Próxima e contador.
 
-Substitua os arquivos mantendo a mesma estrutura de diretórios.
+Base: Etapa 2.5 / 2.4 estável.

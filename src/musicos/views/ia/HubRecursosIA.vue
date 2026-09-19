@@ -39,69 +39,21 @@
       <!-- ABAS -->
       <div class="row mb-3">
         <div class="col-12">
-          <ul
-            class="nav ia-tool-tabs d-flex gap-2 text-start"
-            role="tablist"
-          >
-            <!-- REPERTÓRIO -->
+          <ul class="nav ia-tool-tabs text-start" role="tablist">
             <li class="nav-item" role="presentation">
-              <button
-                type="button"
-                class="nav-link ia-tool-tab font-monospace text-uppercase fw-bold fs-12"
-                :class="{
-                  'active':
-                    abaAtiva === 'repertorio'
-                }"
-                @click="abaAtiva = 'repertorio'"
-              >
-                🎸 Otimizador de Repertório
-              </button>
+              <button type="button" class="nav-link ia-tool-tab font-monospace text-uppercase fw-bold fs-12" :class="{ active: abaAtiva === 'designer' }" @click="abaAtiva = 'designer'">🎨 Gerador de Cartazes</button>
             </li>
-
-            <!-- CIFRAS -->
             <li class="nav-item" role="presentation">
-              <button
-                type="button"
-                class="nav-link ia-tool-tab font-monospace text-uppercase fw-bold fs-12"
-                :class="{
-                  'active':
-                    abaAtiva === 'cifras'
-                }"
-                @click="abaAtiva = 'cifras'"
-              >
-                🎼 Gerador de Cifras
-              </button>
+              <button type="button" class="nav-link ia-tool-tab font-monospace text-uppercase fw-bold fs-12" :class="{ active: abaAtiva === 'cifras' }" @click="abaAtiva = 'cifras'">🎼 Gerador de Cifras</button>
             </li>
-
-            <!-- SEVEN REPERTÓRIO -->
             <li class="nav-item" role="presentation">
-              <button type="button" class="nav-link ia-tool-tab font-monospace text-uppercase fw-bold fs-12"
-                :class="{ 'active': abaAtiva === 'seven-repertorio' }" @click="abaAtiva = 'seven-repertorio'">
-                🎵 Seven Repertório
-              </button>
+              <button type="button" class="nav-link ia-tool-tab font-monospace text-uppercase fw-bold fs-12" :class="{ active: abaAtiva === 'seven-repertorio' }" @click="abaAtiva = 'seven-repertorio'">🎵 Seven Repertório</button>
             </li>
-
-            <!-- PALCO 7 -->
             <li class="nav-item" role="presentation">
-              <button type="button" class="nav-link ia-tool-tab font-monospace text-uppercase fw-bold fs-12"
-                :class="{ 'active': abaAtiva === 'palco-7' }" @click="abaAtiva = 'palco-7'">
-                🎤 Palco 7
-              </button>
+              <button type="button" class="nav-link ia-tool-tab font-monospace text-uppercase fw-bold fs-12" :class="{ active: abaAtiva === 'palco-7' }" @click="abaAtiva = 'palco-7'">🎤 Palco 7</button>
             </li>
-
-            <!-- SEVEN DESIGNER -->
             <li class="nav-item" role="presentation">
-              <button
-                type="button"
-                class="nav-link ia-tool-tab font-monospace text-uppercase fw-bold fs-12"
-                :class="{
-                  'active':
-                    abaAtiva === 'designer'
-                }"
-                @click="abaAtiva = 'designer'"
-              >
-                🎨 Gerador de Cartazes
-              </button>
+              <button type="button" class="nav-link ia-tool-tab font-monospace text-uppercase fw-bold fs-12" :class="{ active: abaAtiva === 'repertorio' }" @click="abaAtiva = 'repertorio'">🎸 Setlist Inteligente</button>
             </li>
           </ul>
         </div>
@@ -174,7 +126,7 @@ export default {
 
   data() {
     return {
-      abaAtiva: "repertorio"
+      abaAtiva: "designer"
     };
   }
 };
@@ -183,6 +135,9 @@ export default {
 <style scoped>
 .ia-tool-tabs {
   padding: 6px;
+  display: flex;
+  flex-wrap: nowrap !important;
+  gap: 6px;
   margin: 0;
   border: 1px solid #e3e6ec;
   border-radius: 12px;
@@ -192,7 +147,7 @@ export default {
 
 .ia-tool-tabs .nav-item {
   flex: 1 1 0;
-  min-width: 190px;
+  min-width: 0;
 }
 
 .ia-tool-tab {
@@ -202,7 +157,8 @@ export default {
   align-items: center;
   justify-content: center;
   gap: 7px;
-  padding: 10px 18px !important;
+  padding: 10px 8px !important;
+  white-space: nowrap;
   border: 1px solid transparent !important;
   border-radius: 8px !important;
   color: #667085 !important;
