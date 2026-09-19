@@ -1,8 +1,7 @@
-Seven Shows — Agenda Cartaz v13 — IMPERDÍVEL
+Seven Shows — Palco 7 — Etapa 3.3.1
 
-Alteração única:
-- SevenDesigner.vue
-- chamada superior dos cartazes originados da Agenda:
-  UMA NOITE ESPECIAL -> IMPERDÍVEL!!!
+Correção: botão “Ver lista de músicas” volta a abrir/fechar normalmente.
+Mantido: clique fora da barra lateral fecha a lista; clique dentro não fecha; selecionar música mantém a lista aberta.
 
-Não altera Agenda, backend, Data, AppDbContext, EventId, botão Visualizar cartaz ou migration.
+Substituir somente:
+src/musicos/views/ia/components/palco-7/Palco7.vue
