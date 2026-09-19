@@ -59,3 +59,40 @@ export function urlDesignerAsset(relativeUrl) {
 
   return `${baseSemApi}${relativeUrl.startsWith("/") ? "" : "/"}${relativeUrl}`;
 }
+
+export async function enviarBackgroundRemovidoDesignerAsset(assetId, blob) {
+  if (!assetId) {
+    throw new Error("Asset da imagem não informado.");
+  }
+
+  if (!blob) {
+    throw new Error("PNG sem fundo não informado.");
+  }
+
+  const arquivo = new File(
+    [blob],
+    `${assetId}-sem-fundo.png`,
+    { type: "image/png" }
+  );
+
+  const formData = new FormData();
+  formData.append("file", arquivo);
+
+  const token = localStorage.getItem("jwt");
+
+  if (!token) {
+    throw new Error("Token de autenticação do músico não encontrado.");
+  }
+
+  const response = await axios.post(
+    `${process.env.VUE_APP_API_BASE_URL}/tenants/designer-assets/${assetId}/background-removed`,
+    formData,
+    {
+      headers: {
+        Authorization: `Bearer ${token.replace(/^Bearer\s+/i, "")}`
+      }
+    }
+  );
+
+  return response.data;
+}

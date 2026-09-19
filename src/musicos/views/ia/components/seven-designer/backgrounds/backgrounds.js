@@ -50,7 +50,7 @@ const backgrounds = [
   },
   {
     id: "palco-futurista",
-    nome: "Palco Futurista",
+    nome: "Futurista",
     categoria: "show",
     tipo: "imagem",
     src: bkg1,
@@ -58,7 +58,7 @@ const backgrounds = [
   },
   {
     id: "palco-teatro",
-    nome: "Palco Teatro",
+    nome: "Teatro",
     categoria: "show",
     tipo: "imagem",
     src: bkg2,
@@ -66,7 +66,7 @@ const backgrounds = [
   },
   {
     id: "neon-abstrato",
-    nome: "Neon Abstrato",
+    nome: "Neon",
     categoria: "neon",
     tipo: "imagem",
     src: bkg3,
@@ -74,7 +74,7 @@ const backgrounds = [
   },
   {
     id: "festival-colorido",
-    nome: "Festival Colorido",
+    nome: "Colorido",
     categoria: "festival",
     tipo: "imagem",
     src: bkg4,
@@ -82,7 +82,7 @@ const backgrounds = [
   },
   {
     id: "show-cosmico",
-    nome: "Show Cósmico",
+    nome: "Cósmico",
     categoria: "show",
     tipo: "imagem",
     src: bkg5,
@@ -90,7 +90,7 @@ const backgrounds = [
   },
   {
     id: "arena-azul",
-    nome: "Arena Azul",
+    nome: "Arena",
     categoria: "show",
     tipo: "imagem",
     src: bkg6,
@@ -98,7 +98,7 @@ const backgrounds = [
   },
   {
     id: "show-luzes-vibrantes",
-    nome: "Show Luzes Vibrantes",
+    nome: "Vibrante",
     categoria: "show",
     tipo: "imagem",
     src: bkg7,
@@ -106,7 +106,7 @@ const backgrounds = [
   },
   {
     id: "festival-neon",
-    nome: "Festival Neon",
+    nome: "Euforia",
     categoria: "festival",
     tipo: "imagem",
     src: bkg8,
@@ -114,7 +114,7 @@ const backgrounds = [
   },
   {
     id: "palco-laranja",
-    nome: "Palco Laranja",
+    nome: "Laranja",
     categoria: "show",
     tipo: "imagem",
     src: bkg9,
@@ -122,7 +122,7 @@ const backgrounds = [
   },
   {
     id: "palco-geometrico",
-    nome: "Palco Geométrico",
+    nome: "Geométrico",
     categoria: "show",
     tipo: "imagem",
     src: bkg10,
@@ -130,7 +130,7 @@ const backgrounds = [
   },
   {
     id: "show-dourado",
-    nome: "Show Dourado",
+    nome: "Dourado",
     categoria: "show",
     tipo: "imagem",
     src: bkg11,
@@ -138,7 +138,7 @@ const backgrounds = [
   },
   {
     id: "festival-luz-dourada",
-    nome: "Festival Luz Dourada",
+    nome: "Solar",
     categoria: "festival",
     tipo: "imagem",
     src: bkg12,
@@ -146,7 +146,7 @@ const backgrounds = [
   },
   {
     id: "show-vermelho",
-    nome: "Show Vermelho",
+    nome: "Rubro",
     categoria: "show",
     tipo: "imagem",
     src: bkg13,
@@ -154,7 +154,7 @@ const backgrounds = [
   },
   {
     id: "palco-vermelho",
-    nome: "Palco Vermelho",
+    nome: "Vermelho",
     categoria: "show",
     tipo: "imagem",
     src: bkg14,
@@ -162,7 +162,7 @@ const backgrounds = [
   },
   {
     id: "festa-tropical",
-    nome: "Festa Tropical",
+    nome: "Tropical",
     categoria: "festa",
     tipo: "imagem",
     src: bkg15,
@@ -170,7 +170,7 @@ const backgrounds = [
   },
   {
     id: "festival-por-do-sol",
-    nome: "Festival Pôr do Sol",
+    nome: "Sunset",
     categoria: "festival",
     tipo: "imagem",
     src: bkg16,
@@ -178,7 +178,7 @@ const backgrounds = [
   },
   {
     id: "festa-colorida",
-    nome: "Festa Colorida",
+    nome: "Alegria",
     categoria: "festa",
     tipo: "imagem",
     src: bkg17,
@@ -186,7 +186,7 @@ const backgrounds = [
   },
   {
     id: "festival-tropical",
-    nome: "Festival Tropical",
+    nome: "Verão",
     categoria: "festival",
     tipo: "imagem",
     src: bkg18,
@@ -194,7 +194,7 @@ const backgrounds = [
   },
   {
     id: "percussao-tropical",
-    nome: "Percussão Tropical",
+    nome: "Percussão",
     categoria: "musica",
     tipo: "imagem",
     src: bkg19,
@@ -202,7 +202,7 @@ const backgrounds = [
   },
   {
     id: "percussao-brasileira",
-    nome: "Percussão Brasileira",
+    nome: "Brasil",
     categoria: "musica",
     tipo: "imagem",
     src: bkg20,
@@ -210,7 +210,7 @@ const backgrounds = [
   },
   {
     id: "guitarra-e-teclado",
-    nome: "Guitarra & Teclado",
+    nome: "Instrumental",
     categoria: "musica",
     tipo: "imagem",
     src: bkg21,
@@ -218,7 +218,7 @@ const backgrounds = [
   },
   {
     id: "balada-disco",
-    nome: "Balada Disco",
+    nome: "Disco",
     categoria: "balada",
     tipo: "imagem",
     src: bkg22,
@@ -226,7 +226,7 @@ const backgrounds = [
   },
   {
     id: "disco-microfone",
-    nome: "Disco & Microfone",
+    nome: "Retrô",
     categoria: "balada",
     tipo: "imagem",
     src: bkg23,
@@ -234,7 +234,7 @@ const backgrounds = [
   },
   {
     id: "musica-neon",
-    nome: "Música Neon",
+    nome: "Neon Music",
     categoria: "musica",
     tipo: "imagem",
     src: bkg24,
@@ -242,7 +242,7 @@ const backgrounds = [
   },
   {
     id: "instrumentos-em-chamas",
-    nome: "Instrumentos em Chamas",
+    nome: "Fúria",
     categoria: "rock",
     tipo: "imagem",
     src: bkg25,
@@ -250,7 +250,7 @@ const backgrounds = [
   },
   {
     id: "bateria-no-palco",
-    nome: "Bateria no Palco",
+    nome: "Bateria",
     categoria: "rock",
     tipo: "imagem",
     src: bkg26,
@@ -258,7 +258,7 @@ const backgrounds = [
   },
   {
     id: "guitarra-eletrica",
-    nome: "Guitarra Elétrica",
+    nome: "Guitarra",
     categoria: "rock",
     tipo: "imagem",
     src: bkg27,
@@ -266,7 +266,7 @@ const backgrounds = [
   },
   {
     id: "rock-urbano",
-    nome: "Rock Urbano",
+    nome: "Urbano",
     categoria: "rock",
     tipo: "imagem",
     src: bkg28,
@@ -274,7 +274,7 @@ const backgrounds = [
   },
   {
     id: "rock-n-roll",
-    nome: "Rock'n'Roll",
+    nome: "Rock",
     categoria: "rock",
     tipo: "imagem",
     src: bkg29,
@@ -282,7 +282,7 @@ const backgrounds = [
   },
   {
     id: "country-rustico",
-    nome: "Country Rústico",
+    nome: "Country",
     categoria: "country",
     tipo: "imagem",
     src: bkg30,
@@ -290,7 +290,7 @@ const backgrounds = [
   },
   {
     id: "palco-rustico",
-    nome: "Palco Rústico",
+    nome: "Rústico",
     categoria: "rustico",
     tipo: "imagem",
     src: bkg31,
@@ -298,7 +298,7 @@ const backgrounds = [
   },
   {
     id: "palco-ambar",
-    nome: "Palco Âmbar",
+    nome: "Âmbar",
     categoria: "show",
     tipo: "imagem",
     src: bkg32,
@@ -314,7 +314,7 @@ const backgrounds = [
   },
   {
     id: "tijolo-dourado",
-    nome: "Tijolo Dourado",
+    nome: "Tijolo",
     categoria: "restaurante",
     tipo: "imagem",
     src: bkg34,
@@ -322,7 +322,7 @@ const backgrounds = [
   },
   {
     id: "churrascaria-rustica",
-    nome: "Churrascaria Rústica",
+    nome: "Churrasco",
     categoria: "restaurante",
     tipo: "imagem",
     src: bkg35,
@@ -330,7 +330,7 @@ const backgrounds = [
   },
   {
     id: "churrasco-e-cerveja",
-    nome: "Churrasco & Cerveja",
+    nome: "Boteco",
     categoria: "restaurante",
     tipo: "imagem",
     src: bkg36,
@@ -338,7 +338,7 @@ const backgrounds = [
   },
   {
     id: "pesqueiro-rustico",
-    nome: "Pesqueiro Rústico",
+    nome: "Pesqueiro",
     categoria: "pesqueiro",
     tipo: "imagem",
     src: bkg37,
@@ -346,7 +346,7 @@ const backgrounds = [
   },
   {
     id: "cerveja-gelada",
-    nome: "Cerveja Gelada",
+    nome: "Cerveja",
     categoria: "bar",
     tipo: "imagem",
     src: bkg38,
@@ -354,7 +354,7 @@ const backgrounds = [
   },
   {
     id: "brinde-de-cerveja",
-    nome: "Brinde de Cerveja",
+    nome: "Brinde",
     categoria: "bar",
     tipo: "imagem",
     src: bkg39,
@@ -362,7 +362,7 @@ const backgrounds = [
   },
   {
     id: "rock-roxo",
-    nome: "Rock Roxo",
+    nome: "Purple Rock",
     categoria: "rock",
     tipo: "imagem",
     src: bkg40,

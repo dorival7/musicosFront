@@ -40,22 +40,21 @@
       <div class="row mb-3">
         <div class="col-12">
           <ul
-            class="nav nav-tabs-custom rounded card-header-tabs border-bottom-0 d-flex gap-2 text-start"
+            class="nav ia-tool-tabs d-flex gap-2 text-start"
             role="tablist"
-            style="padding-left: 0;"
           >
             <!-- REPERTÓRIO -->
             <li class="nav-item" role="presentation">
               <button
                 type="button"
-                class="nav-link font-monospace text-uppercase fw-bold fs-12 py-2 px-4 position-relative border-0"
+                class="nav-link ia-tool-tab font-monospace text-uppercase fw-bold fs-12"
                 :class="{
-                  'active text-primary bg-white shadow-sm rounded-top':
+                  'active':
                     abaAtiva === 'repertorio'
                 }"
                 @click="abaAtiva = 'repertorio'"
               >
-                🎸 Otimizar Repertório
+                🎸 Otimizador de Repertório
               </button>
             </li>
 
@@ -63,9 +62,9 @@
             <li class="nav-item" role="presentation">
               <button
                 type="button"
-                class="nav-link font-monospace text-uppercase fw-bold fs-12 py-2 px-4 position-relative border-0"
+                class="nav-link ia-tool-tab font-monospace text-uppercase fw-bold fs-12"
                 :class="{
-                  'active text-primary bg-white shadow-sm rounded-top':
+                  'active':
                     abaAtiva === 'cifras'
                 }"
                 @click="abaAtiva = 'cifras'"
@@ -78,14 +77,14 @@
             <li class="nav-item" role="presentation">
               <button
                 type="button"
-                class="nav-link font-monospace text-uppercase fw-bold fs-12 py-2 px-4 position-relative border-0"
+                class="nav-link ia-tool-tab font-monospace text-uppercase fw-bold fs-12"
                 :class="{
-                  'active text-primary bg-white shadow-sm rounded-top':
+                  'active':
                     abaAtiva === 'designer'
                 }"
                 @click="abaAtiva = 'designer'"
               >
-                🎨 Criar Cartaz
+                🎨 Gerador de Cartazes
               </button>
             </li>
           </ul>
@@ -152,19 +151,68 @@ export default {
 </script>
 
 <style scoped>
-.nav-tabs-custom .nav-link {
-  color: #6c757d !important;
-  transition: all 0.2s ease;
+.ia-tool-tabs {
+  padding: 6px;
+  margin: 0;
+  border: 1px solid #e3e6ec;
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 3px 12px rgba(15, 23, 42, 0.05);
 }
 
-.nav-tabs-custom .nav-link.active {
-  color: #ff6c22 !important;
-  border-top: 2px solid #ff6c22 !important;
+.ia-tool-tabs .nav-item {
+  flex: 1 1 0;
+  min-width: 190px;
 }
 
-.nav-tabs-custom .nav-link:not(.active):hover {
-  color: #495057 !important;
-  background-color: rgba(0, 0, 0, 0.02);
-  border-radius: 4px 4px 0 0;
+.ia-tool-tab {
+  width: 100%;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 10px 18px !important;
+  border: 1px solid transparent !important;
+  border-radius: 8px !important;
+  color: #667085 !important;
+  background: transparent !important;
+  transition:
+    color 0.18s ease,
+    background-color 0.18s ease,
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    transform 0.18s ease;
+  cursor: pointer;
+}
+
+.ia-tool-tab:hover:not(.active) {
+  color: #344054 !important;
+  background: #f8f9fc !important;
+  border-color: #e4e7ec !important;
+  transform: translateY(-1px);
+}
+
+.ia-tool-tab.active {
+  color: #ffffff !important;
+  background: #ff6c22 !important;
+  border-color: #ff6c22 !important;
+  box-shadow: 0 5px 12px rgba(255, 108, 34, 0.22);
+}
+
+.ia-tool-tab:focus-visible {
+  outline: 3px solid rgba(255, 108, 34, 0.22);
+  outline-offset: 2px;
+}
+
+@media (max-width: 767.98px) {
+  .ia-tool-tabs {
+    flex-direction: column;
+  }
+
+  .ia-tool-tabs .nav-item {
+    width: 100%;
+    min-width: 0;
+  }
 }
 </style>

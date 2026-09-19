@@ -18,85 +18,56 @@
           <v-rect v-if="imagens.length === 0" :config="placeholderRect" @click="pedirUpload" @tap="pedirUpload" />
           <v-text v-if="imagens.length === 0" :config="placeholderText" @click="pedirUpload" @tap="pedirUpload" />
 
-          <v-image v-for="img in imagens" :key="img.elementId" :config="imagemConfig(img)"
-            @click="selecionarImagem(img)" @tap="selecionarImagem(img)" @dragend="dragImagem(img, $event)"
-            @transformend="transformImagem(img, $event)" />
-          <v-group :config="grupoConfig('data')" @click="selecionarTexto('data')" @tap="selecionarTexto('data')"
-            @dragend="dragTexto('data', $event)" @transformend="transformTexto('data', $event)">
-            <v-text :config="textoConfig('data', dataFormatada)"
-              @dblclick="editarTextoNoCanvas('data')" @dbltap="editarTextoNoCanvas('data')" />
-          </v-group>
-
-          <v-group :config="grupoConfig('weekday')" @click="selecionarTexto('weekday')"
-            @tap="selecionarTexto('weekday')" @dragend="dragTexto('weekday', $event)"
-            @transformend="transformTexto('weekday', $event)">
-            <v-rect :config="fundoConfig('weekday')" />
-            <v-text :config="textoConfig('weekday', weekday)"
-              @dblclick="editarTextoNoCanvas('weekday')" @dbltap="editarTextoNoCanvas('weekday')" />
-          </v-group>
-
-          <v-group :config="grupoConfig('chamada')" @click="selecionarTexto('chamada')"
-            @tap="selecionarTexto('chamada')" @dragend="dragTexto('chamada', $event)"
-            @transformend="transformTexto('chamada', $event)">
-            <v-text :config="textoConfig('chamada', dados.chamada)"
-              @dblclick="editarTextoNoCanvas('chamada')" @dbltap="editarTextoNoCanvas('chamada')" />
-          </v-group>
-
-          <v-group :config="grupoConfig('showLabel')" @click="selecionarTexto('showLabel')"
-            @tap="selecionarTexto('showLabel')" @dragend="dragTexto('showLabel', $event)"
-            @transformend="transformTexto('showLabel', $event)">
-            <v-rect :config="fundoConfig('showLabel')" />
-            <v-text :config="textoConfig('showLabel', estilos.showLabel?.textoOverride || 'SHOW COM')"
-              @dblclick="editarTextoNoCanvas('showLabel')" @dbltap="editarTextoNoCanvas('showLabel')" />
-          </v-group>
-
-          <v-group :config="grupoConfig('artista')" @click="selecionarTexto('artista')"
-            @tap="selecionarTexto('artista')" @dragend="dragTexto('artista', $event)"
-            @transformend="transformTexto('artista', $event)">
-            <v-rect :config="fundoConfig('artista')" />
-            <v-text :config="textoConfig('artista', dados.artista)"
-              @dblclick="editarTextoNoCanvas('artista')" @dbltap="editarTextoNoCanvas('artista')" />
-          </v-group>
-
-          <v-group :config="grupoConfig('estabelecimento')" @click="selecionarTexto('estabelecimento')"
-            @tap="selecionarTexto('estabelecimento')" @dragend="dragTexto('estabelecimento', $event)"
-            @transformend="transformTexto('estabelecimento', $event)">
-            <v-rect :config="fundoConfig('estabelecimento')" />
-            <v-text :config="textoConfig('estabelecimento', dados.local)"
-              @dblclick="editarTextoNoCanvas('estabelecimento')" @dbltap="editarTextoNoCanvas('estabelecimento')" />
-          </v-group>
-
-          <v-group :config="grupoConfig('cidadeHorario')" @click="selecionarTexto('cidadeHorario')"
-            @tap="selecionarTexto('cidadeHorario')" @dragend="dragTexto('cidadeHorario', $event)"
-            @transformend="transformTexto('cidadeHorario', $event)">
-            <v-text
-              :config="textoConfig('cidadeHorario', estilos.cidadeHorario?.textoOverride || `${dados.cidade} • ${dados.horario}`)"
-              @dblclick="editarTextoNoCanvas('cidadeHorario')" @dbltap="editarTextoNoCanvas('cidadeHorario')" />
-          </v-group>
-
-          <v-group :config="grupoConfig('extra')" @click="selecionarTexto('extra')" @tap="selecionarTexto('extra')"
-            @dragend="dragTexto('extra', $event)" @transformend="transformTexto('extra', $event)">
-            <v-rect :config="fundoConfig('extra')" />
-            <v-text :config="textoConfig('extra', dados.extra)"
-              @dblclick="editarTextoNoCanvas('extra')" @dbltap="editarTextoNoCanvas('extra')" />
-          </v-group>
-
-          <v-group
-            v-for="livre in textosLivres"
-            v-show="!estilos[livre.id]?.oculto"
-            :key="livre.id"
-            :config="grupoConfig(livre.id)"
-            @click="selecionarTexto(livre.id)"
-            @tap="selecionarTexto(livre.id)"
-            @dragend="dragTexto(livre.id, $event)"
-            @transformend="transformTexto(livre.id, $event)"
-          >
-            <v-text
-              :config="textoConfig(livre.id, estilos[livre.id]?.textoOverride || livre.texto)"
-              @dblclick="editarTextoNoCanvas(livre.id)"
-              @dbltap="editarTextoNoCanvas(livre.id)"
+          <!--
+            V15: todos os elementos editáveis são renderizados por UMA única lista.
+            A ordem do array abaixo é a ordem visual real do Konva.
+            Não dependemos mais de node.zIndex()/moveToTop(), que o vue-konva
+            podia desfazer ao reconciliar o template.
+          -->
+          <template v-for="elemento in elementosOrdenados" :key="elemento.key">
+            <v-image
+              v-if="elemento.tipo === 'imagem'"
+              :config="imagemConfig(elemento.ref)"
+              @click="selecionarImagem(elemento.ref)"
+              @tap="selecionarImagem(elemento.ref)"
+              @dragend="dragImagem(elemento.ref, $event)"
+              @transformend="transformImagem(elemento.ref, $event)"
             />
-          </v-group>
+
+            <v-circle
+              v-else-if="elemento.tipo === 'forma' && elemento.ref.forma === 'circulo'"
+              :config="formaCirculoConfig(elemento.ref)"
+              @click="selecionarForma(elemento.ref)"
+              @tap="selecionarForma(elemento.ref)"
+              @dragend="dragForma(elemento.ref, $event)"
+              @transformend="transformForma(elemento.ref, $event)"
+            />
+
+            <v-rect
+              v-else-if="elemento.tipo === 'forma'"
+              :config="formaRectConfig(elemento.ref)"
+              @click="selecionarForma(elemento.ref)"
+              @tap="selecionarForma(elemento.ref)"
+              @dragend="dragForma(elemento.ref, $event)"
+              @transformend="transformForma(elemento.ref, $event)"
+            />
+
+            <v-group
+              v-else-if="elemento.tipo === 'texto' && !estilos[elemento.id]?.oculto"
+              :config="grupoConfig(elemento.id)"
+              @click="selecionarTexto(elemento.id)"
+              @tap="selecionarTexto(elemento.id)"
+              @dragend="dragTexto(elemento.id, $event)"
+              @transformend="transformTexto(elemento.id, $event)"
+            >
+              <v-rect :config="fundoConfig(elemento.id)" />
+              <v-text
+                :config="textoConfig(elemento.id, textoAtual(elemento.id))"
+                @dblclick="editarTextoNoCanvas(elemento.id)"
+                @dbltap="editarTextoNoCanvas(elemento.id)"
+              />
+            </v-group>
+          </template>
 
           <v-transformer ref="transformer" :config="transformerConfig" />
         </v-layer>
@@ -125,10 +96,11 @@ const POS = {
 
 export default {
   name: "DesignerCanvas",
-  emits: ["selecionar", "atualizar-imagem", "atualizar-texto-layout", "editar-texto", "pedir-upload", "remover-imagem"],
+  emits: ["selecionar", "atualizar-imagem", "atualizar-forma", "atualizar-texto-layout", "editar-texto", "pedir-upload", "remover-imagem", "remover-forma", "imagem-carregada"],
   props: {
     dados: { type: Object, required: true },
     imagens: { type: Array, default: () => [] },
+    formas: { type: Array, default: () => [] },
     estilos: { type: Object, required: true },
     textosLivres: { type: Array, default: () => [] },
     backgroundId: { type: String, default: "show-luzes-01" }
@@ -150,7 +122,37 @@ export default {
     },
     placeholderRect() { return { x: 110, y: 330, width: 860, height: 700, stroke: "#ffffff", strokeWidth: 4, dash: [20, 14], cornerRadius: 25, fill: "rgba(255,255,255,.06)", listening: true } },
     placeholderText() { return { x: 210, y: 650, width: 660, text: "+ FOTO DO ARTISTA", fontSize: 52, fontStyle: "bold", align: "center", fill: "#ffffff", listening: true } },
-    transformerConfig() { return { rotateEnabled: true, keepRatio: true, flipEnabled: false, enabledAnchors: ["top-left", "top-right", "bottom-left", "bottom-right"], borderStroke: "#ffc107", anchorStroke: "#111", anchorFill: "#ffc107", anchorSize: 20, anchorCornerRadius: 10 } }
+    elementosOrdenados() {
+      const fixos = ["data", "weekday", "chamada", "showLabel", "artista", "estabelecimento", "cidadeHorario", "extra"];
+      const itens = [];
+
+      this.formas.forEach((ref, index) => {
+        const z = Number(ref.zIndex);
+        itens.push({ key: `forma:${ref.elementId}`, id: ref.elementId, tipo: "forma", ref, ordem: Number.isFinite(z) ? z : 10 + index });
+      });
+
+      this.imagens.forEach((ref, index) => {
+        const z = Number(ref.zIndex);
+        itens.push({ key: `imagem:${ref.elementId}`, id: ref.elementId, tipo: "imagem", ref, ordem: Number.isFinite(z) ? z : 100 + index });
+      });
+
+      fixos.forEach((id, index) => {
+        const z = Number(this.estilos[id]?.layout?.zIndex);
+        itens.push({ key: `texto:${id}`, id, tipo: "texto", ordem: Number.isFinite(z) ? z : 200 + index });
+      });
+
+      this.textosLivres.forEach((ref, index) => {
+        const z = Number(this.estilos[ref.id]?.layout?.zIndex);
+        itens.push({ key: `texto:${ref.id}`, id: ref.id, tipo: "texto", ref, ordem: Number.isFinite(z) ? z : 300 + index });
+      });
+
+      return itens.sort((a, b) => a.ordem - b.ordem);
+    },
+    transformerConfig() {
+      const f = this.selecionado?.tipo === "forma" ? this.formas.find(x => x.elementId === this.selecionado.id) : null;
+      const keepRatio = this.selecionado?.tipo === "imagem" || f?.forma === "quadrado" || f?.forma === "circulo";
+      return { rotateEnabled:true, keepRatio, flipEnabled:false, enabledAnchors:["top-left","top-right","bottom-left","bottom-right"], borderStroke:"#ffc107", anchorStroke:"#111", anchorFill:"#ffc107", anchorSize:20, anchorCornerRadius:10 };
+    }
   },
   watch: {
     estilos: {
@@ -159,11 +161,14 @@ export default {
         Object.keys(this.estilos || {}).forEach(id => this.garantirFonte(id));
         this.$nextTick(() => {
           this.$refs.stage?.getNode?.()?.batchDraw();
+          this.atualizarOrdemCamadas();
           this.atualizarTransformer();
         });
       }
     },
-    imagens: { deep: true, immediate: true, handler() { this.carregarImagens() } },
+    imagens: { deep: true, immediate: true, handler() { this.carregarImagens(); this.$nextTick(() => this.atualizarOrdemCamadas()); } },
+    formas: { deep: true, handler() { this.$nextTick(() => this.atualizarOrdemCamadas()); } },
+    textosLivres: { deep: true, handler() { this.$nextTick(() => this.atualizarOrdemCamadas()); } },
     backgroundId: { immediate: true, handler() { this.carregarBackground() } }
   },
   mounted() {
@@ -176,7 +181,70 @@ export default {
     window.removeEventListener("resize", this.ajustarEscala);
     window.removeEventListener("keydown", this.aoPressionarTecla);
   },
+  updated() {
+    // vue-konva pode reaplicar a ordem declarativa dos nós após qualquer
+    // atualização do componente. Reaplicamos a ordem persistida depois
+    // de cada render para que a camada não volte para a posição original.
+    this.$nextTick(() => this.atualizarOrdemCamadas());
+  },
   methods: {
+    async exportarPng() {
+      const stage = this.$refs.stage?.getNode?.();
+      if (!stage) throw new Error("Canvas do cartaz não encontrado.");
+
+      const transformer = this.$refs.transformer?.getNode?.();
+      const escalaAnterior = { x: stage.scaleX(), y: stage.scaleY() };
+      const transformerVisivel = transformer?.visible?.() ?? true;
+      const substituicoes = [];
+
+      // A visualização normal continua exatamente como está. Apenas para exportar,
+      // recarregamos imagens externas em modo CORS, evitando canvas bloqueado ao
+      // chamar toDataURL quando as fotos vêm da API em outra porta/domínio.
+      const carregarParaExportacao = (src) => new Promise((resolve, reject) => {
+        const im = new Image();
+        im.crossOrigin = "anonymous";
+        im.onload = () => resolve(im);
+        im.onerror = () => reject(new Error("Não foi possível preparar uma das imagens para download."));
+        im.src = src;
+      });
+
+      try {
+        for (const item of this.imagens) {
+          if (!item?.src) continue;
+          const node = stage.findOne(`#${item.elementId}`);
+          if (!node?.image) continue;
+
+          const original = node.image();
+          const exportImage = await carregarParaExportacao(item.src);
+          substituicoes.push({ node, original });
+          node.image(exportImage);
+        }
+
+        if (transformer) transformer.visible(false);
+
+        // O editor usa scale apenas para caber na tela. Para o arquivo final
+        // exportamos em escala real: 1080 × 1920 pixels.
+        stage.scale({ x: 1, y: 1 });
+        stage.batchDraw();
+
+        return stage.toDataURL({
+          x: 0,
+          y: 0,
+          width: 1080,
+          height: 1920,
+          pixelRatio: 1,
+          mimeType: "image/png",
+          quality: 1
+        });
+      } finally {
+        substituicoes.forEach(({ node, original }) => node.image(original));
+        stage.scale(escalaAnterior);
+        if (transformer) transformer.visible(transformerVisivel);
+        stage.batchDraw();
+        this.$nextTick(() => this.atualizarTransformer());
+      }
+    },
+
     aoClicarStage(event) {
       const target = event?.target;
       if (!target) return;
@@ -195,6 +263,10 @@ export default {
       if (this.selecionado?.tipo === "imagem") {
         event.preventDefault();
         this.$emit("remover-imagem", this.selecionado.id);
+        this.limparSelecao();
+      } else if (this.selecionado?.tipo === "forma") {
+        event.preventDefault();
+        this.$emit("remover-forma", this.selecionado.id);
         this.limparSelecao();
       }
     },
@@ -328,6 +400,7 @@ export default {
         im.__src = item.src;
         im.onload = () => {
           this.imagensCarregadas = { ...this.imagensCarregadas, [item.elementId]: im };
+          this.$emit("imagem-carregada", { elementId: item.elementId, src: item.src });
 
           if (!item.aspectRatio && im.naturalWidth && im.naturalHeight) {
             const ratio = im.naturalWidth / im.naturalHeight;
@@ -360,6 +433,35 @@ export default {
       }
     },
     imagemConfig(i) { return { id: i.elementId, image: this.imagensCarregadas[i.elementId] || null, x: i.x, y: i.y, width: i.width, height: i.height, rotation: i.rotation || 0, draggable: true, listening: true } },
+    formaBaseConfig(f) {
+      return {
+        id:f.elementId, x:f.x, y:f.y, rotation:f.rotation || 0,
+        fill:f.cor || "#ffffff", stroke:f.corBorda || "#111111",
+        strokeWidth:Number(f.espessuraBorda || 0), opacity:f.opacidade ?? .85,
+        shadowEnabled:Boolean(f.sombra), shadowColor:f.corSombra || "#000000",
+        shadowBlur:Number(f.blurSombra || 20), shadowOffsetX:Number(f.offsetSombraX ?? 10),
+        shadowOffsetY:Number(f.offsetSombraY ?? 10), shadowOpacity:f.sombra ? .45 : 0,
+        draggable:true, listening:true
+      };
+    },
+    formaRectConfig(f) { return { ...this.formaBaseConfig(f), width:f.width, height:f.height, cornerRadius:f.cornerRadius || 0 }; },
+    formaCirculoConfig(f) {
+      const d = Math.min(f.width, f.height);
+      return { ...this.formaBaseConfig(f), radius:d/2, offsetX:-d/2, offsetY:-d/2 };
+    },
+    selecionarForma(f) {
+      this.selecionado = { id:f.elementId, tipo:"forma" };
+      this.$emit("selecionar", { id:f.elementId, tipo:"forma" });
+      this.$nextTick(() => this.atualizarTransformer());
+    },
+    dragForma(f,e) { this.$emit("atualizar-forma", { elementId:f.elementId, x:e.target.x(), y:e.target.y() }); },
+    transformForma(f,e) {
+      const n=e.target, sx=Math.max(.1,n.scaleX()), sy=Math.max(.1,n.scaleY());
+      const width=Math.max(30,f.width*sx), height=Math.max(30,f.height*sy);
+      n.scale({x:1,y:1});
+      this.$emit("atualizar-forma",{elementId:f.elementId,x:n.x(),y:n.y(),width,height,rotation:n.rotation()});
+      this.$nextTick(() => this.atualizarTransformer());
+    },
     selecionarImagem(i) { this.selecionado = { id: i.elementId, tipo: "imagem" }; this.$emit("selecionar", { id: i.elementId, tipo: "imagem" }); this.$nextTick(() => this.atualizarTransformer()) },
     textoAtual(id) {
       const map = { data: this.dataFormatada, weekday: this.weekday, chamada: this.dados.chamada, showLabel: this.estilos.showLabel?.textoOverride || "SHOW COM", artista: this.dados.artista, estabelecimento: this.dados.local, cidadeHorario: this.estilos.cidadeHorario?.textoOverride || `${this.dados.cidade} • ${this.dados.horario}`, extra: this.dados.extra };
@@ -394,7 +496,17 @@ export default {
     },
     fonte(id) { return obterFontePorId(this.estilos[id]?.fontId)?.family || "Arial" },
     textoConfig(id, text) { const p = this.layout(id); return { x: 0, y: 0, width: p.w, height: p.h, text, fontFamily: this.fonte(id), fontSize: p.size, fill: this.estilos[id]?.corTexto || "#fff", align: p.align || "center", verticalAlign: "middle", fontStyle: id === "data" ? "bold" : "normal", listening: true, wrap: "word" } },
-    fundoConfig(id) { const p = this.layout(id); return { x: 0, y: 0, width: p.w, height: p.h, fill: this.estilos[id]?.corFundo || "#000", cornerRadius: id === "estabelecimento" ? 14 : 4, opacity: id === "estabelecimento" ? .94 : .9, listening: false } },
+    fundoConfig(id) {
+      const p = this.layout(id);
+      const ativo = Boolean(this.estilos[id]?.temFundo);
+      return {
+        x:0, y:0, width:p.w, height:p.h,
+        fill:this.estilos[id]?.corFundo || "#000000",
+        cornerRadius:this.estilos[id]?.cornerRadius ?? (id === "estabelecimento" ? 14 : 4),
+        opacity:ativo ? (this.estilos[id]?.fundoOpacity ?? (id === "estabelecimento" ? .94 : .9)) : 0,
+        visible:ativo, listening:false
+      };
+    },
     atualizarTransformer() {
       const tr = this.$refs.transformer?.getNode?.(); const st = this.$refs.stage?.getNode?.(); if (!tr || !st) return;
       if (!this.selecionado) { tr.nodes([]); tr.getLayer()?.batchDraw(); return }
@@ -428,6 +540,8 @@ export default {
           x: node.x(),
           y: node.y()
         });
+      } else if (this.selecionado.tipo === "forma") {
+        this.$emit("atualizar-forma", { elementId:this.selecionado.id, x:node.x(), y:node.y() });
       } else {
         const p = this.layout(this.selecionado.id);
         this.$emit("atualizar-texto-layout", {
@@ -447,25 +561,16 @@ export default {
       this.$nextTick(() => this.atualizarTransformer());
     },
 
-    moverSelecionado(direcao) {
-      const tr = this.$refs.transformer?.getNode?.();
-      const st = this.$refs.stage?.getNode?.();
-      if (!st || !this.selecionado) return;
+    atualizarOrdemCamadas() {
+      // V15: a ordem é declarativa em elementosOrdenados.
+      // Mantido apenas por compatibilidade com chamadas existentes do pai.
+      this.$refs.stage?.getNode?.()?.batchDraw();
+      this.atualizarTransformer();
+    },
 
-      const node =
-        st.findOne(`#${this.nodeId(this.selecionado.id)}`) ||
-        st.findOne(`#${this.selecionado.id}`);
-
-      if (!node) return;
-
-      if (direcao === "top") node.moveToTop();
-      else if (direcao === "up") node.moveUp();
-      else if (direcao === "down") node.moveDown();
-      else if (direcao === "bottom") node.moveToBottom();
-
-      // O Transformer deve continuar visível acima do elemento selecionado.
-      tr?.moveToTop();
-      node.getLayer()?.batchDraw();
+    moverSelecionado() {
+      // A ordem agora é controlada pelo estado persistente do SevenDesigner.
+      this.atualizarOrdemCamadas();
     },
     dragImagem(i, e) { this.$emit("atualizar-imagem", { elementId: i.elementId, x: e.target.x(), y: e.target.y() }) },
     transformImagem(i, e) {
