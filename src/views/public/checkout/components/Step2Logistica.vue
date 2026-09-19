@@ -105,6 +105,25 @@
         </div>
       </div>
 
+      <!-- LOGO OPCIONAL DO CONTRATANTE / ESTABELECIMENTO -->
+      <div style="grid-column: span 2; display: flex; flex-direction: column; gap: 8px; margin-top: 4px;">
+        <label style="color: #ffffff; font-weight: bold; font-size: 12px; text-transform: uppercase;">Logo do estabelecimento / contratante <span style="color:#878a99; font-weight:normal;">(opcional)</span></label>
+        <input ref="logoInput" type="file" accept="image/png,image/jpeg,image/webp" @change="selecionarLogo" style="display:none;" />
+        <div style="display:flex; align-items:center; gap:16px; padding:14px; background:#171a25; border:1px dashed #3a3f50; border-radius:10px;">
+          <div v-if="logoPreview" style="width:76px; height:76px; border-radius:10px; background:#ffffff; display:flex; align-items:center; justify-content:center; overflow:hidden; flex:0 0 76px;">
+            <img :src="logoPreview" alt="Prévia do logo" style="max-width:100%; max-height:100%; object-fit:contain;" />
+          </div>
+          <div v-else style="width:76px; height:76px; border-radius:10px; background:#1f2230; display:flex; align-items:center; justify-content:center; font-size:28px; flex:0 0 76px;">🖼️</div>
+          <div style="flex:1; min-width:0;">
+            <div style="color:#ced4da; font-size:12px; line-height:1.5; margin-bottom:9px;">Será usado automaticamente na criação dos cartazes dos seus shows. PNG, JPG ou WEBP, até 5 MB.</div>
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+              <button type="button" @click="$refs.logoInput.click()" style="background:#252938; border:1px solid #454b60; color:#fff; border-radius:7px; padding:8px 12px; font-size:11px; font-weight:bold; cursor:pointer;">{{ logoArquivo ? 'Trocar logo' : 'Selecionar logo' }}</button>
+              <button v-if="logoArquivo" type="button" @click="removerLogoSelecionado" style="background:transparent; border:1px solid #f06548; color:#f06548; border-radius:7px; padding:8px 12px; font-size:11px; font-weight:bold; cursor:pointer;">Remover</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
     <!-- FORMULÁRIO DE ENDEREÇO (BLOCO INTEGRAL ORIGINAL: CEP E SEU ENGENHO ASSÍNCRONO) -->
     <div v-if="!isAutenticado && !exibirPainelDuplicidade" style="display: flex; flex-direction: column; gap: 20px; text-align: left; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 25px;">
@@ -200,7 +219,9 @@ export default {
       modoApenasLogin: false,
       exibirPainelDuplicidade: false,
       loadingRecuperacao: false,
-      isAutenticado: false
+      isAutenticado: false,
+      logoArquivo: null,
+      logoPreview: ""
     };
   },
   methods: {
@@ -398,6 +419,43 @@ export default {
       }
     },
 
+    selecionarLogo(event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+      const permitidos = ["image/png", "image/jpeg", "image/webp"];
+      if (!permitidos.includes(file.type)) {
+        alert("Formato inválido. Use PNG, JPG ou WEBP.");
+        event.target.value = "";
+        return;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        alert("O logo deve ter no máximo 5 MB.");
+        event.target.value = "";
+        return;
+      }
+      if (this.logoPreview) URL.revokeObjectURL(this.logoPreview);
+      this.logoArquivo = file;
+      this.logoPreview = URL.createObjectURL(file);
+    },
+
+    removerLogoSelecionado() {
+      if (this.logoPreview) URL.revokeObjectURL(this.logoPreview);
+      this.logoArquivo = null;
+      this.logoPreview = "";
+      if (this.$refs.logoInput) this.$refs.logoInput.value = "";
+    },
+
+    async enviarLogoContratante(contratanteId) {
+      if (!this.logoArquivo || !contratanteId) return null;
+      const formData = new FormData();
+      formData.append("file", this.logoArquivo);
+      const url = `${this.apiBaseUrlGlobal}/public/contratantes/${contratanteId}/logo`;
+      const response = await axios.post(url, formData, {
+        headers: { "Content-Type": "multipart/form-data" }
+      });
+      return response.data?.logoUrl || null;
+    },
+
     // 🏛️ CADASTRO TRADICIONAL: Envia o payload limpo para la tabela única do MariaDB
     async processarCadastroELogistica() {
       this.loadingCep = true;
@@ -422,7 +480,19 @@ export default {
         const response = await axios.post(urlCadastro, payloadCadastro);
 
         if (response.data && response.data.token) {
-          const stringifiedUser = JSON.stringify(response.data.user);
+          const userCriado = { ...response.data.user };
+
+          // Logo é opcional: só envia depois que o ContratanteId existir.
+          if (this.logoArquivo && userCriado.id) {
+            try {
+              userCriado.logoUrl = await this.enviarLogoContratante(userCriado.id);
+            } catch (logoError) {
+              console.error("Cadastro concluído, mas o logo não pôde ser enviado:", logoError);
+              alert("Seu cadastro foi concluído, mas não foi possível enviar o logo agora. Você poderá adicioná-lo depois.");
+            }
+          }
+
+          const stringifiedUser = JSON.stringify(userCriado);
           localStorage.setItem("jwt", response.data.token);
           localStorage.setItem("user", stringifiedUser);
           localStorage.setItem("userdata", stringifiedUser);

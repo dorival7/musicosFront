@@ -28,6 +28,34 @@
         <input type="text" v-model="form.celular" @input="aplicarMascaraCelular" placeholder="(00) 00000-0000" maxlength="15" style="width: 100%; padding: 14px 20px; background-color: #1a1d29; border: 1px solid #3a3f50; border-radius: 8px; color: #ffffff; font-size: 13px; font-weight: bold; outline: none; box-sizing: border-box;" />
       </div>
 
+      <!-- LOGO DO CONTRATANTE / ESTABELECIMENTO -->
+      <div style="grid-column: span 2; margin: 10px 0 5px 0; border-top: 1px dashed rgba(255,255,255,0.05); padding-top: 15px;">
+        <span style="color: #ff6c22; font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">🏢 Logo do Contratante / Estabelecimento</span>
+      </div>
+
+      <div style="grid-column: span 2;">
+        <input ref="logoInput" type="file" accept="image/png,image/jpeg,image/webp" @change="selecionarLogo" style="display:none;" />
+        <div style="display:flex; align-items:center; gap:18px; padding:16px; background:#171a25; border:1px dashed #3a3f50; border-radius:10px;">
+          <div style="width:92px; height:92px; border-radius:10px; background:#fff; display:flex; align-items:center; justify-content:center; overflow:hidden; flex:0 0 92px;">
+            <img v-if="logoPreviewUrl" :src="logoPreviewUrl" alt="Logo do contratante" style="max-width:100%; max-height:100%; object-fit:contain;" />
+            <span v-else style="font-size:30px;">🖼️</span>
+          </div>
+          <div style="flex:1; min-width:0;">
+            <div style="color:#fff; font-size:12px; font-weight:bold; margin-bottom:5px;">{{ logoPreviewUrl ? 'Logo atual' : 'Nenhum logo cadastrado' }}</div>
+            <div style="color:#878a99; font-size:11px; line-height:1.5; margin-bottom:10px;">Opcional. PNG, JPG ou WEBP, até 5 MB. Este logo poderá ser usado automaticamente nos cartazes dos seus shows.</div>
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+              <button type="button" :disabled="loadingLogo" @click="$refs.logoInput.click()" style="background:#252938; border:1px solid #454b60; color:#fff; border-radius:7px; padding:9px 13px; font-size:11px; font-weight:bold; cursor:pointer;">
+                {{ logoPreviewUrl ? 'Trocar logo' : 'Enviar logo' }}
+              </button>
+              <button v-if="logoPreviewUrl" type="button" :disabled="loadingLogo" @click="removerLogo" style="background:transparent; border:1px solid #f06548; color:#f06548; border-radius:7px; padding:9px 13px; font-size:11px; font-weight:bold; cursor:pointer;">
+                Remover logo
+              </button>
+              <span v-if="loadingLogo" style="align-self:center; color:#0ab39c; font-size:11px; font-weight:bold;">Processando...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Divisória de Seção Postal -->
       <div style="grid-column: span 2; margin: 10px 0 5px 0; border-top: 1px dashed rgba(255,255,255,0.05); padding-top: 15px;">
         <span style="color: #ff6c22; font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">🏡 Rastro Global de Endereço</span>
@@ -105,6 +133,8 @@ export default {
       loadingCep: false,
       loadingSalvar: false,
       erroCep: false,
+      loadingLogo: false,
+      logoPreviewUrl: "",
       apiBaseUrlGlobal: process.env.VUE_APP_API_BASE_URL,
       
       // Modelo de dados do formulário preenchido na inicialização
@@ -123,6 +153,68 @@ export default {
     };
   },
   methods: {
+    obterApiOrigin() {
+      return (this.apiBaseUrlGlobal || "").replace(/\/api\/?$/i, "").replace(/\/$/, "");
+    },
+
+    resolverLogoUrl(logoUrl) {
+      if (!logoUrl) return "";
+      if (/^https?:\/\//i.test(logoUrl)) return logoUrl;
+      return `${this.obterApiOrigin()}${logoUrl.startsWith("/") ? "" : "/"}${logoUrl}`;
+    },
+
+    async selecionarLogo(event) {
+      const file = event.target.files && event.target.files[0];
+      event.target.value = "";
+      if (!file) return;
+
+      const permitidos = ["image/png", "image/jpeg", "image/webp"];
+      if (!permitidos.includes(file.type)) {
+        alert("Formato inválido. Use PNG, JPG ou WEBP.");
+        return;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        alert("O logo deve ter no máximo 5 MB.");
+        return;
+      }
+
+      this.loadingLogo = true;
+      try {
+        const formData = new FormData();
+        formData.append("file", file);
+        const response = await axios.post(
+          `${this.apiBaseUrlGlobal}/public/contratantes/${this.usuario.id}/logo`,
+          formData,
+          { headers: { "Content-Type": "multipart/form-data" } }
+        );
+        const logoUrl = response.data?.logoUrl || "";
+        this.logoPreviewUrl = this.resolverLogoUrl(logoUrl);
+        this.$emit("atualizar-sessao", { ...this.usuario, logoUrl });
+      } catch (error) {
+        console.error("Falha ao enviar logo:", error);
+        alert(error.response?.data?.message || "Não foi possível enviar o logo.");
+      } finally {
+        this.loadingLogo = false;
+      }
+    },
+
+    async removerLogo() {
+      if (!this.logoPreviewUrl || this.loadingLogo) return;
+      if (!confirm("Deseja remover o logo cadastrado?")) return;
+
+      this.loadingLogo = true;
+      try {
+        await axios.delete(`${this.apiBaseUrlGlobal}/public/contratantes/${this.usuario.id}/logo`);
+        this.logoPreviewUrl = "";
+        this.$emit("atualizar-sessao", { ...this.usuario, logoUrl: null });
+      } catch (error) {
+        console.error("Falha ao remover logo:", error);
+        alert(error.response?.data?.message || "Não foi possível remover o logo.");
+      } finally {
+        this.loadingLogo = false;
+      }
+    },
+
     // 🚀 ENVIO ATÔMICO: Dispara o PUT contra o .NET 10 e atualiza as tabelas do MariaDB
     async processarAtualizacaoCadastral() {
       if (this.loadingSalvar || this.loadingCep) return;
@@ -209,6 +301,7 @@ export default {
       this.form.cidade = this.usuario.cidade || "";
       this.form.estado = this.usuario.estado || "";
       this.form.complemento = this.usuario.complemento || "";
+      this.logoPreviewUrl = this.resolverLogoUrl(this.usuario.logoUrl || "");
     }
   },
   mounted() {

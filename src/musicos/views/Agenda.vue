@@ -33,6 +33,8 @@ export default {
       // CONTROLE DE INTERAÇÃO DA MODAL DE DETALHES DO SHOW (BALÃO AZUL/LARANJA/ROXO)
       selectedEvent: null,
       showDetailsModal: false,
+      cartazEventoExiste: false,
+      verificandoCartazEvento: false,
 
       // CONTROLE DA MESA DE NEGOCIAÇÕES (MODAL DE DECISÃO DA RECUSA)
       activeTargetRequest: null,
@@ -334,6 +336,100 @@ export default {
         this.loadAllRequests()
       ]);
       this.submittingAction = false;
+    },
+
+    urlPublicaApi(url) {
+      if (!url) return null;
+      if (/^https?:\/\//i.test(url)) return url;
+      const api = (process.env.VUE_APP_API_BASE_URL || "http://localhost:5297").replace(/\/$/, "");
+      const origem = api.replace(/\/api$/i, "");
+      return `${origem}${url.startsWith("/") ? "" : "/"}${url}`;
+    },
+
+    // DETALHES DO SHOW: mantém o músico na Agenda e abre o raio-X em modal.
+    async handleOpenEventDetails(evento) {
+      if (!evento || evento.status === "Blocked") return;
+      this.selectedEvent = evento;
+      const chaveLocal = evento?.id ? `sevenDesignerPosterEvent:${String(evento.id).toLowerCase()}` : null;
+      // Resposta imediata no modal. O vínculo local é gravado pelo Designer após
+      // criar/abrir com sucesso e evita o botão piscar ou voltar para "Criar cartaz".
+      this.cartazEventoExiste = !!(chaveLocal && localStorage.getItem(chaveLocal));
+      this.showDetailsModal = true;
+
+      if (String(evento.status || "").toLowerCase() !== "confirmed" || !evento.id) return;
+
+      this.verificandoCartazEvento = true;
+      try {
+        const token = localStorage.getItem("jwt");
+        const api = (process.env.VUE_APP_API_BASE_URL || "http://localhost:5297").replace(/\/$/, "");
+        const headers = { Authorization: `Bearer ${token}` };
+        let existe = this.cartazEventoExiste;
+        let posterId = null;
+
+        try {
+          const { data } = await axios.get(`${api}/tenants/designer-posters/by-event/${evento.id}`, { headers });
+          existe = data?.exists === true || data?.Exists === true;
+          posterId = data?.posterId || data?.PosterId || null;
+        } catch (_) {
+          // Fallback compatível com camelCase/PascalCase.
+          const { data } = await axios.get(`${api}/tenants/designer-posters`, { headers });
+          const itens = Array.isArray(data?.items) ? data.items : (Array.isArray(data?.Items) ? data.Items : []);
+          // Compatibilidade com cartazes antigos criados pela Agenda antes do EventId
+          // começar a ser devolvido pela listagem. O nome do draft é determinístico.
+          const dt = evento.eventDate ? new Date(evento.eventDate) : null;
+          const dataValida = dt && !Number.isNaN(dt.getTime());
+          const dataNome = dataValida
+            ? `${String(dt.getDate()).padStart(2, "0")}-${String(dt.getMonth() + 1).padStart(2, "0")}`
+            : "Show";
+          const localNome = evento.venueName || evento.city || "Evento";
+          const nomeEsperado = `Show ${dataNome} - ${localNome}`.slice(0, 120).trim().toLowerCase();
+
+          const encontrado = itens.find(p => {
+            const vinculo = String(p.eventId || p.EventId || "").toLowerCase();
+            const nome = String(p.name || p.Name || "").trim().toLowerCase();
+            return vinculo === String(evento.id).toLowerCase() || nome === nomeEsperado;
+          });
+          existe = !!encontrado || existe;
+          posterId = encontrado?.id || encontrado?.Id || posterId;
+        }
+
+        if (existe && chaveLocal) localStorage.setItem(chaveLocal, String(posterId || "linked"));
+        if (this.selectedEvent?.id === evento.id) this.cartazEventoExiste = existe;
+      } catch (e) {
+        // Em falha de rede/API, não apaga um vínculo já confirmado neste navegador.
+        this.cartazEventoExiste = !!(chaveLocal && localStorage.getItem(chaveLocal));
+      } finally {
+        this.verificandoCartazEvento = false;
+      }
+    },
+
+    handleCloseEventDetails() {
+      this.showDetailsModal = false;
+      this.selectedEvent = null;
+    },
+
+    // SHOW CONFIRMADO -> SEVEN DESIGNER
+    // O contexto fica apenas na sessão do navegador; o Designer o consome uma vez.
+    criarCartazDoShow() {
+      if (!this.selectedEvent || String(this.selectedEvent.status || "").toLowerCase() !== "confirmed") return;
+
+      const evento = this.selectedEvent;
+      const contexto = {
+        origem: "agenda",
+        eventId: evento.id,
+        titulo: evento.title || evento.eventName || "Show ao vivo",
+        eventType: evento.eventType || "Show",
+        eventDate: evento.eventDate || null,
+        venueName: evento.venueName || "",
+        city: evento.city || "",
+        state: evento.state || "",
+        contractorName: evento.contractorName || "",
+        contractorLogoUrl: this.urlPublicaApi(evento.contractorLogoUrl)
+      };
+
+      sessionStorage.setItem("sevenDesignerEventContext", JSON.stringify(contexto));
+      this.handleCloseEventDetails();
+      this.$router.push({ name: "musicos-recursos-ia", query: { ferramenta: "designer", origem: "agenda" } });
     },
 
     // CONTROLE CRONOLÓGICO: Avançar ou retroceder meses no calendário
@@ -735,6 +831,9 @@ export default {
               <h6 class="fw-bold text-dark fs-12 mb-2 text-uppercase font-monospace tracking-wide">
                 <i class="ri-user-star-line me-1"></i> Ficha do Contratante
               </h6>
+              <div v-if="selectedEvent.contractorLogoUrl" class="text-center mb-3">
+                <img :src="urlPublicaApi(selectedEvent.contractorLogoUrl)" alt="Logo do contratante" class="agenda-contractor-logo" />
+              </div>
               <p class="mb-1 text-muted small"><strong>Nome:</strong> {{ selectedEvent.contractorName }}</p>
               <p class="mb-1 text-muted small"><strong>Tipo de Evento:</strong> {{ selectedEvent.eventType }}</p>
               <p class="mb-0 text-muted small">
@@ -806,7 +905,17 @@ export default {
             <div v-else class="text-muted small italic text-start ps-2">
               <i class="ri-information-line me-1"></i>Este compromisso já foi processado e arquivado.
             </div>
-            <button type="button" class="btn btn-sm btn-secondary px-3" @click="handleCloseEventDetails">Fechar</button>
+            <div class="d-flex gap-2 ms-auto">
+              <button
+                v-if="String(selectedEvent.status || '').toLowerCase() === 'confirmed'"
+                type="button"
+                class="btn btn-sm btn-primary px-3 fw-bold"
+                @click="criarCartazDoShow"
+              >
+                <i class="ri-palette-line me-1"></i> {{ cartazEventoExiste ? "Visualizar cartaz" : "Criar cartaz" }}
+              </button>
+              <button type="button" class="btn btn-sm btn-secondary px-3" @click="handleCloseEventDetails">Fechar</button>
+            </div>
           </div>
         </div>
       </div>
@@ -869,3 +978,7 @@ export default {
   </div>
 </template>
 
+
+<style scoped>
+.agenda-contractor-logo { max-width:150px; max-height:82px; object-fit:contain; padding:8px 12px; border:1px solid #e5e7eb; border-radius:10px; background:#fff; }
+</style>

@@ -15,8 +15,8 @@
         </v-layer>
 
         <v-layer>
-          <v-rect v-if="imagens.length === 0" :config="placeholderRect" @click="pedirUpload" @tap="pedirUpload" />
-          <v-text v-if="imagens.length === 0" :config="placeholderText" @click="pedirUpload" @tap="pedirUpload" />
+          <v-rect v-if="!temFotoArtista" :config="placeholderRect" @click="pedirUpload" @tap="pedirUpload" />
+          <v-text v-if="!temFotoArtista" :config="placeholderText" @click="pedirUpload" @tap="pedirUpload" />
 
           <!--
             V15: todos os elementos editáveis são renderizados por UMA única lista.
@@ -113,6 +113,7 @@ export default {
   },
   computed: {
     backgroundAtual() { return this.backgrounds.find(b => b.id === this.backgroundId) || this.backgrounds[0] },
+    temFotoArtista() { return this.imagens.some(i => !i.origemAgendaLogo); },
     dataFormatada() { if (!this.dados.data) return ""; const [, m, d] = this.dados.data.split("-"); return `${d}/${m}` },
     weekday() {
       if (this.estilos.weekday?.textoOverride) return this.estilos.weekday.textoOverride;

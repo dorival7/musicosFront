@@ -481,6 +481,7 @@ import {
   autosalvarDesignerPoster,
   salvarDesignerPoster,
   criarNovoDesignerPoster,
+  criarDesignerPosterDaAgenda,
   abrirDesignerPoster,
   duplicarDesignerPoster,
   excluirDesignerPoster
@@ -587,6 +588,7 @@ export default {
       this.carregarUploads(),
       this.inicializarCartazes()
     ]);
+    await this.aplicarContextoAgendaSeExistir();
   },
 
   beforeUnmount() {
@@ -601,6 +603,114 @@ export default {
 
   methods: {
     urlAsset(url) { return urlDesignerAsset(url); },
+
+    async aplicarContextoAgendaSeExistir() {
+      const raw = sessionStorage.getItem("sevenDesignerEventContext");
+      if (!raw) return;
+
+      let contexto;
+      try { contexto = JSON.parse(raw); } catch {
+        sessionStorage.removeItem("sevenDesignerEventContext");
+        return;
+      }
+      if (!contexto || contexto.origem !== "agenda") return;
+      sessionStorage.removeItem("sevenDesignerEventContext");
+
+      const dataHora = contexto.eventDate ? new Date(contexto.eventDate) : null;
+      const dataValida = dataHora && !Number.isNaN(dataHora.getTime());
+      const data = dataValida ? `${dataHora.getFullYear()}-${String(dataHora.getMonth() + 1).padStart(2, "0")}-${String(dataHora.getDate()).padStart(2, "0")}` : "";
+      const horario = dataValida ? `${String(dataHora.getHours()).padStart(2, "0")}:${String(dataHora.getMinutes()).padStart(2, "0")}` : "";
+      const dataNome = dataValida ? `${String(dataHora.getDate()).padStart(2, "0")}-${String(dataHora.getMonth() + 1).padStart(2, "0")}` : "Show";
+      const localNome = contexto.venueName || contexto.city || "Evento";
+      const nomeDraft = `Show ${dataNome} - ${localNome}`.slice(0, 120);
+
+      this.trocandoPoster = true;
+      this.autosaveSuspenso = true;
+      try {
+        const resultado = await criarDesignerPosterDaAgenda(contexto.eventId, nomeDraft);
+        const poster = resultado?.poster || resultado;
+        this.aplicarEstadoPoster(poster);
+        // Mantém um índice local do vínculo evento -> cartaz. O backend continua
+        // sendo a fonte principal; isto garante o rótulo correto ao voltar à Agenda.
+        if (contexto.eventId) {
+          const posterId = poster?.id || poster?.Id || "linked";
+          localStorage.setItem(`sevenDesignerPosterEvent:${String(contexto.eventId).toLowerCase()}`, String(posterId));
+        }
+        await this.carregarCartazes();
+
+        // Cartaz já vinculado ao evento: preserva as edições do músico.
+        // Apenas corrige os rótulos legados do layout da Agenda, sem reinjetar
+        // data, local, artista, imagens ou qualquer outro conteúdo.
+        if (resultado?.created === false) {
+          const chamadaAtual = String(this.cartaz?.chamada || this.estilosTexto?.chamada?.textoOverride || "").trim().toLowerCase();
+          const showAtual = String(this.estilosTexto?.showLabel?.textoOverride || "").trim().toLowerCase();
+
+          if (["", "show", "show ao vivo", "noite de música"].includes(chamadaAtual)) {
+            this.cartaz.chamada = "IMPERDÍVEL!!!";
+            this.estilosTexto.chamada.oculto = false;
+            this.estilosTexto.chamada.textoOverride = "IMPERDÍVEL!!!";
+            this.estilosTexto.chamada.layout = { x: 300, y: 205, w: 460, h: 82, size: 42, align: "center", zIndex: 209 };
+          }
+
+          if (["", "show ao", "show ao vivo"].includes(showAtual)) {
+            this.estilosTexto.showLabel.textoOverride = "SHOW AO VIVO";
+            this.estilosTexto.showLabel.layout = { x: 115, y: 1040, w: 520, h: 90, size: 46, align: "center", zIndex: 210 };
+          }
+
+          this.autosaveSuspenso = false;
+          this.agendarAutosave();
+          return;
+        }
+      } catch (e) {
+        this.erroPosters = this.mensagemErroApi(e, "Erro ao criar um novo cartaz para este show.");
+        this.autosaveSuspenso = false;
+        return;
+      } finally {
+        this.trocandoPoster = false;
+      }
+
+      // Sem fallback para dados do cartaz anterior.
+      this.cartaz = {
+        ...this.cartaz,
+        data,
+        horario,
+        local: contexto.venueName || "",
+        cidade: [contexto.city, contexto.state].filter(Boolean).join(" - "),
+        chamada: contexto.eventType || "Show ao vivo",
+        extra: "NOME DO EVENTO"
+      };
+      this.imagensCartaz = [];
+      this.formasCartaz = [];
+      this.textosLivres = [];
+
+      // Layout exclusivo do cartaz criado pela Agenda: preserva a área central
+      // para a foto do artista e mantém todo o rodapé dentro da safe area.
+      this.estilosTexto = JSON.parse(JSON.stringify(DEFAULTS));
+      this.cartaz.chamada = "IMPERDÍVEL!!!";
+      this.estilosTexto.chamada.oculto = false;
+      this.estilosTexto.chamada.textoOverride = "IMPERDÍVEL!!!";
+      this.estilosTexto.chamada.layout = { x: 300, y: 205, w: 460, h: 82, size: 42, align: "center", zIndex: 209 };
+      this.estilosTexto.showLabel.textoOverride = "SHOW AO VIVO";
+      this.estilosTexto.showLabel.layout = { x: 115, y: 1040, w: 520, h: 90, size: 46, align: "center", zIndex: 210 };
+      this.estilosTexto.artista.layout = { x: 95, y: 1145, w: 890, h: 180, size: 118, align: "center", zIndex: 211 };
+      this.estilosTexto.estabelecimento.layout = { x: 135, y: 1365, w: 810, h: 140, size: 66, align: "center", zIndex: 212 };
+      this.estilosTexto.cidadeHorario.layout = { x: 140, y: 1530, w: 800, h: 85, size: 43, align: "center", zIndex: 213 };
+      this.estilosTexto.extra.layout = { x: 170, y: 1650, w: 740, h: 105, size: 48, align: "center", zIndex: 214 };
+
+      if (contexto.contractorLogoUrl) {
+        const id = `logo-agenda-${Date.now()}`;
+        this.imagensCartaz.push({
+          elementId: id, tipo: "imagem", assetId: null, nome: "Logo do contratante",
+          originalSrc: contexto.contractorLogoUrl, backgroundRemovedSrc: null,
+          src: contexto.contractorLogoUrl, usarSemFundo: false, origemAgendaLogo: true,
+          x: 820, y: 55, width: 190, height: 135, rotation: 0, zIndex: 120
+        });
+      }
+
+      this.autosaveSuspenso = false;
+      this.statusAutosave = "alterado";
+      this.$nextTick(() => this.agendarAutosave());
+    },
 
     async baixarCartaz() {
       if (this.operacaoImagemAtiva) return;

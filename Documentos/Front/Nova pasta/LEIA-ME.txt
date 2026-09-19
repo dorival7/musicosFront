@@ -1,0 +1,8 @@
+Seven Shows — Agenda Cartaz v13 — IMPERDÍVEL
+
+Alteração única:
+- SevenDesigner.vue
+- chamada superior dos cartazes originados da Agenda:
+  UMA NOITE ESPECIAL -> IMPERDÍVEL!!!
+
+Não altera Agenda, backend, Data, AppDbContext, EventId, botão Visualizar cartaz ou migration.

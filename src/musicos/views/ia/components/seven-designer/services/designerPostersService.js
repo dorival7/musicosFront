@@ -68,6 +68,15 @@ export async function criarNovoDesignerPoster() {
   return response.data;
 }
 
+export async function criarDesignerPosterDaAgenda(eventId, name) {
+  const response = await axios.post(
+    `${ENDPOINT}/new-from-agenda`,
+    { eventId, name },
+    config()
+  );
+  return response.data;
+}
+
 export async function abrirDesignerPoster(id) {
   const response = await axios.post(
     `${ENDPOINT}/${id}/open`,
