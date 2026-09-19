@@ -73,6 +73,22 @@
               </button>
             </li>
 
+            <!-- SEVEN REPERTÓRIO -->
+            <li class="nav-item" role="presentation">
+              <button type="button" class="nav-link ia-tool-tab font-monospace text-uppercase fw-bold fs-12"
+                :class="{ 'active': abaAtiva === 'seven-repertorio' }" @click="abaAtiva = 'seven-repertorio'">
+                🎵 Seven Repertório
+              </button>
+            </li>
+
+            <!-- PALCO 7 -->
+            <li class="nav-item" role="presentation">
+              <button type="button" class="nav-link ia-tool-tab font-monospace text-uppercase fw-bold fs-12"
+                :class="{ 'active': abaAtiva === 'palco-7' }" @click="abaAtiva = 'palco-7'">
+                🎤 Palco 7
+              </button>
+            </li>
+
             <!-- SEVEN DESIGNER -->
             <li class="nav-item" role="presentation">
               <button
@@ -111,6 +127,16 @@
             <GeradorCifrasIA />
           </div>
 
+          <!-- SEVEN REPERTÓRIO -->
+          <div v-if="abaAtiva === 'seven-repertorio'" class="animate__animated animate__fadeIn">
+            <SevenRepertorio />
+          </div>
+
+          <!-- PALCO 7 -->
+          <div v-if="abaAtiva === 'palco-7'" class="animate__animated animate__fadeIn">
+            <Palco7 />
+          </div>
+
           <!-- SEVEN DESIGNER -->
           <div
             v-if="abaAtiva === 'designer'"
@@ -132,6 +158,8 @@ import GeradorCifrasIA from "./components/GeradorCifrasIA.vue";
 
 import SevenDesigner from
   "./components/seven-designer/SevenDesigner.vue";
+import SevenRepertorio from "./components/seven-repertorio/SevenRepertorio.vue";
+import Palco7 from "./components/palco-7/Palco7.vue";
 
 export default {
   name: "HubRecursosIA",
@@ -139,7 +167,9 @@ export default {
   components: {
     SetlistOptimizerIA,
     GeradorCifrasIA,
-    SevenDesigner
+    SevenDesigner,
+    SevenRepertorio,
+    Palco7
   },
 
   data() {

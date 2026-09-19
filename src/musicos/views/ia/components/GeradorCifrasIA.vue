@@ -256,11 +256,23 @@
           </div>
 
 
-          <div class="song-tone-badge">
-            <i class="ri-music-2-line me-1"></i>
+          <div class="song-header-actions">
+            <button
+              type="button"
+              class="export-pdf-button"
+              title="Exportar cifra para PDF"
+              @click="exportarCifraPdf"
+            >
+              <i class="ri-file-pdf-2-line me-1"></i>
+              Exportar PDF
+            </button>
 
-            TOM:
-            {{ cifraResultado.tomOriginal }}
+            <div class="song-tone-badge">
+              <i class="ri-music-2-line me-1"></i>
+
+              TOM:
+              {{ cifraResultado.tomOriginal }}
+            </div>
           </div>
 
         </div>
@@ -667,6 +679,211 @@ export default {
         this.carregandoRelacionada =
           false;
       }
+    },
+
+
+    // ==============================================================
+    // EXPORTAR CIFRA PARA PDF
+    // ==============================================================
+
+    exportarCifraPdf() {
+      if (
+        !this.cifraResultado ||
+        !this.cifraResultado.cifraCompleta
+      ) {
+        alert("⚠️ Nenhuma cifra disponível para exportar.");
+        return;
+      }
+
+      const escaparHtml = (valor) =>
+        String(valor ?? "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+
+      const musica = escaparHtml(
+        this.cifraResultado.musica || "Cifra"
+      );
+
+      const artista = escaparHtml(
+        this.cifraResultado.artista || ""
+      );
+
+      const tom = escaparHtml(
+        this.cifraResultado.tomOriginal ||
+        this.form.tomDesejado ||
+        "-"
+      );
+
+      // IMPORTANTE:
+      // Não compactar, trimar ou reconstruir a cifra.
+      // Os espaços fazem parte da posição horizontal dos acordes.
+      const cifra = escaparHtml(
+        this.cifraResultado.cifraCompleta
+      );
+
+      const janela = window.open(
+        "",
+        "_blank",
+        "width=1000,height=800"
+      );
+
+      if (!janela) {
+        alert(
+          "⚠️ O navegador bloqueou a janela de exportação. Permita pop-ups para o Seven Shows e tente novamente."
+        );
+        return;
+      }
+
+      janela.document.open();
+      janela.document.write(`<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <title>${musica} - Cifra</title>
+  <style>
+    @page {
+      size: A4 portrait;
+      margin: 16mm 15mm 17mm;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      background: #ffffff;
+      color: #111111;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      padding: 24px;
+    }
+
+    .acoes {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      justify-content: flex-end;
+      margin: -8px -8px 18px;
+      padding: 8px;
+      background: rgba(255, 255, 255, 0.96);
+      border-bottom: 1px solid #e3e7ea;
+    }
+
+    .btn-imprimir {
+      border: 0;
+      border-radius: 7px;
+      padding: 9px 14px;
+      background: #198754;
+      color: #ffffff;
+      font: 700 13px Arial, Helvetica, sans-serif;
+      cursor: pointer;
+    }
+
+    .pagina {
+      width: min(100%, 210mm);
+      margin: 0 auto;
+      padding: 16mm 15mm 17mm;
+      background: #ffffff;
+      box-shadow: 0 2px 18px rgba(0, 0, 0, 0.12);
+    }
+
+    .cabecalho {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 20px;
+      padding-bottom: 10px;
+      margin-bottom: 16px;
+      border-bottom: 1px solid #cfd4d8;
+    }
+
+    .titulo {
+      margin: 0 0 5px;
+      font-size: 18px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .artista {
+      font-size: 10px;
+      color: #444444;
+    }
+
+    .tom {
+      flex: 0 0 auto;
+      padding: 6px 10px;
+      border: 1px solid #333333;
+      border-radius: 4px;
+      font: 700 10px "Courier New", Courier, monospace;
+      white-space: nowrap;
+    }
+
+    .cifra {
+      margin: 0;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: #000000;
+      font-family: "Courier New", Courier, monospace;
+      font-size: 9pt;
+      font-weight: 400;
+      line-height: 1.05;
+      white-space: pre;
+      tab-size: 4;
+      overflow: visible;
+    }
+
+    @media print {
+      body {
+        padding: 0;
+      }
+
+      .acoes {
+        display: none !important;
+      }
+
+      .pagina {
+        width: auto;
+        margin: 0;
+        padding: 0;
+        box-shadow: none;
+      }
+
+      .cifra {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="acoes">
+    <button class="btn-imprimir" type="button" onclick="window.print()">Imprimir / Salvar PDF</button>
+  </div>
+
+  <main class="pagina">
+    <header class="cabecalho">
+      <div>
+        <h1 class="titulo">${musica}</h1>
+        <div class="artista">Cantor: <strong>${artista}</strong></div>
+      </div>
+      <div class="tom">TOM: ${tom}</div>
+    </header>
+
+    <pre class="cifra">${cifra}</pre>
+  </main>
+</body>
+</html>`);
+      janela.document.close();
     },
 
 
@@ -1757,6 +1974,34 @@ export default {
 }
 
 
+.song-header-actions {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.export-pdf-button {
+  height: 38px;
+  padding: 0 14px;
+  border: 1px solid #dc3545;
+  border-radius: 7px;
+  background: #ffffff;
+  color: #c82333;
+  font-family: monospace;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.export-pdf-button:hover {
+  background: #dc3545;
+  color: #ffffff;
+  box-shadow: 0 4px 10px rgba(220, 53, 69, 0.18);
+}
+
 .song-tone-badge {
   flex-shrink: 0;
 
@@ -2024,6 +2269,16 @@ export default {
       normal;
   }
 
+
+  .song-header-actions {
+    width: 100%;
+    align-items: stretch;
+    flex-wrap: wrap;
+  }
+
+  .export-pdf-button {
+    height: 39px;
+  }
 
   .song-tone-badge {
     align-self:

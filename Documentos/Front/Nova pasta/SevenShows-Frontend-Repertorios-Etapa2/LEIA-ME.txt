@@ -1,0 +1,12 @@
+Seven Shows — Repertórios Etapa 2.3 — PDF A4 / 2 colunas
+
+Correção do exportador PDF:
+- página física fixa em A4: 210mm x 297mm;
+- @page A4 sem margem externa do navegador; margens controladas dentro da folha;
+- cada música é medida após a renderização real no navegador;
+- tenta 1 coluna com redução controlada de fonte;
+- se não couber, divide automaticamente em 2 colunas;
+- divisão ocorre somente entre linhas completas, preservando espaços/acordes;
+- preview usa exatamente as mesmas dimensões da impressão.
+
+Substitua os arquivos mantendo a mesma estrutura de diretórios.

@@ -191,7 +191,7 @@ export default {
         <li class="nav-item">
             <router-link to="/musicos/recursos-ia" class="nav-link menu-link d-flex align-items-center gap-2">
                 <i class="ri-brain-line text-primary" style="color: #ff6c22 !important;"></i> 
-                <span data-key="t-recursos-ia" class="font-monospace text-uppercase fs-12 text-white">Recursos de IA</span>
+                <span data-key="t-recursos-ia" class="font-monospace text-uppercase fs-12 text-white">Seven Shows IA</span>
             </router-link>
         </li>
       </ul>
