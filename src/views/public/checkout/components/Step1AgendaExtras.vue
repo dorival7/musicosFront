@@ -6,9 +6,9 @@
       <div class="step-line"></div>
       <div class="step-item"><div class="step-number">2</div><span>Logística</span></div>
       <div class="step-line"></div>
-      <div class="step-item"><div class="step-number">3</div><span>Contrato</span></div>
+      <div class="step-item"><div class="step-number">3</div><span>Confirmar</span></div>
       <div class="step-line"></div>
-      <div class="step-item"><div class="step-number">4</div><span>Pagar</span></div>
+      <div class="step-item"><div class="step-number">4</div><span>Agendar</span></div>
     </div>
 
     <div class="agenda-heading">

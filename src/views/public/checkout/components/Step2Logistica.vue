@@ -8,15 +8,15 @@
       <div style="flex: 1; height: 2px; background-color: #ff6c22; margin: 0 15px;"></div>
       <div style="display: flex; align-items: center; gap: 10px;"><div style="width: 36px; height: 36px; border-radius: 50%; background-color: #ff6c22; color: #ffffff; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px; box-shadow: 0 0 15px rgba(255,108,34,0.4);">2</div><span style="color: #ffffff; font-size: 13px; font-weight: bold; text-transform: uppercase;">Logística</span></div>
       <div style="flex: 1; height: 2px; background-color: rgba(255,255,255,0.05); margin: 0 15px;"></div>
-      <div style="display: flex; align-items: center; gap: 10px; opacity: 0.4;"><div style="width: 36px; height: 36px; border-radius: 50%; background-color: #2a2d3d; color: #adb5bd; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px;">3</div><span style="color: #adb5bd; font-size: 13px; text-transform: uppercase;">Contrato</span></div>
+      <div style="display: flex; align-items: center; gap: 10px; opacity: 0.4;"><div style="width: 36px; height: 36px; border-radius: 50%; background-color: #2a2d3d; color: #adb5bd; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px;">3</div><span style="color: #adb5bd; font-size: 13px; text-transform: uppercase;">Confirmar</span></div>
       <div style="flex: 1; height: 2px; background-color: rgba(255,255,255,0.05); margin: 0 15px;"></div>
-      <div style="display: flex; align-items: center; gap: 10px; opacity: 0.4;"><div style="width: 36px; height: 36px; border-radius: 50%; background-color: #2a2d3d; color: #adb5bd; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px;">4</div><span style="color: #adb5bd; font-size: 13px; text-transform: uppercase;">Pagar</span></div>
+      <div style="display: flex; align-items: center; gap: 10px; opacity: 0.4;"><div style="width: 36px; height: 36px; border-radius: 50%; background-color: #2a2d3d; color: #adb5bd; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px;">4</div><span style="color: #adb5bd; font-size: 13px; text-transform: uppercase;">Agendar</span></div>
     </div>
 
     <!-- TÍTULO ORIENTADOR DO PASSO -->
     <div style="margin-bottom: 25px; text-align: left;">
       <h3 style="color: #ffffff; font-weight: bold; text-transform: uppercase; font-size: 18px; margin: 0 0 6px 0;">Identificação e Local do Evento</h3>
-      <p style="color: #878a99; font-size: 13px; margin: 0;">Insira seus dados para prosseguirmos com a emissão do contrato.</p>
+      <p style="color: #878a99; font-size: 13px; margin: 0;">Confira seus dados e o local do evento para continuarmos com a contratação.</p>
     </div>
 
     <!-- 🚀 CARD DE CONTA LOCALIZADA (RESOLVIDO: SEM LEITURA DE LOCALSTORAGE NO HTML) -->
@@ -25,8 +25,8 @@
         <div style="display: flex; align-items: center; gap: 12px;">
           <span style="font-size: 18px; color: #ff6c22;">⚠️</span>
           <div>
-            <h4 style="color: #ff6c22; font-weight: bold; font-size: 13px; text-transform: uppercase; margin: 0 0 2px 0; letter-spacing: 0.5px;">Conta Localizada</h4>
-            <p style="color: #ced4da; font-size: 13px; margin: 0; line-height: 1.4;">O e-mail <strong>{{ emailContratante }}</strong> já possui cadastro. Insira a senha abaixo para continuar:</p>
+            <h4 style="color: #ff6c22; font-weight: bold; font-size: 13px; text-transform: uppercase; margin: 0 0 2px 0; letter-spacing: 0.5px;">Você já tem uma conta ✓</h4>
+            <p style="color: #ced4da; font-size: 13px; margin: 0; line-height: 1.4;">Encontramos uma conta com <strong>{{ emailContratante }}</strong>. Digite sua senha para continuar de onde parou:</p>
           </div>
         </div>
         <div style="display: flex; flex-direction: column; gap: 8px; width: 100%;">
@@ -38,15 +38,15 @@
             <button @click="dispararRecuperacaoSenha" :disabled="loadingRecuperacao" type="button" style="background: transparent; border: none; color: #878a99; font-size: 11px; font-weight: bold; text-decoration: underline; cursor: pointer; padding: 2px 0; outline: none;">Esqueceu a senha?</button>
           </div>
         </div>
-        <button @click="efectuarLoginNoCheckout" :disabled="loadingCep || !senhaContratante" type="button" :style="{ backgroundColor: senhaContratante ? '#ff6c22' : '#2a2d3d', borderColor: senhaContratante ? '#ff6c22' : '#2a2d3d', color: senhaContratante ? '#ffffff' : '#878a99', cursor: senhaContratante ? 'pointer' : 'not-allowed' }" style="width: 100%; height: 48px; border: 1px solid; font-weight: bold; text-transform: uppercase; font-size: 11px; padding: 0; border-radius: 8px; transition: 0.2s; letter-spacing: 0.5px; box-sizing: border-box; display: flex; align-items: center; justify-content: center;">{{ loadingCep ? 'Verificando Credenciais...' : 'Acessar Conta e Continuar Checkout →' }}</button>
+        <button @click="efectuarLoginNoCheckout" :disabled="loadingCep || !senhaContratante" type="button" :style="{ backgroundColor: senhaContratante ? '#ff6c22' : '#2a2d3d', borderColor: senhaContratante ? '#ff6c22' : '#2a2d3d', color: senhaContratante ? '#ffffff' : '#878a99', cursor: senhaContratante ? 'pointer' : 'not-allowed' }" style="width: 100%; height: 48px; border: 1px solid; font-weight: bold; text-transform: uppercase; font-size: 11px; padding: 0; border-radius: 8px; transition: 0.2s; letter-spacing: 0.5px; box-sizing: border-box; display: flex; align-items: center; justify-content: center;">{{ loadingCep ? 'Verificando Credenciais...' : 'Entrar e Continuar a Contratação →' }}</button>
       </div>
     </div>
     <!-- 🚀 CASO 2: SESSÃO RECONHECIDA (SURGE NO LUGAR DO FORMULÁRIO DE CADASTRO PÓS-LOGIN SUCESSO) -->
     <div v-else-if="isAutenticado && !exibirPainelDuplicidade" class="animate__animated animate__fadeIn" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; text-align: left; margin-bottom: 30px; background-color: rgba(10, 179, 156, 0.04); border: 1px solid rgba(10, 179, 156, 0.2); border-radius: 12px; padding: 25px;">
       
       <div style="grid-column: span 2; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 10px; margin-bottom: 5px;">
-        <span style="color: #878a99; font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">📋 Identificação da Conta Ativa</span>
-        <span style="color: #0ab39c; font-size: 10px; font-weight: bold; text-transform: uppercase;">✓ Cliente Autenticado</span>
+        <span style="color: #878a99; font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">✓ Seus dados já estão preenchidos</span>
+        <span style="color: #0ab39c; font-size: 10px; font-weight: bold; text-transform: uppercase;">✓ Cliente autenticado</span>
       </div>
       
       <div style="display: flex; flex-direction: column; gap: 4px;">
@@ -62,11 +62,11 @@
       <!-- 🚀 LINHA LOGÍSTICA PREMIUM: Mostra de forma clara o deslocamento rodoviário se houver cobrança -->
       <div v-if="cidadeEvento" style="grid-column: span 2; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 15px; margin-top: 5px; display: flex; align-items: center; justify-content: space-between; font-family: monospace;">
         <div style="display: flex; flex-direction: column; gap: 2px;">
-          <span style="color: #878a99; font-size: 11px; text-transform: uppercase;">Logística de Deslocamento</span>
-          <span style="color: #ced4da; font-size: 12px; font-weight: bold;">Deslocamento Extra: {{ $parent.quilometrosCalculados || 0 }} KM</span>
+          <span style="color: #878a99; font-size: 11px; text-transform: uppercase;">Local do evento identificado</span>
+          <span style="color: #ced4da; font-size: 12px; font-weight: bold;">{{ $parent.quilometrosCalculados || 0 }} km de deslocamento</span>
         </div>
         <div style="text-align: right;">
-          <span style="color: #ff6c22; font-size: 14px; font-weight: bold;">+R$ {{ ($parent.taxaDeslocamentoFrete || 0).toFixed(2).replace('.', ',') }}</span>
+          <span style="color: #ff6c22; font-size: 14px; font-weight: bold;">Adicional: + R$ {{ ($parent.taxaDeslocamentoFrete || 0).toFixed(2).replace('.', ',') }}</span>
         </div>
       </div>
 
@@ -180,7 +180,7 @@
         }"
         style="width: 100%; border: 1px solid; font-weight: bold; text-transform: uppercase; font-size: 12px; padding: 18px; border-radius: 50px; box-shadow: 0 4px 15px rgba(255,108,34,0.15);"
       >
-        Confirmar Dados, Local e Avançar para o Contrato →
+        {{ isAutenticado ? 'Está tudo certo — Continuar →' : 'Confirmar dados e continuar →' }}
       </button>
     </div>
 
@@ -247,11 +247,11 @@ export default {
     // 🚀 O MOTOR SECRETO: Realiza o POST contra o .NET 10 vinculando o ContractorId
     async salvarPropostaNoBancoDados() {
       const user = JSON.parse(localStorage.getItem("user") || "{}");
-      if (!user.id) return alert("Sessão expirada. Efetue o acesso novamente.");
+      if (!user.id) return this.$swal({ icon: "warning", title: "Sessão expirada", text: "Efetue o acesso novamente.", confirmButtonText: "OK" });
 
       const pacote = this.$parent.pacoteInfo || {};
       const packageId = pacote.idPackage || pacote.id || sizeof.Id;
-      if (!packageId) return alert("Identificador do pacote do artista não localizado.");
+      if (!packageId) return this.$swal({ icon: "error", title: "Não foi possível continuar", text: "Identificador do pacote do artista não localizado.", confirmButtonText: "OK" });
 
       // 🌐 CAPTURA DINÂMICA: Lê as variáveis reais do componente Pai (CheckoutContratacao)
       const dataBrBruta = this.$parent.dataSelecionadaFormatada; // Formato esperado: "DD/MM/AAAA"
@@ -305,7 +305,7 @@ export default {
       } catch (error) {
         console.error("Falha ao registrar proposta artística no MariaDB:", error);
         const erroBanco = error.response?.data?.error || "Erro de rede no servidor.";
-        alert(`❌ Falha na Gravação:\n${erroBanco}`);
+        this.$swal({ icon: "error", title: "Não foi possível salvar", text: erroBanco, confirmButtonText: "OK" });
       } finally {
         this.loadingCep = false;
       }
@@ -366,7 +366,7 @@ export default {
 
     // 🔐 AUTENTICAÇÃO DIRETA: Executa o login na tabela unificada e popula o LocalStorage compartilhado
     async efectuarLoginNoCheckout() {
-      if (!this.senhaContratante) return alert("Por favor, digite sua senha para entrar.");
+      if (!this.senhaContratante) return this.$swal({ icon: "warning", title: "Senha necessária", text: "Digite sua senha para entrar.", confirmButtonText: "OK" });
       this.loadingCep = true;
       try {
         const response = await axios.post(`${this.apiBaseUrlGlobal}/public/contratantes/login`, {
@@ -404,7 +404,7 @@ export default {
           }
         }
       } catch (error) {
-        alert(error.response?.data?.message || "Senha incorreta. Tente novamente.");
+        this.$swal({ icon: "error", title: "Não foi possível entrar", text: error.response?.data?.message || "Senha incorreta. Tente novamente.", confirmButtonText: "OK" });
       } finally { this.loadingCep = false; }
     },
 
@@ -413,7 +413,7 @@ export default {
       this.loadingRecuperacao = true;
       try {
         await new Promise(resolve => setTimeout(resolve, 1500));
-        alert(`Um link de redefinição foi enviado para: ${this.emailContratante}\nVerifique sua caixa de entrada.`);
+        this.$swal({ icon: "success", title: "Link enviado", text: `Um link de redefinição foi enviado para ${this.emailContratante}. Verifique sua caixa de entrada.`, confirmButtonText: "OK" });
       } finally {
         this.loadingRecuperacao = false;
       }
@@ -424,12 +424,12 @@ export default {
       if (!file) return;
       const permitidos = ["image/png", "image/jpeg", "image/webp"];
       if (!permitidos.includes(file.type)) {
-        alert("Formato inválido. Use PNG, JPG ou WEBP.");
+        this.$swal({ icon: "warning", title: "Formato inválido", text: "Use uma imagem PNG, JPG ou WEBP.", confirmButtonText: "OK" });
         event.target.value = "";
         return;
       }
       if (file.size > 5 * 1024 * 1024) {
-        alert("O logo deve ter no máximo 5 MB.");
+        this.$swal({ icon: "warning", title: "Arquivo muito grande", text: "O logo deve ter no máximo 5 MB.", confirmButtonText: "OK" });
         event.target.value = "";
         return;
       }
@@ -488,7 +488,7 @@ export default {
               userCriado.logoUrl = await this.enviarLogoContratante(userCriado.id);
             } catch (logoError) {
               console.error("Cadastro concluído, mas o logo não pôde ser enviado:", logoError);
-              alert("Seu cadastro foi concluído, mas não foi possível enviar o logo agora. Você poderá adicioná-lo depois.");
+              this.$swal({ icon: "warning", title: "Cadastro concluído", text: "Não foi possível enviar o logo agora. Você poderá adicioná-lo depois.", confirmButtonText: "OK" });
             }
           }
 
@@ -507,7 +507,7 @@ export default {
         }
       } catch (error) {
         console.error("Falha crítica no silent signup do checkout:", error);
-        alert(error.response?.data?.message || "Erro ao processar o seu cadastro. Verifique os dados.");
+        this.$swal({ icon: "error", title: "Não foi possível concluir o cadastro", text: error.response?.data?.message || "Verifique os dados informados e tente novamente.", confirmButtonText: "OK" });
       } finally {
         this.loadingCep = false;
       }
