@@ -1,7 +1,0 @@
-Seven Shows — Palco 7 — Etapa 3.3.1
-
-Correção: botão “Ver lista de músicas” volta a abrir/fechar normalmente.
-Mantido: clique fora da barra lateral fecha a lista; clique dentro não fecha; selecionar música mantém a lista aberta.
-
-Substituir somente:
-src/musicos/views/ia/components/palco-7/Palco7.vue
