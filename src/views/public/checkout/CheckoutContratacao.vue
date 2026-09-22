@@ -74,13 +74,13 @@
             <div style="background-color: #131520; border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); position: sticky; top: 120px; font-family: monospace;">
               
               <h4 style="color: #ffffff; font-weight: bold; text-transform: uppercase; font-size: 14px; margin: 0 0 20px 0; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); letter-spacing: 0.5px;">
-                🛒 Resumo Detalhado
+                🛒 Resumo da contratação
               </h4>
 
               <!-- ITEM 1: CACHÊ CONTRATUAL BASE COM DURAÇÃO EM DESTAQUE -->
               <div style="margin-bottom: 16px; display: flex; justify-content: space-between; align-items: start;">
                 <div style="flex: 1; text-align: left;">
-                  <span style="color: rgba(255,255,255,0.5); font-size: 12px; text-transform: uppercase; display: block; font-weight: bold;">Item Principal</span>
+                  <span style="color: rgba(255,255,255,0.5); font-size: 12px; text-transform: uppercase; display: block; font-weight: bold;">Artista escolhido</span>
                   <strong style="color: #ffffff; font-size: 14px; text-transform: uppercase; display: block; margin-top: 2px;">{{ pacoteInfo?.nomeBanda || pacoteInfo?.NomeBanda }}</strong>
                   <span style="color: #ced4da; display: block; font-size: 12px; margin-top: 4px; font-weight: bold;">
                     🎬 {{ pacoteInfo?.tituloPacote || pacoteInfo?.TituloPacote }}
@@ -97,9 +97,9 @@
               </div>
 
               <!-- 📋 INFRAESTRUTURA INCLUSA E DESCRIÇÃO DO PACOTE -->
-              <div v-if="pacoteInfo?.descricaoPacote || pacoteInfo?.DescricaoPacote" style="background-color: rgba(255,255,255,0.02); border: 1px dashed rgba(255,255,255,0.05); border-radius: 8px; padding: 12px; margin-bottom: 16px; text-align: left;">
-                <span style="color: rgba(255,255,255,0.4); font-size: 11px; text-transform: uppercase; display: block; margin-bottom: 4px; font-weight: bold;">📋 Detalhes &amp; Infraestrutura:</span>
-                <p style="color: #a3a3a3; font-size: 11px; line-height: 1.4; margin: 0; white-space: pre-line; word-break: break-word;">
+              <div v-if="pacoteInfo?.descricaoPacote || pacoteInfo?.DescricaoPacote" style="background-color: rgba(255,255,255,0.02); border: 1px dashed rgba(255,255,255,0.05); border-radius: 8px; padding: 14px; margin-bottom: 18px; text-align: left;">
+                <span style="color: rgba(255,255,255,0.4); font-size: 11px; text-transform: uppercase; display: block; margin-bottom: 4px; font-weight: bold;">📋 O que está incluído neste formato:</span>
+                <p style="color: #a3a3a3; font-size: 12px; line-height: 1.65; margin: 0; white-space: pre-line; word-break: break-word;">
                   {{ pacoteInfo?.descricaoPacote || pacoteInfo?.DescricaoPacote }}
                 </p>
               </div>
@@ -131,7 +131,7 @@
               <!-- TOTALIZADOR REATIVO CONSOLIDADO (BASE + EXTRAS + FRETE) -->
               <div style="background-color: rgba(0,0,0,0.25); padding: 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.02); display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px;">
                 <div>
-                  <span style="color: rgba(255,255,255,0.5); font-size: 12px; text-transform: uppercase; display: block; font-weight: bold;">Total do Cachê</span>
+                  <span style="color: rgba(255,255,255,0.5); font-size: 12px; text-transform: uppercase; display: block; font-weight: bold;">Total até aqui</span>
                   <strong style="color: #ff6c22; font-size: 20px; display: block; margin-top: 2px;">{{ formatCurrency(calcularPrecoTotal) }}</strong>
                 </div>
                 <span style="font-size: 24px; opacity: 0.4;">💵</span>
@@ -140,9 +140,9 @@
               <!-- 🛡️ EMBLEMA DE ALTA CONFIANÇA: Custódia de Pagamento Garantida Segura SevenShows -->
               <div style="background-color: rgba(10, 179, 156, 0.06); border: 1px solid rgba(10, 179, 156, 0.25); border-radius: 8px; padding: 12px; text-align: center; box-shadow: inset 0 0 10px rgba(10,179,156,0.02);">
                 <p style="color: #0ab39c; font-size: 11px; line-height: 1.5; margin: 0; font-weight: bold; text-transform: uppercase; letter-spacing: 0.3px;">
-                  🔒 CUSTÓDIA SEGURA SEVENSHOWS<br/>
-                  <span style="color: #a3a3a3; font-size: 10px; font-weight: normal; text-transform: none; display: block; margin-top: 4px; line-height: 1.4;">
-                    Seu dinheiro fica protegido na plataforma e o artista só recebe após a realização do show!
+                  🔒 PAGAMENTO PROTEGIDO PELA SEVEN SHOWS<br/>
+                  <span style="color: #c0c3cb; font-size: 11px; font-weight: normal; text-transform: none; display: block; margin-top: 4px; line-height: 1.4;">
+                    O valor permanece protegido na plataforma e o artista só recebe após a realização do show e sua liberação.
                   </span>
                 </p>
               </div>

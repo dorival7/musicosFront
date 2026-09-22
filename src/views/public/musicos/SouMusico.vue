@@ -5,147 +5,142 @@
     <!-- FIXAÇÃO ABSOLUTA DA NAVBAR SUPERIOR -->
     <NavbarPublic />
 
-    <!-- ==================================================================== -->
-    <!-- 🌌 SEÇÃO 1: BANNER HERO IMERSIVO DE PONTA A PONTA (ESTILO FESTIVAL)  -->
-    <!-- ==================================================================== -->
-    <div style="position: relative; width: 100%; height: 560px; overflow: hidden; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid rgba(255,255,255,0.05); box-shadow: 0 10px 40px rgba(0,0,0,0.5);" class="animate__animated animate__fadeIn">
-      
-      <!-- Imagem de Fundo Bruta do Show Expandida -->
-      <img :src="imagemHeroBackground" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1;" alt="Palco principal iluminado ao vivo" />
-      
-      <!-- Máscara de Contraste Escura e Gradiente Sênior para Leitura Perfeita -->
-      <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, rgba(8,9,13,0.95) 0%, rgba(8,9,13,0.75) 50%, rgba(8,9,13,0.95) 100%); z-index: 2;"></div>
+    <!-- ================================================================ -->
+    <!-- SEVEN SHOWS PARA ARTISTAS — PÁGINA DE CONVERSÃO                  -->
+    <!-- ================================================================ -->
+    <main class="artist-sales">
 
-      <!-- Conteúdo Comercial Centralizado e Sobreposto -->
-      <div style="position: relative; z-index: 3; max-width: 850px; padding: 0 24px; text-align: center; margin-top: 40px;">
-        
-        <!-- Badge Flutuante Neon -->
-        <div style="display: inline-flex; align-items: center; gap: 8px; background: rgba(19, 21, 37, 0.85); border: 1px solid rgba(255,108,34,0.4); padding: 8px 22px; border-radius: 30px; margin-bottom: 25px; backdrop-filter: blur(10px);">
-          <span style="color: #ff6c22; font-weight: 900; font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; font-family: monospace;">★ SEVENSHOWS FOR ARTISTS</span>
-        </div>
-        
-        <h1 style="color: #ffffff; font-weight: 900; font-size: 42px; line-height: 1.2; margin: 0 0 20px 0; text-transform: uppercase; letter-spacing: -1px; font-family: monospace; text-shadow: 0 4px 15px rgba(0,0,0,0.9);">
-          MULTIPLIQUE AS VENDAS DA SUA BANDA <br />
-          <span style="background: linear-gradient(135deg, #ff6c22 0%, #ff9e66 50%, #0ab39c 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 2px 10px rgba(255,108,34,0.3));">SEM DEPENDER DE INTERMEDIÁRIOS</span>
-        </h1>
-        
-        <p style="color: #e2e4eb; font-size: 15px; line-height: 1.6; margin: 0 0 35px 0; font-weight: 500; text-shadow: 0 2px 8px rgba(0,0,0,0.9);">
-          Gerencie sua agenda digital, emita minutas de contrato com assinatura eletrônica automática e tenha a segurança de receber via PIX ou faturamento integrado antes mesmo de subir ao palco. Sua única preocupação será o show.
-        </p>
+      <section class="sales-hero">
+        <img :src="imagemHeroBackground" class="sales-hero-bg" alt="Show ao vivo" />
+        <div class="sales-hero-mask"></div>
+        <div class="sales-hero-content">
+          <div class="sales-badge">♫ SEVEN SHOWS PARA ARTISTAS</div>
+          <div class="sales-audience">VOCÊ É CANTOR, MÚSICO OU TEM UMA BANDA?</div>
 
-        <!-- Botão Master de Conversão -->
-        <button @click="rolarAteOnboarding" type="button" style="background: linear-gradient(135deg, #ff6c22, #ff8138); border: none; color: #ffffff; padding: 18px 45px; font-size: 11px; font-weight: 900; text-transform: uppercase; border-radius: 50px; box-shadow: 0 8px 25px rgba(255,108,34,0.4); cursor: pointer; transition: 0.2s; letter-spacing: 1px; outline: none;" onmouseover="this.style.transform='scale(1.02)';" onmouseout="this.style.transform='scale(1)';">
-          Criar Meu Perfil de Artista Grátis →
-        </button>
-      </div>
+          <h1>
+            MAIS SHOWS. MENOS CORRERIA.
+            <span>SUA CARREIRA EM UM SÓ LUGAR.</span>
+          </h1>
 
-    </div>
+          <p class="sales-lead">
+            Seja encontrado por novos contratantes, receba propostas, organize sua agenda,
+            feche contratos e acompanhe seus recebimentos — enquanto você cuida da música.
+          </p>
 
-    <!-- CONTÊINER PARA OS RECURSOS INFERIORES -->
-    <div style="max-width: 1200px; margin: 0 auto; padding: 0 24px; margin-top: 50px;">
-<!-- ==================================================================== -->
-      <!-- 💎 SEÇÃO 2: GRID COMPACTO E MINIMALISTA (FOCO TEXTUAL PREMIUM)      -->
-      <!-- ==================================================================== -->
-      <div style="margin-bottom: 35px; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.05);">
-        <h3 style="color: #ffffff; font-size: 14px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; margin: 0; font-family: monospace;">
-          汇 RECURSOS DESENVOLVIDOS PARA BLINDAR SUA CARREIRA
-        </h3>
-      </div>
+          <div class="trial-pill">
+            <strong>30 DIAS GRÁTIS</strong>
+            <span>para conhecer a plataforma funcionando na sua rotina</span>
+          </div>
 
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 25px;">
-        
-        <!-- Benefício 1 -->
-        <div style="background-color: #131524; border: 1px solid rgba(255,255,255,0.04); border-radius: 16px; padding: 30px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); transition: 0.2s;" onmouseover="this.style.borderColor='#ff6c22';" onmouseout="this.style.borderColor='rgba(255,255,255,0.04)';">
-          <div style="color: #ff6c22; font-size: 11px; font-weight: 900; text-transform: uppercase; font-family: monospace; margin-bottom: 8px; letter-spacing: 0.5px;">01. Aceleração de Mercado</div>
-          <h4 style="color: #ffffff; font-size: 14px; font-weight: bold; margin: 0 0 10px 0;">Aumento Real de Vendas</h4>
-          <p style="color: #878a99; font-size: 12px; line-height: 1.6; margin: 0; font-family: sans-serif;">Fique visível na nossa vitrine pública regional. Contratantes encontram seus pacotes comerciais, escolhem as suas datas livres e fecham a contratação direto pelo checkout.</p>
-        </div>
+          <button @click="rolarAteOnboarding" type="button" class="sales-primary-btn">
+            COMEÇAR MEUS 30 DIAS GRÁTIS →
+          </button>
 
-        <!-- Benefício 2 -->
-        <div style="background-color: #131524; border: 1px solid rgba(255,255,255,0.04); border-radius: 16px; padding: 30px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); transition: 0.2s;" onmouseover="this.style.borderColor='#0ab39c';" onmouseout="this.style.borderColor='rgba(255,255,255,0.04)';">
-          <div style="color: #0ab39c; font-size: 11px; font-weight: 900; text-transform: uppercase; font-family: monospace; margin-bottom: 8px; letter-spacing: 0.5px;">02. Blindagem Financeira</div>
-          <h4 style="color: #ffffff; font-size: 14px; font-weight: bold; margin: 0 0 10px 0;">Garantia de Recebimento</h4>
-          <p style="color: #878a99; font-size: 12px; line-height: 1.6; margin: 0; font-family: sans-serif;">Sem espaço para calotes. A data só fica bloqueada na agenda quando o Pix ou Cartão é liquidado pelo gateway Asaas, mantendo o cachê guardado em custódia segura.</p>
-        </div>
-
-        <!-- Benefício 3 -->
-        <div style="background-color: #131524; border: 1px solid rgba(255,255,255,0.04); border-radius: 16px; padding: 30px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); transition: 0.2s;" onmouseover="this.style.borderColor='#299cdb';" onmouseout="this.style.borderColor='rgba(255,255,255,0.04)';">
-          <div style="color: #299cdb; font-size: 11px; font-weight: 900; text-transform: uppercase; font-family: monospace; margin-bottom: 8px; letter-spacing: 0.5px;">03. Gestão Centralizada</div>
-          <h4 style="color: #ffffff; font-size: 14px; font-weight: bold; margin: 0 0 10px 0;">Painel de Controle (Dashboard)</h4>
-          <p style="color: #878a99; font-size: 12px; line-height: 1.6; margin: 0; font-family: sans-serif;">Acompanhe o faturamento da sua carreira, gerencie propostas em análise, verifique contratos assinados e acompanhe relatórios financeiros completos de forma centralizada.</p>
-        </div>
-
-        <!-- Benefício 4 -->
-        <div style="background-color: #131524; border: 1px solid rgba(255,255,255,0.04); border-radius: 16px; padding: 30px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); transition: 0.2s;" onmouseover="this.style.borderColor='#ff6c22';" onmouseout="this.style.borderColor='rgba(255,255,255,0.04)';">
-          <div style="color: #ff6c22; font-size: 11px; font-weight: 900; text-transform: uppercase; font-family: monospace; margin-bottom: 8px; letter-spacing: 0.5px;">04. Sincronia de Datas</div>
-          <h4 style="color: #ffffff; font-size: 14px; font-weight: bold; margin: 0 0 10px 0;">Controle de Agenda Digital</h4>
-          <p style="color: #878a99; font-size: 12px; line-height: 1.6; margin: 0; font-family: sans-serif;">Sincronia automática total. Um painel interativo para você bloquear folgas ou indisponibilidades com facilidade, organizando suas apresentações sem riscos de reservas duplas.</p>
-        </div>
-
-        <!-- Benefício 5 -->
-        <div style="background-color: #131524; border: 1px solid rgba(255,255,255,0.04); border-radius: 16px; padding: 30px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); transition: 0.2s;" onmouseover="this.style.borderColor='#ff6c22';" onmouseout="this.style.borderColor='rgba(255,255,255,0.04)';">
-          <div style="color: #ff6c22; font-size: 11px; font-weight: 900; text-transform: uppercase; font-family: monospace; margin-bottom: 8px; letter-spacing: 0.5px;">05. Motor Tecnológico</div>
-          <h4 style="color: #ffffff; font-size: 14px; font-weight: bold; margin: 0 0 10px 0;">Cálculo de KM e Deslocamento</h4>
-          <p style="color: #878a99; font-size: 12px; line-height: 1.6; margin: 0; font-family: sans-serif;">Nosso motor de mapas calcula as rotas rodoviárias reais de estrada. O sistema deduz a sua franquia de raio gratuito e cobra taxas extras automáticas por cada quilômetro excedente.</p>
-        </div>
-
-        <!-- Benefício 6 -->
-        <div style="background-color: #131524; border: 1px solid rgba(255,255,255,0.04); border-radius: 16px; padding: 30px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); transition: 0.2s;" onmouseover="this.style.borderColor='#ff6c22';" onmouseout="this.style.borderColor='rgba(255,255,255,0.04)';">
-          <div style="color: #ff6c22; font-size: 11px; font-weight: 900; text-transform: uppercase; font-family: monospace; margin-bottom: 8px; letter-spacing: 0.5px;">06. Respeito ao Músico</div>
-          <h4 style="color: #ffffff; font-size: 14px; font-weight: bold; margin: 0 0 10px 0;">Taxação por Hora Extra</h4>
-          <p style="color: #878a99; font-size: 12px; line-height: 1.6; margin: 0; font-family: sans-serif;">Se o evento atrasar ou a comemoração pedir bis, seu tempo extra de palco está protegido. O contratante realiza o pagamento adicional de hora extra diretamente pela esteira.</p>
-        </div>
-
-                <!-- ==================================================================== -->
-        <!-- 🌌 NOVO BANNER HERO 2: VISIBILIDADE REGIONAL E VITRINE DE MÍDIA       -->
-        <!-- ==================================================================== -->
-        <div style="grid-column: 1 / -1; margin: 50px 0 20px 0; position: relative; width: 100%; min-height: 280px; border-radius: 24px; overflow: hidden; display: flex; align-items: center; box-shadow: 0 20px 50px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.06);">
-          
-          <!-- Imagem de Fundo do Banner 2 (Multidão/Audiência em Alta Resolução) -->
-          <img :src="imagemBannerAudiência" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; opacity: 0.15;" alt="Multidão assistindo show" />
-          <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #111322 30%, rgba(17,19,34,0.85) 100%); z-index: 2;"></div>
-
-          <!-- Conteúdo Interno do Banner Dividido em Duas Colunas -->
-          <div style="position: relative; z-index: 3; width: 100%; padding: 45px; display: flex; flex-wrap: wrap; gap: 40px; align-items: center; justify-content: space-between;">
-            
-            <!-- Lado Esquerdo: A Carga da Promessa de Audiência (60%) -->
-            <div style="flex: 1; min-width: 300px; text-align: left;">
-              <div style="display: inline-block; background-color: rgba(10,179,156,0.1); border: 1px solid rgba(10,179,156,0.3); padding: 4px 14px; border-radius: 50px; margin-bottom: 15px;">
-                <span style="color: #0ab39c; font-weight: bold; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; font-family: monospace;">🚀 Visibilidade Máxima Regional</span>
-              </div>
-              <h2 style="color: #ffffff; font-weight: 900; font-size: 26px; line-height: 1.2; margin: 0 0 12px 0; text-transform: uppercase; font-family: monospace; letter-spacing: -0.5px;">
-                SEU PERFIL VISTO POR <span style="color: #ff6c22;">MILHARES DE CONTRATANTES</span> DIRETO NA SUA REGIÃO
-              </h2>
-              <p style="color: #949aaf; font-size: 12px; line-height: 1.6; margin: 0; font-family: sans-serif; max-width: 620px;">
-                Conectamos sua carreira direto com promotores de eventos, prefeituras, casamentos e donos de bares locais. Ao se cadastrar, seu portfólio entra em nosso motor reativo e passa a ser ofertado ativamente para quem tem orçamento pronto para fechar shows na sua praça de deslocamento.
-              </p>
-            </div>
-
-            <!-- Lado Direito: A Vitrine de Recursos de Mídia (40%) -->
-            <div style="width: 340px; background: rgba(8,9,13,0.6); border: 1px solid rgba(255,255,255,0.05); padding: 25px; border-radius: 16px; backdrop-filter: blur(10px); text-align: left;">
-              <span style="color: #ffffff; font-weight: bold; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; font-family: monospace; display: block; margin-bottom: 15px;">📸 Portfólio de Alta Conversão:</span>
-              
-              <div style="display: flex; flex-direction: column; gap: 12px;">
-                <div style="display: flex; align-items: center; gap: 10px;">
-                  <div style="color: #ff6c22; font-size: 14px;">🖼️</div>
-                  <span style="color: #ced4da; font-size: 11px; font-weight: bold; text-transform: uppercase; font-family: monospace;">Galeria de Fotos Premium</span>
-                </div>
-                <div style="display: flex; align-items: center; gap: 10px;">
-                  <div style="color: #ff6c22; font-size: 14px;">🎬</div>
-                  <span style="color: #ced4da; font-size: 11px; font-weight: bold; text-transform: uppercase; font-family: monospace;">Vídeos Integrados (YouTube/Vimeo)</span>
-                </div>
-                <div style="display: flex; align-items: center; gap: 10px;">
-                  <div style="color: #ff6c22; font-size: 14px;">🎵</div>
-                  <span style="color: #ced4da; font-size: 11px; font-weight: bold; text-transform: uppercase; font-family: monospace;">Streaming e Links de Redes Sociais</span>
-                </div>
-              </div>
-            </div>
-
+          <div class="sales-proof">
+            ✓ Acesso imediato ao painel <span>•</span> ✓ Escolha seu plano abaixo <span>•</span> ✓ Primeiro mês por R$ 0
           </div>
         </div>
+      </section>
 
-        <!-- ==================================================================== -->
-        <!-- 🏁 ETAPA 0: ESTEIRA REATIVA DE SELEÇÃO DE PLANOS SAAS (VELZON DARK)  -->
+      <section class="sales-section sales-problem">
+        <div class="section-kicker">MENOS IMPROVISO. MAIS PROFISSIONALISMO.</div>
+        <h2>TUDO O QUE HOJE FICA ESPALHADO.<br><span>AGORA TRABALHA JUNTO.</span></h2>
+        <p class="section-intro">
+          Chega de controlar a carreira entre WhatsApp, agenda, anotações, arquivos e planilhas.
+          A Seven Shows reúne sua operação em um só lugar.
+        </p>
+
+        <div class="pain-grid">
+          <article><i class="ri-calendar-check-line"></i><b>Agenda organizada</b><span>Datas livres, bloqueios e shows confirmados sem conflito.</span></article>
+          <article><i class="ri-file-list-3-line"></i><b>Propostas e contratos</b><span>Acompanhe negociações sem procurar conversas antigas.</span></article>
+          <article><i class="ri-shield-check-line"></i><b>Pagamento protegido</b><span>Mais segurança para fechar o show e receber o seu cachê.</span></article>
+          <article><i class="ri-map-pin-2-line"></i><b>Deslocamento calculado</b><span>Quilometragem e regras de viagem entram na contratação.</span></article>
+          <article><i class="ri-store-2-line"></i><b>Vitrine profissional</b><span>Seu trabalho pronto para ser descoberto por novos contratantes.</span></article>
+          <article><i class="ri-line-chart-line"></i><b>Visão da carreira</b><span>Shows, oportunidades e financeiro dentro da mesma rotina.</span></article>
+        </div>
+      </section>
+
+      <section class="sales-section opportunity-section">
+        <div class="opportunity-copy">
+          <div class="section-kicker teal">SUA VITRINE PARA NOVOS SHOWS</div>
+          <h2>NÃO É SÓ UM PAINEL.<br><span>É ONDE O CONTRATANTE ENCONTRA VOCÊ.</span></h2>
+          <p>
+            Sua página pública apresenta seu trabalho, fotos, vídeos e formatos de show.
+            O contratante consulta sua disponibilidade e pode iniciar a contratação dentro do mesmo ecossistema.
+          </p>
+          <ul>
+            <li>Perfil público profissional</li>
+            <li>Galeria de fotos e vídeos conforme o seu plano</li>
+            <li>Formatos e pacotes de show organizados</li>
+            <li>Agenda conectada ao processo de contratação</li>
+          </ul>
+        </div>
+        <div class="opportunity-card">
+          <div class="mini-window-top"><span></span><span></span><span></span><small>seven shows • artista</small></div>
+          <div class="mini-profile">
+            <div class="mini-avatar">7</div>
+            <div><small>SEU PERFIL</small><strong>Seu palco começa aqui.</strong><span>Apresente seu trabalho. Receba oportunidades.</span></div>
+          </div>
+          <div class="mini-metrics">
+            <div><i class="ri-eye-line"></i><b>Visibilidade</b><span>para novos contratantes</span></div>
+            <div><i class="ri-calendar-event-line"></i><b>Agenda</b><span>sempre atualizada</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="sales-section intelligent-section">
+        <div class="section-kicker teal">✦ RECURSOS INTELIGENTES SEVEN</div>
+        <h2>MAIS QUE GESTÃO.<br><span>FERRAMENTAS PARA QUEM VIVE DE MÚSICA.</span></h2>
+        <p class="section-intro">
+          Da preparação do repertório à divulgação do próximo show, recursos criados para tarefas reais do músico.
+        </p>
+
+        <div class="smart-grid">
+          <article>
+            <div class="smart-icon"><i class="ri-music-2-line"></i></div>
+            <small>REPERTÓRIO INTELIGENTE</small>
+            <h3>Organize melhor o seu show</h3>
+            <p>Estruture seu setlist, organize a sequência das músicas e trabalhe a dinâmica da apresentação.</p>
+          </article>
+          <article>
+            <div class="smart-icon"><i class="ri-magic-line"></i></div>
+            <small>CIFRAS NO TOM CERTO</small>
+            <h3>Prepare o material para tocar</h3>
+            <p>Pesquise músicas, trabalhe cifras e faça transposição para a tonalidade que você precisa.</p>
+          </article>
+          <article>
+            <div class="smart-icon"><i class="ri-image-edit-line"></i></div>
+            <small>SEVEN DESIGNER</small>
+            <h3>Divulgação pronta para as redes</h3>
+            <p>Crie artes para Stories e Status dentro da Seven Shows e mantenha sua divulgação sempre ativa.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="sales-section security-section">
+        <div class="section-kicker">DO ACORDO AO PALCO</div>
+        <h2>MENOS RISCO PARA VOCÊ.<br><span>MAIS SEGURANÇA PARA FECHAR.</span></h2>
+
+        <div class="benefit-grid">
+          <article><small>01. MAIS OPORTUNIDADES</small><h3>Vitrine para novos shows</h3><p>Seu perfil fica disponível para contratantes conhecerem seu trabalho e iniciarem uma contratação.</p></article>
+          <article><small>02. RECEBIMENTO</small><h3>Pagamento protegido</h3><p>O fluxo financeiro acompanha a contratação para trazer mais segurança ao seu cachê.</p></article>
+          <article><small>03. GESTÃO</small><h3>Painel de controle</h3><p>Propostas, contratos, agenda e financeiro organizados em uma visão central da carreira.</p></article>
+          <article><small>04. AGENDA</small><h3>Controle de datas</h3><p>Bloqueie compromissos e mantenha a disponibilidade sincronizada para evitar conflitos.</p></article>
+          <article><small>05. LOGÍSTICA</small><h3>KM e deslocamento</h3><p>As regras cadastradas pelo artista ajudam a calcular o deslocamento durante a contratação.</p></article>
+          <article><small>06. RESPEITO AO PALCO</small><h3>Hora extra prevista</h3><p>As condições do show ficam organizadas para reduzir improvisos e proteger o combinado.</p></article>
+        </div>
+      </section>
+
+      <section class="pre-plans">
+        <div class="pre-plans-badge">30 DIAS GRÁTIS EM QUALQUER PLANO</div>
+        <h2>ESCOLHA COMO QUER COMEÇAR.<br><span>HOJE, SEU PRIMEIRO MÊS É R$ 0.</span></h2>
+        <p>Os planos abaixo são carregados diretamente do catálogo da Seven Shows. Escolha o que combina com o momento da sua carreira.</p>
+        <div class="arrow-down"><i class="ri-arrow-down-line"></i></div>
+      </section>
+
+    </main>
+
+    <!-- 🏁 ETAPA 0: ESTEIRA REATIVA DE SELEÇÃO DE PLANOS SAAS (VELZON DARK)  -->
         <!-- ==================================================================== -->
         <div id="secao-onboarding" style="grid-column: 1 / -1; max-width: 1000px; margin: 40px auto 0 auto; background: linear-gradient(145deg, #161929, #10121d); border: 1px solid rgba(255,255,255,0.06); border-radius: 24px; padding: 45px; box-shadow: 0 25px 60px rgba(0,0,0,0.6); width: 100%; box-sizing: border-box;">
           
@@ -157,7 +152,7 @@
               </span>
             </div>
             <h3 style="color: #ffffff; font-size: 20px; font-weight: 900; text-transform: uppercase; margin: 15px 0 0 0; font-family: monospace; letter-spacing: -0.5px;">
-              {{ etapaOnboarding === 0 ? 'Selecione o plano ideal para a sua carreira' : 'Crie suas credenciais de acesso' }}
+              {{ etapaOnboarding === 0 ? 'Escolha seu plano e comece com 30 dias grátis' : 'Crie suas credenciais de acesso' }}
             </h3>
           </div>
 
@@ -181,12 +176,7 @@
               onmouseover="this.style.transform='scale(1.02)';"
               onmouseout="this.style.transform='scale(1)';"
             >
-              <!-- Tag de Destaque Recomendado (Alinhada ao preço mais alto do Ouro) -->
-              <div v-if="plano.monthlyFee > 50" style="position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background-color: #0ab39c; color: #ffffff; font-size: 9px; font-weight: bold; padding: 4px 12px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; font-family: monospace; white-space: nowrap; z-index: 5;">
-                🚀 RECOMENDADO
-              </div>
-
-              <!-- Topo do Card -->
+<!-- Topo do Card -->
               <div style="text-align: center; margin-bottom: 20px;">
                 <h4 style="color: #ffffff; font-size: 15px; font-weight: 900; margin: 0 0 6px 0; text-transform: uppercase; font-family: monospace; letter-spacing: 0.5px;">{{ plano.name }}</h4>
                 <p style="color: #878a99; font-size: 11px; margin: 0; line-height: 1.4; font-family: sans-serif; min-height: 32px;">{{ plano.description || 'Ideal para gerenciar seus shows regionais.' }}</p>
@@ -194,7 +184,8 @@
 
               <!-- Centro do Card: Bloco de Faturamento com Cifrão -->
               <div style="background-color: rgba(255,255,255,0.02); border-radius: 12px; padding: 15px; text-align: center; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.03);">
-                <span style="color: #878a99; font-size: 10px; font-weight: bold; text-transform: uppercase; font-family: monospace;">Mensalidade</span>
+                <div style="display:inline-block;background:rgba(10,179,156,.12);border:1px solid rgba(10,179,156,.28);color:#35d7c0;font:800 10px monospace;padding:5px 9px;border-radius:20px;margin-bottom:8px;text-transform:uppercase;">1º mês grátis</div>
+                <span style="display:block;color:#a8b3c6;font-size:10px;font-weight:bold;text-transform:uppercase;font-family:monospace;">Depois</span>
                 <div style="color: #0ab39c; font-size: 22px; font-weight: 900; font-family: monospace; margin-top: 2px;">
                   R$ {{ plano.monthlyFee.toFixed(2).replace('.', ',') }}<span style="color: #878a99; font-size: 11px; font-weight: normal; font-family: sans-serif;">/mês</span>
                 </div>
@@ -229,7 +220,7 @@
                 onmouseover="this.style.borderColor='#ff6c22'; this.style.color='#ff6c22';"
                 onmouseout="this.style.borderColor=this.style.backgroundColor==='transparent'?'#3a3f50':'#0ab39c'; this.style.color='#ffffff';"
               >
-                Selecionar Plano →
+                COMEÇAR 30 DIAS GRÁTIS →
               </button>
             </div>
 
@@ -443,11 +434,43 @@
 
         </div>
 
-
-      </div>
-    </div>
   </div>
 </template>
+
+<style scoped>
+.artist-sales{--orange:#ff6c22;--teal:#10cdb4;--panel:#121521;--line:rgba(255,255,255,.09);color:#d8deea;background:#08090d}
+.sales-hero{position:relative;min-height:650px;display:flex;align-items:center;justify-content:center;overflow:hidden;border-bottom:1px solid var(--line)}
+.sales-hero-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.sales-hero-mask{position:absolute;inset:0;background:radial-gradient(circle at 50% 40%,rgba(8,9,13,.56),rgba(8,9,13,.94) 72%),linear-gradient(180deg,rgba(8,9,13,.25),#08090d)}
+.sales-hero-content{position:relative;z-index:2;width:min(980px,92%);text-align:center;padding:70px 20px 55px}
+.sales-badge,.section-kicker{display:inline-flex;border:1px solid rgba(255,108,34,.45);background:rgba(255,108,34,.07);color:var(--orange);border-radius:30px;padding:9px 17px;font:900 12px monospace;letter-spacing:1.2px}
+.sales-audience{margin:18px 0 14px;color:#fff;font:900 16px monospace;letter-spacing:.5px}
+.sales-hero h1,.sales-section h2,.pre-plans h2{margin:0;color:#fff;font:900 clamp(34px,4.4vw,58px)/1.08 monospace;letter-spacing:-1.5px}
+.sales-hero h1 span,.sales-section h2 span,.pre-plans h2 span{display:block;color:var(--orange);margin-top:8px}
+.sales-lead{max-width:800px;margin:24px auto;color:#c2cbda;font-size:18px;line-height:1.65}
+.trial-pill{width:max-content;max-width:100%;margin:24px auto 20px;padding:10px 18px;border:1px solid rgba(16,205,180,.35);border-radius:12px;background:rgba(16,205,180,.08);display:flex;gap:10px;align-items:center;color:#cbd5e1;font-size:13px}
+.trial-pill strong{color:#43dec8;font:900 14px monospace}
+.sales-primary-btn{border:0;border-radius:50px;padding:18px 34px;background:linear-gradient(135deg,#ff6c22,#ff8138);color:#fff;font:900 12px monospace;letter-spacing:.7px;box-shadow:0 12px 30px rgba(255,108,34,.25);cursor:pointer}
+.sales-primary-btn:hover{transform:translateY(-2px);box-shadow:0 16px 34px rgba(255,108,34,.35)}
+.sales-proof{margin-top:18px;color:#aab6c8;font-size:13px}.sales-proof span{margin:0 7px;color:#465064}
+.sales-section{max-width:1160px;margin:0 auto;padding:90px 28px}
+.sales-section .section-kicker{margin-bottom:20px}.section-kicker.teal{border-color:rgba(16,205,180,.35);background:rgba(16,205,180,.07);color:#55ded0}
+.sales-section h2{font-size:clamp(30px,3.2vw,44px);text-align:center}.section-intro{max-width:780px;margin:20px auto 42px;text-align:center;color:#aeb9cb;font-size:17px;line-height:1.7}
+.sales-problem{text-align:center}.pain-grid,.smart-grid,.benefit-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.pain-grid article,.smart-grid article,.benefit-grid article{background:linear-gradient(145deg,#141724,#0f111a);border:1px solid var(--line);border-radius:18px;padding:26px;text-align:left;transition:.2s}
+.pain-grid article:hover,.smart-grid article:hover,.benefit-grid article:hover{transform:translateY(-3px);border-color:rgba(255,108,34,.42)}
+.pain-grid i{font-size:25px;color:var(--orange);display:block;margin-bottom:16px}.pain-grid b{display:block;color:#fff;font-size:17px;margin-bottom:8px}.pain-grid span{color:#9fabc0;font-size:14px;line-height:1.6}
+.opportunity-section{display:grid;grid-template-columns:1.05fr .95fr;gap:55px;align-items:center;border-top:1px solid rgba(255,255,255,.05);border-bottom:1px solid rgba(255,255,255,.05)}
+.opportunity-section h2{text-align:left}.opportunity-copy p{color:#aeb9cb;font-size:16px;line-height:1.7}.opportunity-copy ul{list-style:none;padding:0;margin:24px 0 0}.opportunity-copy li{margin:12px 0;color:#d7deea}.opportunity-copy li:before{content:"✓";color:var(--teal);font-weight:900;margin-right:10px}
+.opportunity-card{background:#11141f;border:1px solid var(--line);border-radius:20px;overflow:hidden;box-shadow:0 25px 60px rgba(0,0,0,.35)}.mini-window-top{height:44px;padding:0 15px;display:flex;align-items:center;gap:7px;border-bottom:1px solid var(--line)}.mini-window-top span{width:8px;height:8px;border-radius:50%;background:#4a5265}.mini-window-top small{margin-left:8px;color:#79849a;font:700 10px monospace}.mini-profile{display:flex;gap:16px;padding:28px}.mini-avatar{width:48px;height:48px;border-radius:13px;background:var(--orange);display:grid;place-items:center;color:#fff;font-weight:900}.mini-profile div:last-child{display:flex;flex-direction:column;gap:4px}.mini-profile small{color:var(--orange);font:800 10px monospace}.mini-profile strong{color:#fff;font-size:21px}.mini-profile span{color:#929fb4;font-size:13px}.mini-metrics{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 28px 28px}.mini-metrics div{padding:18px;border:1px solid var(--line);border-radius:13px;background:#171a26}.mini-metrics i{color:var(--teal);font-size:21px}.mini-metrics b,.mini-metrics span{display:block}.mini-metrics b{color:#fff;margin:8px 0 3px}.mini-metrics span{color:#8f9bb0;font-size:12px}
+.intelligent-section{text-align:center}.smart-grid{margin-top:42px}.smart-icon{width:54px;height:54px;border-radius:14px;background:linear-gradient(135deg,rgba(255,108,34,.15),rgba(16,205,180,.1));display:grid;place-items:center;margin-bottom:24px}.smart-icon i{font-size:24px;color:var(--orange)}.smart-grid small,.benefit-grid small{color:#58d8ca;font:900 11px monospace;letter-spacing:.7px}.smart-grid h3,.benefit-grid h3{color:#fff;font-size:19px;margin:10px 0}.smart-grid p,.benefit-grid p{color:#a3aec0;font-size:14px;line-height:1.65;margin:0}
+.security-section{text-align:center;border-top:1px solid rgba(255,255,255,.05)}.benefit-grid{margin-top:42px}.benefit-grid small{color:var(--orange)}
+.pre-plans{max-width:1000px;margin:15px auto 10px;text-align:center;padding:65px 28px 25px;border-top:1px solid rgba(255,255,255,.07)}.pre-plans-badge{display:inline-block;color:#55decf;border:1px solid rgba(16,205,180,.4);background:rgba(16,205,180,.08);padding:9px 16px;border-radius:30px;font:900 12px monospace;letter-spacing:1px;margin-bottom:20px}.pre-plans h2{font-size:clamp(29px,3.2vw,42px)}.pre-plans p{max-width:720px;margin:20px auto;color:#aab6c8;font-size:15px;line-height:1.65}.arrow-down{color:var(--orange);font-size:28px;margin-top:18px;animation:bounceDown 1.6s infinite}@keyframes bounceDown{50%{transform:translateY(7px)}}
+#secao-onboarding{scroll-margin-top:105px}
+@media(max-width:900px){.pain-grid,.smart-grid,.benefit-grid{grid-template-columns:1fr 1fr}.opportunity-section{grid-template-columns:1fr}.opportunity-section h2{text-align:center}.opportunity-copy{text-align:center}.opportunity-copy ul{display:inline-block;text-align:left}}
+@media(max-width:640px){.sales-hero{min-height:690px}.sales-hero-content{padding-top:55px}.sales-lead{font-size:16px}.trial-pill{flex-direction:column;gap:3px}.sales-proof{line-height:1.8}.pain-grid,.smart-grid,.benefit-grid{grid-template-columns:1fr}.sales-section{padding:65px 20px}.sales-section h2{font-size:29px}.mini-metrics{grid-template-columns:1fr}}
+</style>
+
 <script>
 /* eslint-disable */
 import NavbarPublic from "@/components/public/NavbarPublic.vue";

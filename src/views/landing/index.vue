@@ -11,6 +11,22 @@
     <!-- COMPONENTE 2: ABERTURA HERO COM BARRA DE BUSCA EM LINHA -->
     <HeroPublic />
 
+    <!-- JORNADA RÁPIDA DO CONTRATANTE -->
+    <section class="contractor-journey">
+      <BContainer>
+        <div class="journey-shell">
+          <div class="journey-intro"><small>DO PRIMEIRO CLIQUE AO SHOW</small><b>Contrate sem complicação</b></div>
+          <div class="journey-step"><i class="ri-search-eye-line"></i><span><b>Encontre</b><small>o artista ideal</small></span></div>
+          <i class="ri-arrow-right-s-line journey-arrow"></i>
+          <div class="journey-step"><i class="ri-calendar-check-line"></i><span><b>Escolha</b><small>uma data livre</small></span></div>
+          <i class="ri-arrow-right-s-line journey-arrow"></i>
+          <div class="journey-step"><i class="ri-route-line"></i><span><b>Calcule</b><small>a logística</small></span></div>
+          <i class="ri-arrow-right-s-line journey-arrow"></i>
+          <div class="journey-step"><i class="ri-shield-check-line"></i><span><b>Contrate</b><small>e pague seguro</small></span></div>
+        </div>
+      </BContainer>
+    </section>
+
     <!-- CARROSSEL DE ARTISTAS EM DESTAQUE (MANTIDO DO DESIGN BASE) -->
     <div class="pt-5 mt-5">
       <BContainer>
@@ -186,7 +202,7 @@
                 🛡️ O MELHOR PARA O SEU EVENTO!!!
               </span>
               <h2 class="mb-3 fw-bold text-white display-6">Contratar uma Banda nunca foi tão Simples</h2>
-              <p class="text-muted fs-15">Esqueça ligações cansativas e burocracia. No SevenShows você
+              <p class="text-muted fs-15">Esqueça ligações cansativas e burocracia. Na Seven Shows você
                 resolve tudo em poucos minutos com total transparência.</p>
             </div>
           </BCol>
@@ -214,7 +230,7 @@
 
           <!-- PASSO 02 -->
           <BCol lg="4" md="6">
-            <div class="p-4 rounded-3 h-100 position-relative border border-light border-opacity-5"
+            <div class="p-4 rounded-3 h-100 position-relative border border-light border-opacity-5 modern-card"
               style="background-color: #131520;">
               <div
                 class="display-4 text-primary font-monospace fw-bold position-absolute opacity-10 end-0 top-0 me-3 mt-2"
@@ -232,7 +248,7 @@
 
           <!-- PASSO 03 -->
           <BCol lg="4" md="6">
-            <div class="p-4 rounded-3 h-100 position-relative border border-light border-opacity-5"
+            <div class="p-4 rounded-3 h-100 position-relative border border-light border-opacity-5 modern-card"
               style="background-color: #131520;">
               <div
                 class="display-4 text-primary font-monospace fw-bold position-absolute opacity-10 end-0 top-0 me-3 mt-2"
@@ -252,110 +268,113 @@
     </section>
 
     <!-- ==================================================================== -->
-    <!-- SEÇÃO: ÁREA DO MÚSICO (VITRINE ESTILIZADA DE ALTA CONVERSÃO)         -->
+    <!-- ÁREA DO MÚSICO — AQUISIÇÃO, ENCANTAMENTO E CONVERSÃO                -->
     <!-- ==================================================================== -->
-    <section class="section border-top border-light border-opacity-5" id="vantagens-musico"
-      style="padding-top: 100px; padding-bottom: 100px; background-color: #0a0b10 !important;">
-      <BContainer>
+    <section class="artist-growth-section" id="vantagens-musico">
+      <div class="artist-glow artist-glow-orange"></div>
+      <div class="artist-glow artist-glow-cyan"></div>
+      <BContainer class="position-relative" style="z-index: 2;">
         <BRow class="justify-content-center">
-
-          <!-- CONTEÚDO EM TELA CHEIA INTEGRADO -->
           <BCol lg="10" class="text-center">
-            <span
-              class="badge border border-primary border-opacity-30 text-primary fw-bold text-uppercase px-3 py-2 rounded-pill fs-12 mb-3 font-monospace modern-badge"
-              style="background-color: rgba(255, 108, 34, 0.08) !important; letter-spacing: 1px;">
-              🚀 Multiplique Seus Contratos
-            </span>
-
-            <h2 class="text-white fw-bold display-5 mb-3 font-monospace text-uppercase main-title-glow"
-              style="letter-spacing: -1px;">
-              Você é Cantor, Músico ou <br />
-              Tem uma <span class="text-primary text-gradient-orange">Banda?</span>
-            </h2>
-
-            <!-- 🛠️ CORREÇÃO CIRÚRGICA DO TEXTO: DESTAQUE IMPACTANTE E ARREDONDADO -->
-            <h3 class="text-white fw-bold fs-26 my-4 font-monospace text-uppercase"
-              style="color: #ff6c22 !important; letter-spacing: 0.5px;">
-              🔥 VENDA MUITO MAIS SHOWS E LOTE SUA AGENDA!
-            </h3>
-
-            <h5 class="text-light fw-medium fs-18 mb-5 lh-base mx-auto text-muted-custom"
-              style="max-width: 780px; opacity: 0.95; color: #ced4da !important;">
-              Melhore a gestão da sua carreira e seja visto por milhares de contratantes, donos de bares,
-              organizadores de casamentos e produtores que buscam o seu estilo de som todos os dias.
-            </h5>
-
-            <p class="text-muted fs-16 mb-5 mx-auto"
-              style="max-width: 840px; color: #a3a3a3 !important; line-height: 1.7;">
-              Chega de ficar esperando mensagens no WhatsApp ou dependendo apenas de indicações. No
-              SevenShows, você ganha uma **Vitrine Digital Irresistível** e um **Painel de Controle
-              Inteligente** exclusivo para acompanhar propostas em tempo real, ver seus históricos de
-              extratos e garantir datas fechadas de forma rápida e segura.
-            </p>
-
-            <!-- 🛠️ ELEMENTOS COMPLETAMENTE ESTILIZADOS: BORDAS ARREDONDADAS E FLUTUAÇÃO NEON -->
-            <BRow class="text-start g-4 mb-5 justify-content-center">
-
-              <!-- BENEFÍCIO 1 -->
-              <BCol md="6" lg="4">
-                <div class="p-4 h-100 modern-card">
-                  <div
-                    class="avatar-sm text-primary rounded-circle mb-3 d-flex align-items-center justify-content-center modern-icon-wrapper">
-                    <i class="ri-rocket-line fs-22"></i>
-                  </div>
-                  <h5 class="text-white fw-bold fs-17 mb-2">Acelerador de Shows</h5>
-                  <p class="text-muted small mb-0 fs-14" style="line-height: 1.6; color: #a3a3a3 !important;">Sua banda
-                    em destaque no
-                    maior catálogo do país. Contratantes filtram por preço e estilo de som e fecham
-                    o agendamento direto pelo portal de forma automática.</p>
-                </div>
-              </BCol>
-
-              <!-- BENEFÍCIO 2 -->
-              <BCol md="6" lg="4">
-                <div class="p-4 h-100 modern-card">
-                  <div
-                    class="avatar-sm text-primary rounded-circle mb-3 d-flex align-items-center justify-content-center modern-icon-wrapper">
-                    <i class="ri-money-dollar-circle-line fs-22"></i>
-                  </div>
-                  <h5 class="text-white fw-bold fs-17 mb-2">Recebimento Garantido</h5>
-                  <p class="text-muted small mb-0 fs-14" style="line-height: 1.6; color: #a3a3a3 !important;">O cliente
-                    realiza o
-                    pagamento e o valor do seu cachê fica guardado com total segurança. Você sobe ao
-                    palco focado no espetáculo, sabendo que seu dinheiro já está garantido.</p>
-                </div>
-              </BCol>
-
-              <!-- BENEFÍCIO 3 -->
-              <BCol md="6" lg="4">
-                <div class="p-4 h-100 modern-card">
-                  <div
-                    class="avatar-sm text-primary rounded-circle mb-3 d-flex align-items-center justify-content-center modern-icon-wrapper">
-                    <i class="ri-calendar-todo-line fs-22"></i>
-                  </div>
-                  <h5 class="text-white fw-bold fs-17 mb-2">Controle Digital da Agenda</h5>
-                  <p class="text-muted small mb-0 fs-14" style="line-height: 1.6; color: #a3a3a3 !important;">Gerencie
-                    datas livres e
-                    bloqueie dias de folga ou compromissos particulares. O sistema atualiza sua
-                    vitrine em tempo real, evitando qualquer tipo de choque de horários.</p>
-                </div>
-              </BCol>
-
-            </BRow>
-
-            <!-- BOTÃO MESTRE IMPONENTE COM CANTOS CURVOS E NEON -->
-            <div class="mt-4">
-              <router-link to="/quero-vender"
-                class="btn btn-primary btn-lg fw-bold px-5 text-uppercase font-monospace fs-14 modern-action-button">
-                <i class="ri-flashlight-line me-2 fs-18"></i> Impulsionar Minha Agenda Agora
-              </router-link>
+            <div class="artist-entry-label">
+              <span class="artist-eyebrow"><i class="ri-rocket-2-line"></i> SEVEN SHOWS PARA ARTISTAS</span>
+              <div class="artist-audience-callout">VOCÊ É CANTOR, MÚSICO OU TEM UMA BANDA?</div>
             </div>
-
+            <h2 class="artist-main-title">VOCÊ CUIDA DA MÚSICA.<br><span>A SEVEN SHOWS CUIDA DE TODO O RESTO.</span></h2>
+            <p class="artist-lead">Da divulgação à contratação, da agenda ao financeiro, a Seven Shows reúne as ferramentas para você organizar sua carreira, conquistar novas oportunidades e ter mais tempo para fazer o que realmente importa: música.</p>
+            <div class="d-flex flex-wrap justify-content-center gap-3 mt-4">
+              <router-link to="/quero-vender" class="artist-cta artist-cta-primary"><i class="ri-flashlight-fill"></i> CRIAR MINHA PÁGINA</router-link>
+              <a href="#recursos-ia" class="artist-cta artist-cta-ghost"><i class="ri-sparkling-2-line"></i> CONHECER OS RECURSOS</a>
+            </div>
+            <div class="artist-mini-proof mt-3"><i class="ri-check-line"></i> Cadastre-se e acesse seu painel para começar a configurar sua presença na Seven Shows.</div>
           </BCol>
         </BRow>
+
+        <div class="artist-pain-block">
+          <div class="text-center mb-5">
+            <span class="section-kicker">MENOS IMPROVISO. MAIS PROFISSIONALISMO.</span>
+            <h3 class="section-title">MENOS TEMPO ORGANIZANDO.<br><span>MAIS TEMPO TOCANDO.</span></h3>
+            <p class="section-copy">A Seven Shows centraliza tarefas que hoje ficam espalhadas entre WhatsApp, agenda, anotações, arquivos e planilhas.</p>
+          </div>
+          <BRow class="g-4">
+            <BCol md="6" lg="4" v-for="beneficio in beneficiosMusico" :key="beneficio.titulo">
+              <div class="benefit-card h-100">
+                <div class="benefit-icon"><i :class="beneficio.icone"></i></div>
+                <div>
+                  <small>{{ beneficio.sobre }}</small>
+                  <h4>{{ beneficio.titulo }}</h4>
+                  <p>{{ beneficio.texto }}</p>
+                </div>
+              </div>
+            </BCol>
+          </BRow>
+        </div>
+
+        <!-- MOCKUP DO PAINEL -->
+        <div class="dashboard-showcase">
+          <BRow class="align-items-center g-5">
+            <BCol lg="5">
+              <span class="section-kicker">SEU NEGÓCIO NA PALMA DA MÃO</span>
+              <h3 class="section-title text-start">SEU ESCRITÓRIO DE SHOWS.<br><span>DENTRO DO SEU CELULAR.</span></h3>
+              <p class="section-copy text-start mx-0">Acompanhe sua carreira em um painel feito para quem vive de música. Veja oportunidades, organize datas, acompanhe contratos e tenha uma visão clara dos seus shows e recebimentos.</p>
+              <div class="showcase-list">
+                <div><i class="ri-check-double-line"></i><span><b>Agenda inteligente</b><small>Datas livres, bloqueios e shows em um só calendário.</small></span></div>
+                <div><i class="ri-check-double-line"></i><span><b>Propostas e contratos</b><small>Acompanhe cada oportunidade sem procurar conversas antigas.</small></span></div>
+                <div><i class="ri-check-double-line"></i><span><b>Financeiro organizado</b><small>Visualize cachês, pagamentos e histórico da sua operação.</small></span></div>
+                <div><i class="ri-check-double-line"></i><span><b>Vitrine profissional</b><small>Seu perfil público trabalha por você enquanto você está no palco.</small></span></div>
+              </div>
+            </BCol>
+            <BCol lg="7">
+              <div class="dashboard-mockup">
+                <div class="mockup-top"><span></span><span></span><span></span><div>painel.sevenshows</div></div>
+                <div class="mockup-body">
+                  <aside><div class="mock-logo">7</div><i class="ri-home-5-line active"></i><i class="ri-calendar-event-line"></i><i class="ri-file-list-3-line"></i><i class="ri-wallet-3-line"></i><i class="ri-magic-line"></i></aside>
+                  <main>
+                    <div class="mock-welcome"><small>PAINEL DO ARTISTA</small><b>Olá, músico 👋</b><span>Veja como está sua agenda e suas oportunidades.</span></div>
+                    <div class="mock-stats"><div><i class="ri-calendar-check-line"></i><b>Agenda</b><span>Próximos shows</span></div><div><i class="ri-hand-coin-line"></i><b>Propostas</b><span>Em negociação</span></div><div><i class="ri-wallet-line"></i><b>Financeiro</b><span>Recebimentos</span></div></div>
+                    <div class="mock-chart"><div class="mock-chart-title"><b>Visão da carreira</b><span>Últimos meses</span></div><div class="bars"><i style="height:34%"></i><i style="height:52%"></i><i style="height:43%"></i><i style="height:70%"></i><i style="height:61%"></i><i style="height:88%"></i><i style="height:78%"></i></div></div>
+                  </main>
+                </div>
+              </div>
+            </BCol>
+          </BRow>
+        </div>
+
+        <!-- IA -->
+        <div class="ai-showcase" id="recursos-ia">
+          <div class="text-center mb-5">
+            <span class="ai-badge"><i class="ri-sparkling-fill"></i> RECURSOS INTELIGENTES SEVEN</span>
+            <h3 class="section-title">MAIS QUE UM PAINEL.<br><span>FERRAMENTAS INTELIGENTES PARA O SEU SHOW.</span></h3>
+            <p class="section-copy">Tecnologia aplicada a tarefas reais do músico: preparar repertório, trabalhar cifras e criar divulgação sem sair da plataforma.</p>
+          </div>
+          <BRow class="g-4">
+            <BCol lg="4">
+              <div class="ai-card h-100"><div class="ai-number">01</div><div class="ai-icon"><i class="ri-music-2-line"></i></div><span>REPERTÓRIO INTELIGENTE</span><h4>Organize melhor o seu show</h4><p>Use recursos inteligentes para estruturar e otimizar seu setlist, organizar a sequência das músicas e trabalhar a dinâmica do espetáculo.</p><div class="ai-tag">SETLIST • ORGANIZAÇÃO • ENERGIA</div></div>
+            </BCol>
+            <BCol lg="4">
+              <div class="ai-card h-100"><div class="ai-number">02</div><div class="ai-icon"><i class="ri-guitar-line"></i></div><span>CIFRAS NO TOM CERTO</span><h4>Menos tempo refazendo acordes</h4><p>Pesquise a música, trabalhe a cifra e faça a transposição para a tonalidade que você precisa, deixando o material pronto para tocar.</p><div class="ai-tag">CIFRAS • TOM • TRANSPOSIÇÃO</div></div>
+            </BCol>
+            <BCol lg="4">
+              <div class="ai-card h-100"><div class="ai-number">03</div><div class="ai-icon"><i class="ri-brush-3-line"></i></div><span>SEVEN DESIGNER</span><h4>Divulgação pronta para as redes</h4><p>Crie artes dos seus shows dentro da Seven Shows e exporte materiais no formato ideal para Stories e Status, mantendo sua divulgação sempre ativa.</p><div class="ai-tag">DESIGN • STORIES • WHATSAPP</div></div>
+            </BCol>
+          </BRow>
+          <div class="ai-closing">DA PREPARAÇÃO AO PALCO. DA DIVULGAÇÃO AO PAGAMENTO. <b>TUDO NA SEVEN SHOWS.</b></div>
+        </div>
+
+        <!-- MARKETPLACE + CTA -->
+        <div class="marketplace-message">
+          <div class="marketplace-icon"><i class="ri-store-3-line"></i></div>
+          <div class="flex-grow-1"><span class="section-kicker">UM DIFERENCIAL QUE VAI ALÉM DA GESTÃO</span><h3>NÃO É APENAS UM PAINEL. <em>É SUA VITRINE PARA NOVOS SHOWS.</em></h3><p>Você administra sua carreira no mesmo ecossistema em que contratantes podem descobrir seu trabalho, conhecer seu perfil e iniciar uma contratação.</p></div>
+        </div>
+
+        <div class="final-artist-cta text-center">
+          <span class="section-kicker">PRONTO PARA PROFISSIONALIZAR SEUS SHOWS?</span>
+          <h3>COLOQUE SUA CARREIRA NO <span>PRÓXIMO PALCO.</span></h3>
+          <p>Crie sua presença na Seven Shows, entre no painel e conheça os recursos disponíveis para organizar e vender melhor o seu trabalho.</p>
+          <router-link to="/quero-vender" class="artist-cta artist-cta-primary artist-cta-large"><i class="ri-rocket-fill"></i> QUERO FAZER PARTE DA SEVEN SHOWS</router-link>
+        </div>
       </BContainer>
     </section>
-
 
   </div>
 </template>
@@ -379,7 +398,15 @@ export default {
     return {
       Autoplay, Navigation, Pagination,
       artistasLista: [], // 🆕 DINÂMICO: Recebe a lista viva de bandas do MariaDB
-      loading: false
+      loading: false,
+      beneficiosMusico: [
+        { sobre: "MAIS VISIBILIDADE", titulo: "Pare de depender só de indicação", texto: "Tenha uma vitrine profissional e seja encontrado por contratantes que estão procurando artistas para seus eventos.", icone: "ri-user-search-line" },
+        { sobre: "VITRINE PROFISSIONAL", titulo: "Seu material sempre pronto", texto: "Centralize sua apresentação e informações comerciais em um perfil preparado para transformar visitas em oportunidades.", icone: "ri-window-line" },
+        { sobre: "AGENDA INTELIGENTE", titulo: "Chega de conflito de datas", texto: "Controle disponibilidade, bloqueios e compromissos para manter sua agenda organizada e atualizada.", icone: "ri-calendar-check-line" },
+        { sobre: "NEGOCIAÇÃO ORGANIZADA", titulo: "Propostas em um só lugar", texto: "Acompanhe oportunidades e contratações pelo painel sem depender de conversas espalhadas no WhatsApp.", icone: "ri-file-list-3-line" },
+        { sobre: "PAGAMENTO PROTEGIDO", titulo: "Mais segurança para receber", texto: "Tenha o fluxo de contratação e pagamento integrado para subir ao palco com muito mais tranquilidade.", icone: "ri-shield-check-line" },
+        { sobre: "GESTÃO DA CARREIRA", titulo: "Enxergue o seu negócio", texto: "Shows, agenda, contratos e financeiro passam a fazer parte da mesma rotina digital.", icone: "ri-line-chart-line" }
+      ]
     };
   },
   components: {
@@ -498,8 +525,91 @@ export default {
 
     const currentYearEl = document.querySelector('.currentyear');
     if (currentYearEl) {
-      currentYearEl.innerHTML = new Date().getFullYear() + " © SevenShows";
+      currentYearEl.innerHTML = new Date().getFullYear() + " © Seven Shows";
     }
   },
 };
 </script>
+
+<style scoped>
+.contractor-journey{padding:38px 0 0;background:#0a0b10}.journey-shell{display:flex;align-items:center;justify-content:center;gap:18px;padding:20px 24px;border:1px solid rgba(255,255,255,.07);border-radius:18px;background:linear-gradient(90deg,rgba(255,108,34,.055),rgba(255,255,255,.018),rgba(10,179,156,.04))}.journey-intro{display:flex;flex-direction:column;padding-right:22px;border-right:1px solid rgba(255,255,255,.08)}.journey-intro small{color:#ff6c22;font:800 9px monospace;letter-spacing:1px}.journey-intro b{color:#fff;font-size:14px;margin-top:3px}.journey-step{display:flex;align-items:center;gap:9px}.journey-step>i{color:#ff6c22;font-size:20px}.journey-step span{display:flex;flex-direction:column}.journey-step b{color:#fff;font-size:12px}.journey-step small{color:#737b8c;font-size:10px}.journey-arrow{color:#343a48}.artist-growth-section{position:relative;overflow:hidden;padding:110px 0 90px;background:linear-gradient(180deg,#090a0f 0%,#0d0f17 48%,#08090d 100%);border-top:1px solid rgba(255,255,255,.06)}
+.artist-glow{position:absolute;border-radius:50%;filter:blur(100px);pointer-events:none;opacity:.13}.artist-glow-orange{width:500px;height:500px;background:#ff6c22;top:80px;left:-250px}.artist-glow-cyan{width:500px;height:500px;background:#00c8c8;top:420px;right:-300px}.artist-eyebrow,.section-kicker,.ai-badge{display:inline-flex;align-items:center;gap:8px;color:#ff7a35;font:800 12px/1 monospace;letter-spacing:1.4px;text-transform:uppercase}.artist-eyebrow{padding:10px 16px;border:1px solid rgba(255,108,34,.35);border-radius:30px;background:rgba(255,108,34,.07)}.artist-entry-label{display:flex;flex-direction:column;align-items:center;gap:14px;margin-bottom:10px}.artist-eyebrow{font-size:13px;padding:12px 22px;border-color:rgba(255,108,34,.58);background:linear-gradient(90deg,rgba(255,108,34,.14),rgba(255,108,34,.05));box-shadow:0 0 28px rgba(255,108,34,.10)}.artist-audience-callout{color:#fff;font:900 clamp(18px,2vw,25px)/1.25 monospace;letter-spacing:.4px;text-transform:uppercase}.artist-main-title{margin:24px auto 18px;color:#fff;font:900 clamp(34px,4.2vw,58px)/1.08 monospace;letter-spacing:-2px;max-width:1000px}.artist-main-title span,.section-title span,.final-artist-cta h3 span{background:linear-gradient(90deg,#ff6c22,#ff9d66);-webkit-background-clip:text;-webkit-text-fill-color:transparent}.artist-lead,.section-copy{max-width:820px;margin:0 auto;color:#aeb4c2;font-size:17px;line-height:1.75}.artist-cta{min-height:52px;padding:0 28px;border-radius:28px;display:inline-flex;align-items:center;justify-content:center;gap:9px;text-decoration:none!important;font:900 12px/1 monospace;letter-spacing:.6px;transition:.25s}.artist-cta-primary{color:#fff!important;background:linear-gradient(135deg,#ff5d16,#ff7b32);box-shadow:0 12px 30px rgba(255,108,34,.24)}.artist-cta-primary:hover{transform:translateY(-2px);box-shadow:0 16px 38px rgba(255,108,34,.35)}.artist-cta-ghost{color:#e9edf5!important;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.035)}.artist-mini-proof{color:#b7c2d3;font-size:14px;font-weight:500;line-height:1.55;margin-top:18px!important}.artist-mini-proof i{color:#18d5bd;font-size:16px;margin-right:4px}.artist-mini-proof i{color:#0ab39c}.artist-pain-block,.dashboard-showcase,.ai-showcase{margin-top:110px}.section-title{color:#fff;font:900 clamp(28px,3.1vw,42px)/1.15 monospace;letter-spacing:-1.2px;margin:14px 0 16px}.benefit-card{display:flex;gap:17px;padding:25px;border:1px solid rgba(255,255,255,.08);border-radius:18px;background:linear-gradient(145deg,rgba(22,24,35,.95),rgba(13,15,23,.95));transition:.25s}.benefit-card:hover{transform:translateY(-4px);border-color:rgba(255,108,34,.38);box-shadow:0 16px 35px rgba(0,0,0,.25)}.benefit-icon{width:46px;height:46px;flex:0 0 46px;border-radius:13px;display:flex;align-items:center;justify-content:center;color:#ff6c22;font-size:21px;background:rgba(255,108,34,.09);border:1px solid rgba(255,108,34,.2)}.benefit-card small{color:#ff7a35;font:800 10px monospace;letter-spacing:.8px}.benefit-card h4{color:#fff;font-size:16px;margin:6px 0 8px}.benefit-card p{color:#8f96a5;font-size:13px;line-height:1.6;margin:0}.dashboard-showcase{padding:60px;border-radius:28px;border:1px solid rgba(255,255,255,.07);background:radial-gradient(circle at 85% 20%,rgba(10,179,156,.08),transparent 34%),#0c0e15}.showcase-list{margin-top:28px;display:grid;gap:16px}.showcase-list>div{display:flex;gap:12px}.showcase-list i{color:#0ab39c;font-size:21px}.showcase-list span{display:flex;flex-direction:column}.showcase-list b{color:#fff;font-size:14px}.showcase-list small{color:#7f8796;font-size:12px;margin-top:3px}.dashboard-mockup{border:1px solid rgba(255,255,255,.13);border-radius:18px;background:#10131d;box-shadow:0 30px 70px rgba(0,0,0,.45);overflow:hidden;transform:perspective(1200px) rotateY(-2deg)}.mockup-top{height:38px;display:flex;align-items:center;gap:6px;padding:0 13px;background:#171a25;border-bottom:1px solid rgba(255,255,255,.06)}.mockup-top>span{width:8px;height:8px;border-radius:50%;background:#3d4251}.mockup-top div{margin-left:12px;color:#555e70;font:10px monospace}.mockup-body{display:flex;min-height:360px}.mockup-body aside{width:58px;padding:18px 0;display:flex;flex-direction:column;align-items:center;gap:20px;background:#0b0d13;border-right:1px solid rgba(255,255,255,.05);color:#4f586b}.mock-logo{width:29px;height:29px;border-radius:9px;display:grid;place-items:center;background:#ff6c22;color:#fff;font-weight:900}.mockup-body aside i{font-size:17px}.mockup-body aside i.active{color:#ff6c22}.mockup-body main{padding:24px;flex:1}.mock-welcome{display:flex;flex-direction:column}.mock-welcome small{color:#ff6c22;font:9px monospace}.mock-welcome b{color:#fff;font-size:20px;margin:4px 0}.mock-welcome span{color:#687184;font-size:10px}.mock-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:22px 0}.mock-stats>div{padding:14px;border-radius:10px;background:#171a25;border:1px solid rgba(255,255,255,.05);display:flex;flex-direction:column}.mock-stats i{color:#0ab39c;font-size:17px}.mock-stats b{color:#fff;font-size:11px;margin:8px 0 2px}.mock-stats span{color:#626b7d;font-size:8px}.mock-chart{height:145px;padding:15px;border-radius:11px;background:#171a25}.mock-chart-title{display:flex;justify-content:space-between;color:#fff;font-size:10px}.mock-chart-title span{color:#60697a;font-size:8px}.bars{height:90px;display:flex;align-items:end;gap:9px;padding-top:12px}.bars i{flex:1;min-height:18%;border-radius:4px 4px 0 0;background:linear-gradient(#ff7a35,#71351c)}.ai-showcase{padding-top:20px}.ai-badge{padding:10px 16px;border-radius:25px;color:#75e7db;background:rgba(10,179,156,.08);border:1px solid rgba(10,179,156,.2)}.ai-card{position:relative;overflow:hidden;padding:30px;border-radius:20px;background:linear-gradient(145deg,#141722,#0d0f17);border:1px solid rgba(255,255,255,.08);transition:.25s}.ai-card:hover{transform:translateY(-5px);border-color:rgba(10,179,156,.3)}.ai-number{position:absolute;right:20px;top:10px;color:rgba(255,255,255,.035);font:900 70px monospace}.ai-icon{width:52px;height:52px;border-radius:15px;display:grid;place-items:center;background:linear-gradient(135deg,rgba(255,108,34,.14),rgba(10,179,156,.12));color:#ff7a35;font-size:23px;margin-bottom:22px}.ai-card>span{color:#62d8cc;font:800 10px monospace;letter-spacing:1px}.ai-card h4{color:#fff;font-size:19px;margin:8px 0 10px}.ai-card p{color:#8e96a6;font-size:13px;line-height:1.7}.ai-tag{display:inline-block;margin-top:10px;color:#697386;font:9px monospace;letter-spacing:.7px}.ai-closing{text-align:center;margin-top:35px;color:#8e96a6;font:800 12px monospace;letter-spacing:.7px}.ai-closing b{color:#ff7a35}.marketplace-message{margin-top:100px;padding:38px 42px;border-radius:22px;display:flex;gap:25px;align-items:center;background:linear-gradient(110deg,rgba(255,108,34,.09),rgba(10,179,156,.06));border:1px solid rgba(255,108,34,.2)}.marketplace-icon{width:68px;height:68px;flex:0 0 68px;border-radius:18px;display:grid;place-items:center;color:#ff6c22;font-size:30px;background:rgba(255,108,34,.1)}.marketplace-message h3{color:#fff;font:900 26px monospace;margin:9px 0}.marketplace-message h3 em{font-style:normal;color:#ff7a35}.marketplace-message p{color:#929aaa;margin:0;line-height:1.7}.final-artist-cta{margin-top:100px;padding:65px 25px;border-top:1px solid rgba(255,255,255,.07)}.final-artist-cta h3{color:#fff;font:900 clamp(30px,4vw,48px) monospace;margin:16px 0}.final-artist-cta p{color:#929aaa;max-width:700px;margin:0 auto 28px;line-height:1.7}.artist-cta-large{min-height:58px;padding:0 34px}
+@media(max-width:991px){.journey-shell{flex-wrap:wrap;justify-content:flex-start}.journey-intro{width:100%;border-right:0;border-bottom:1px solid rgba(255,255,255,.08);padding:0 0 14px}.journey-arrow{display:none}.dashboard-showcase{padding:35px 22px}.dashboard-mockup{transform:none}.contractor-journey{padding:38px 0 0;background:#0a0b10}.journey-shell{display:flex;align-items:center;justify-content:center;gap:18px;padding:20px 24px;border:1px solid rgba(255,255,255,.07);border-radius:18px;background:linear-gradient(90deg,rgba(255,108,34,.055),rgba(255,255,255,.018),rgba(10,179,156,.04))}.journey-intro{display:flex;flex-direction:column;padding-right:22px;border-right:1px solid rgba(255,255,255,.08)}.journey-intro small{color:#ff6c22;font:800 9px monospace;letter-spacing:1px}.journey-intro b{color:#fff;font-size:14px;margin-top:3px}.journey-step{display:flex;align-items:center;gap:9px}.journey-step>i{color:#ff6c22;font-size:20px}.journey-step span{display:flex;flex-direction:column}.journey-step b{color:#fff;font-size:12px}.journey-step small{color:#737b8c;font-size:10px}.journey-arrow{color:#343a48}.artist-growth-section{padding-top:80px}.marketplace-message{align-items:flex-start}.artist-main-title{letter-spacing:-1px}.artist-pain-block,.dashboard-showcase,.ai-showcase{margin-top:80px}}
+@media(max-width:575px){.artist-main-title{font-size:32px}.artist-lead,.section-copy{font-size:15px}.dashboard-showcase{padding:28px 16px}.mockup-body main{padding:14px}.mock-stats{grid-template-columns:1fr}.mock-chart{display:none}.marketplace-message{padding:28px 20px;flex-direction:column}.marketplace-message h3{font-size:21px}.artist-cta{width:100%}.ai-closing{line-height:1.7}}
+
+/* v06 — legibilidade da vitrine do painel do artista */
+.dashboard-showcase .section-kicker{font-size:13px;letter-spacing:1.2px}
+.dashboard-showcase .section-copy{font-size:17px;line-height:1.75;color:#b9c5d8;max-width:520px}
+.dashboard-showcase .showcase-list{margin-top:28px}
+.dashboard-showcase .showcase-list>div{margin-bottom:18px;align-items:flex-start}
+.dashboard-showcase .showcase-list i{font-size:21px;margin-top:1px}
+.dashboard-showcase .showcase-list b{font-size:15px;line-height:1.35}
+.dashboard-showcase .showcase-list small{font-size:13px;line-height:1.5;color:#91a4bf;margin-top:4px}
+@media(max-width:767.98px){
+  .dashboard-showcase .section-copy{font-size:16px}
+  .dashboard-showcase .showcase-list b{font-size:15px}
+  .dashboard-showcase .showcase-list small{font-size:13px}
+}
+
+
+/* v07 — legibilidade dos textos DENTRO do mockup do painel */
+.dashboard-mockup .mockup-top{font-size:11px;color:#8792a8}
+.dashboard-mockup .mock-welcome small{font-size:11px!important;line-height:1.35;color:#ff7a32!important;font-weight:800}
+.dashboard-mockup .mock-welcome b{font-size:21px!important;line-height:1.3;color:#fff!important}
+.dashboard-mockup .mock-welcome span{font-size:12px!important;line-height:1.45;color:#9aa8bd!important}
+.dashboard-mockup .mock-stats b{font-size:13px!important;line-height:1.35;color:#fff!important}
+.dashboard-mockup .mock-stats span{font-size:10px!important;line-height:1.4;color:#9aa8bd!important}
+.dashboard-mockup .mock-chart-title b{font-size:12px!important;color:#fff!important}
+.dashboard-mockup .mock-chart-title span{font-size:10px!important;color:#9aa8bd!important}
+.dashboard-mockup .mock-stats i{font-size:19px!important}
+
+
+/* v08 — legibilidade do topo do mockup e dos cards de recursos inteligentes */
+.dashboard-mockup .mockup-top div{
+  font-size:12px!important;
+  font-weight:600!important;
+  color:#aab6c9!important;
+  letter-spacing:.15px;
+}
+
+/* Cards IA */
+.ai-card>span{
+  font-size:12px!important;
+  font-weight:800!important;
+  line-height:1.4;
+  letter-spacing:1px;
+  color:#63ded2!important;
+}
+.ai-card h4{
+  font-size:20px!important;
+  line-height:1.3!important;
+}
+.ai-card p{
+  font-size:15px!important;
+  line-height:1.65!important;
+  color:#aeb8c9!important;
+}
+.ai-card .ai-tag{
+  font-size:10px!important;
+  line-height:1.4!important;
+  color:#91a0b7!important;
+  letter-spacing:.7px;
+}
+.ai-card .ai-number{
+  opacity:.16!important;
+  color:#778399!important;
+  font-size:58px!important;
+}
+.ai-card .ai-icon{
+  width:54px!important;
+  height:54px!important;
+}
+.ai-card .ai-icon i{
+  font-size:24px!important;
+}
+@media(max-width:767.98px){
+  .ai-card p{font-size:14px!important}
+  .ai-card h4{font-size:19px!important}
+}
+
+</style>

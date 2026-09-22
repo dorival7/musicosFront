@@ -44,9 +44,13 @@
               {{ artista.nomeBanda || artista.NomeBanda || 'Atração Sem Nome' }}
             </h1>
             
-            <p class="font-monospace fs-14 mb-0 fw-semibold" style="color: #ff6c22 !important; text-shadow: 0 1px 4px rgba(0,0,0,0.8);">
+            <p class="font-monospace fs-14 mb-3 fw-semibold artist-slogan" style="color: #ff6c22 !important; text-shadow: 0 1px 4px rgba(0,0,0,0.8);">
               🔥 {{ artista.slogan || artista.Slogan || 'Show disponível para contratação direta' }}
             </p>
+
+            <a href="#formatos-show" class="btn hero-cta rounded-pill fw-bold text-uppercase font-monospace px-4 py-2">
+              Ver formatos de show <i class="ri-arrow-down-line ms-1"></i>
+            </a>
 
           </div>
         </BContainer>
@@ -59,7 +63,8 @@
           <!-- COLUNA ESQUERDA: BIOGRAFIA (65%) -->
           <BCol lg="8" class="text-start">
             <div class="card modern-card p-4 border border-light border-opacity-10 shadow-sm mb-4" style="background-color: #131520 !important; border-radius: 16px !important;">
-              <h4 class="text-white fw-bold font-monospace text-uppercase fs-16 mb-3" style="letter-spacing: 0.5px;">
+              <div class="section-kicker font-monospace text-uppercase mb-2">Conheça a atração</div>
+              <h4 class="text-white fw-bold font-monospace text-uppercase fs-18 mb-3" style="letter-spacing: 0.5px;">
                 <i class="ri-user-voice-line text-primary me-2"></i> Nossa História
               </h4>
               <!-- 🛠️ CORREÇÃO DE CHAVE: Lê a biografia real em texto longo do banco -->
@@ -70,9 +75,11 @@
 
             <!-- 📸 PORTFÓLIO DE PALCO: Galeria de Fotos e Player de Vídeo Real do MariaDB -->
             <div class="card modern-card p-4 border border-light border-opacity-10 shadow-sm mb-4" style="background-color: #131520 !important; border-radius: 16px !important;">
-              <h4 class="text-white fw-bold font-monospace text-uppercase fs-16 mb-4" style="letter-spacing: 0.5px;">
-                <i class="ri-image-gallery-line text-primary me-2"></i> Portfólio de Palco
+              <div class="section-kicker font-monospace text-uppercase mb-2">Portfólio de palco</div>
+              <h4 class="text-white fw-bold font-monospace text-uppercase fs-18 mb-2" style="letter-spacing: 0.5px;">
+                <i class="ri-image-gallery-line text-primary me-2"></i> Veja a banda no palco
               </h4>
+              <p class="portfolio-intro font-monospace mb-4">Assista aos vídeos e conheça alguns momentos dos shows antes de escolher o formato ideal para o seu evento.</p>
               <div v-if="videosPortfolio && videosPortfolio.length > 0 && !fotoAtivaGrande" class="mb-3 animate__animated animate__fadeIn">
                 <div class="ratio ratio-16x9 rounded-3 overflow-hidden border border-light border-opacity-10 bg-dark shadow-sm">
                   
@@ -156,7 +163,7 @@
           </BCol>
 
           <!-- COLUNA DIREITA: E-COMMERCE DE PACOTES COM CONTRATAÇÃO DIRETA (35%) -->
-          <BCol lg="4" class="text-start">
+          <BCol lg="4" class="text-start" id="formatos-show">
             <div class="position-sticky" style="top: 100px;">
               
               <div class="card modern-card p-3 border border-light border-opacity-10 shadow-sm mb-4 text-center" style="background-color: #131520 !important; border-radius: 16px !important;">
@@ -167,13 +174,17 @@
                 </p>
               </div>
 
-              <h4 class="text-white fw-bold font-monospace text-uppercase fs-15 mb-3 px-1" style="letter-spacing: 0.5px;">
-                ⚡ Escolha o Formato do Show
-              </h4>
+              <div class="formats-heading px-1 mb-3">
+                <span class="section-kicker font-monospace text-uppercase d-block mb-1">Escolha como quer viver o show</span>
+                <h4 class="text-white fw-bold font-monospace text-uppercase fs-17 mb-1" style="letter-spacing: 0.5px;">
+                  ⚡ Escolha o Formato do Show
+                </h4>
+                <p class="font-monospace mb-0 formats-subtitle">Compare as opções e avance para consultar os detalhes da contratação.</p>
+              </div>
 
               <!-- 🛠️ CORREÇÃO DE CHAVE: Varre e renderiza o array de pacotes reais em minúsculo ou maiúsculo -->
               <div class="d-flex flex-column gap-3" v-if="(artista.pacotes && artista.pacotes.length > 0) || (artista.Pacotes && artista.Pacotes.length > 0)">
-                <div v-for="pacote in (artista.pacotes || artista.Pacotes)" :key="pacote.id || pacote.Id" class="card modern-card p-4 border border-light border-opacity-10 shadow-md h-auto" style="background-color: #131520 !important; border-radius: 16px !important;">
+                <div v-for="pacote in (artista.pacotes || artista.Pacotes)" :key="pacote.id || pacote.Id" class="card modern-card package-card p-4 border border-light border-opacity-10 shadow-md h-auto" style="background-color: #131520 !important; border-radius: 16px !important;">
                   <div class="d-flex flex-column align-items-start mb-3">
                     <h5 class="text-white fw-bold font-monospace text-uppercase fs-15 mb-2 text-wrap w-100" style="letter-spacing: -0.3px; line-height: 1.3;">
                       {{ pacote.title || pacote.Title }}
@@ -197,7 +208,7 @@
                       class="btn btn-primary fw-bold text-uppercase fs-12 font-monospace px-3 rounded-pill shadow-sm"
                       style="background-color: #ff6c22 !important; border-color: #ff6c22 !important; height: 36px;"
                     >
-                      Contratar <i class="ri-arrow-right-line ms-1"></i>
+                      Escolher este show <i class="ri-arrow-right-line ms-1"></i>
                     </button>
                   </div>
                 </div>
@@ -356,6 +367,58 @@ export default {
   border-color: #ff6c22 !important;
   box-shadow: 0 0 10px rgba(255, 108, 34, 0.4) !important;
   opacity: 1 !important;
+}
+
+html { scroll-behavior: smooth; }
+
+.hero-cta {
+  color: #fff !important;
+  background: rgba(10, 11, 16, 0.72) !important;
+  border: 1px solid rgba(255, 108, 34, 0.75) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
+  transition: transform .2s ease, background-color .2s ease, box-shadow .2s ease;
+}
+.hero-cta:hover {
+  background: #ff6c22 !important;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 26px rgba(255, 108, 34, 0.25);
+}
+.artist-slogan { max-width: 900px; }
+.section-kicker {
+  color: #ff6c22;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.1px;
+}
+.portfolio-intro,
+.formats-subtitle {
+  color: #aeb6c4;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.package-card {
+  transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+}
+.package-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(255, 108, 34, 0.42) !important;
+  box-shadow: 0 12px 30px rgba(0,0,0,.24) !important;
+}
+.package-card .btn-primary {
+  min-width: 168px;
+}
+.artist-portfolio-img {
+  transition: transform .25s ease, filter .25s ease;
+}
+.artist-portfolio-img:hover {
+  transform: scale(1.035);
+  filter: brightness(1.08);
+}
+#formatos-show { scroll-margin-top: 110px; }
+
+@media (max-width: 991.98px) {
+  .hero-cta { width: 100%; max-width: 330px; }
+  #formatos-show { scroll-margin-top: 90px; }
 }
 </style>
 

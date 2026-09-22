@@ -1,7 +1,7 @@
 <!-- eslint-disable vue/no-parsing-error -->
 <template>
-  <section class="section pb-0 position-relative overflow-hidden" id="hero"
-    style="padding-top: 140px; padding-bottom: 60px; background-color: #0a0b10 !important;">
+  <section class="section pb-0 position-relative overflow-visible" id="hero"
+    style="padding-top: 140px; padding-bottom: 60px; background-color: #0a0b10 !important; z-index: 20;">
     <!-- PADRÃO DE FUNDO SUTIL DO VELZON -->
     <div class="bg-overlay bg-overlay-pattern opacity-25"></div>
 
@@ -14,17 +14,16 @@
             <span
               class="badge border border-primary border-opacity-20 text-primary fw-bold text-uppercase px-3 py-2 rounded-pill fs-13 mb-3 font-monospace"
               style="background-color: rgba(255, 108, 34, 0.05) !important; letter-spacing: 1px;">
-              ⚡ MAIS DE 500 ARTISTAS PRONTOS PARA O SEU SHOW
+              ⚡ ENCONTRE • COMPARE • CONTRATE COM SEGURANÇA
             </span>
             <h1 class="display-4 fw-bold text-white mb-3 lh-base font-monospace text-uppercase"
               style="letter-spacing: -1px;">
-              O ARTISTA PERFEITO PARA O SEU EVENTO, <br />
-              <span class="text-primary">A UM CLIQUE DE DISTÂNCIA.</span>
+              ENCONTRE O ARTISTA CERTO. <br />
+              <span class="text-primary">VEJA A DISPONIBILIDADE. CONTRATE.</span>
             </h1>
             <p class="lead text-muted lh-base mx-auto mb-5 fs-18 fw-medium"
               style="max-width: 800px; color: #d1d5db !important;">
-              Sem ligações cansativas, sem burocracia e com cachê 100% protegido. Escolha o estilo, simule o frete pelo
-              CEP de forma automática e feche o contrato digital com garantia jurídica absoluta.
+              Encontre músicos e bandas para seu evento, consulte disponibilidade, calcule o deslocamento e feche tudo online — com agenda integrada, contrato digital e pagamento protegido.
             </p>
           </div>
 
@@ -40,7 +39,7 @@
                   <span style="color: #ff6c22;">🔥</span> AQUI VOCÊ ENCONTRA OS MELHORES ARTISTAS E BANDAS DO BRASIL!
                 </h4>
                 <p class="text-muted small mb-0 fs-12 font-monospace" style="color: #9ca3af !important;">
-                  Músicos verificados, com portfólio digital completo e prontos para o seu espetáculo.
+                  Pesquise pela cidade do evento e descubra artistas prontos para transformar sua data em um grande show.
                 </p>
               </div>
 

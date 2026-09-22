@@ -43,11 +43,56 @@
         <!-- 🖼️ LADO DIREITO: GALERIA DE ARTISTAS (GRID DE CARDS ARREDONDADOS)    -->
         <!-- ==================================================================== -->
         <BCol lg="9" md="8">
-          <div class="d-flex justify-content-between align-items-center mb-4 text-start">
-            <div>
+          <div class="catalog-header mb-4 text-start">
+            <div class="catalog-title">
               <h3 class="text-white fw-bold font-monospace text-uppercase fs-20 mb-1" style="letter-spacing: -0.5px;">Catálogo de Atrações</h3>
-              <!-- 🆕 DINÂMICO: Mostra a contagem real baseada nos registros do MariaDB -->
-              <p class="text-muted small mb-0 fs-13">Exibindo {{ artistasFiltrados.length }} artistas disponíveis para o seu show</p>
+              <p class="text-muted small mb-0 fs-13">{{ artistasFiltrados.length }} artistas encontrados</p>
+            </div>
+
+            <div class="artist-search-wrap">
+              <div class="artist-search">
+                <i class="ri-map-pin-2-line"></i>
+                <input v-model="termoBusca" type="text" autocomplete="off"
+                  aria-label="Onde será o seu evento?"
+                  placeholder="Onde será o seu evento? Digite 3 letras..."
+                  @input="buscarCidades" @focus="buscaComFoco = true"
+                  @blur="fecharAutocomplete" @keydown.esc="sugestoes = []" />
+                <button v-if="termoBusca" type="button" class="artist-search-clear"
+                  aria-label="Limpar local" @mousedown.prevent @click="limparFiltroGeografico">
+                  <i class="ri-close-line"></i>
+                </button>
+              </div>
+              <div v-if="buscaComFoco && Array.isArray(sugestoes) && sugestoes.length > 0" class="artist-autocomplete">
+                <button v-for="(cidade, index) in sugestoes" :key="'cidade-top-' + index"
+                  type="button" class="artist-autocomplete-item" @mousedown.prevent="selecionarCidade(cidade)">
+                  <span class="artist-autocomplete-icon"><i class="ri-map-pin-line"></i></span>
+                  <span class="artist-autocomplete-copy">
+                    <strong>{{ cidade }}</strong>
+                    <small>Buscar artistas próximos ao local do show</small>
+                  </span>
+                  <i class="ri-arrow-right-up-line artist-autocomplete-arrow"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="artist-name-search mt-2">
+              <i class="ri-search-line"></i>
+              <input
+                v-model="termoBuscaTexto"
+                type="text"
+                autocomplete="off"
+                aria-label="Buscar pelo nome do artista ou banda"
+                placeholder="Ou busque pelo nome do artista ou banda..."
+              />
+              <button
+                v-if="termoBuscaTexto"
+                type="button"
+                class="artist-search-clear"
+                aria-label="Limpar nome"
+                @click="termoBuscaTexto = ''"
+              >
+                <i class="ri-close-line"></i>
+              </button>
             </div>
           </div>
 
@@ -56,7 +101,7 @@
             <BCol lg="4" md="6" sm="12" v-for="artista in artistasFiltrados" :key="artista.Id || artista.id" class="d-flex">
               
               <!-- CARD FLUIDO COM ALTURA FIXA IGUALADA (d-flex flex-column w-100) -->
-              <div class="modern-card overflow-hidden d-flex flex-column w-100" @click="handleNavigateToArtist(artista.slug || artista.Slug)" style="cursor: pointer; border-radius: 16px !important;">
+              <div class="modern-card artist-result-card overflow-hidden d-flex flex-column w-100" @click="handleNavigateToArtist(artista.slug || artista.Slug)" style="cursor: pointer; border-radius: 16px !important;">
                 
                 <!-- CONTAINER DA FOTO DE CAPA CALIBRADA NAS DIMENSÕES EXATAS DO PAINEL -->
                 <div class="position-relative overflow-hidden border-bottom border-light border-opacity-5" style="height: 180px; min-height: 180px; background-color: #141622;">
@@ -85,9 +130,12 @@
                     {{ artista.nomeBanda || artista.NomeBanda || 'Atração Sem Nome' }}
                   </h5>
                   
-                  <!-- SLOGAN LIMITADO A DUAS LINHAS COM ESPAÇAMENTO FIXO -->
-                  <p class="text-muted small mb-3 text-truncate-2 font-monospace fs-12 lh-base" style="color: #9ca3af !important; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 36px;">
-                    {{ artista.slogan || artista.Slogan || 'Nenhum slogan comercial cadastrado.' }}
+                  <!-- SLOGAN: só ocupa espaço quando o artista cadastrou conteúdo -->
+                  <p
+                    v-if="artista.slogan || artista.Slogan"
+                    class="text-muted small mb-3 text-truncate-2 font-monospace fs-12 lh-base artist-slogan"
+                  >
+                    {{ artista.slogan || artista.Slogan }}
                   </p>
                   
                   <!-- 🗺️ LOCALIZAÇÃO ASSENTADA E COMPUTAÇÃO DE DISTÂNCIA DINÂMICA -->
@@ -157,6 +205,9 @@ export default {
   components: { NavbarPublic },
   data() {
     return {
+      sugestoes: [],
+      termoBusca: "",
+      debounceCidadeTimer: null,
       loading: false,
       artistasLista: [], // 🆕 DINÂMICO: Recebe a carga geral ou filtrada por raio geográfico
       filtrosDisponiveis: {
@@ -168,7 +219,8 @@ export default {
         uf: ""
       },
       // 🕵️‍♂️ REATIVIDADE TEXTUAL: Suporta buscas por nomes de bandas vindas da Home
-      termoBuscaTexto: ""
+      termoBuscaTexto: "",
+      buscaComFoco: false
     };
   },
   computed: {
@@ -206,10 +258,63 @@ export default {
     }
   },
   methods: {
+    // AUTOCOMPLETE GEOGRÁFICO — MESMO ENDPOINT DA HOME/LP
+    buscarCidades() {
+      clearTimeout(this.debounceCidadeTimer);
+      const termo = (this.termoBusca || "").trim();
+
+      if (termo.length < 3) {
+        this.sugestoes = [];
+        return;
+      }
+
+      this.debounceCidadeTimer = setTimeout(() => {
+        this.consultarMunicipiosApi(termo);
+      }, 300);
+    },
+
+    async consultarMunicipiosApi(termo) {
+      try {
+        const response = await axios.get(
+          `${process.env.VUE_APP_API_BASE_URL}/public/artists/cities/autocomplete`,
+          { params: { termo } }
+        );
+        this.sugestoes = Array.isArray(response.data) ? response.data : [];
+        this.buscaComFoco = true;
+      } catch (error) {
+        console.error("Falha ao carregar autocomplete de cidades:", error);
+        this.sugestoes = [];
+      }
+    },
+
+    selecionarCidade(cidade) {
+      this.termoBusca = cidade;
+      this.sugestoes = [];
+      this.buscaComFoco = false;
+
+      const partes = String(cidade).split(" - ");
+      const query = {
+        cidade: (partes[0] || "").trim(),
+        uf: partes.length >= 2 ? partes[partes.length - 1].trim().toUpperCase() : "PR"
+      };
+
+      this.$router.push({ path: "/artistas", query }).then(() => {
+        this.processarCargaCatalogo();
+      });
+    },
+
+    fecharAutocomplete() {
+      window.setTimeout(() => {
+        this.buscaComFoco = false;
+        this.sugestoes = [];
+      }, 120);
+    },
     limparFiltroGeografico() {
       console.log("🧹 [VITRINE] Limpando filtros geográficos de raio por contingência de clique.");
       
       // Limpa os estados textuais locais de suporte
+      this.termoBusca = "";
+      this.sugestoes = [];
       this.termoBuscaTexto = "";
       this.filtrosAtivos.uf = "";
       this.filtrosAtivos.estilos = [];
@@ -241,6 +346,10 @@ export default {
       const queryCidade = this.$route.query.cidade;
       const queryUf = this.$route.query.uf;
       const queryTexto = this.$route.query.q;
+
+      if (queryCidade && queryUf) {
+        this.termoBusca = `${queryCidade} - ${queryUf}`;
+      }
 
       if (queryTexto) {
         this.termoBuscaTexto = queryTexto.trim();
@@ -280,7 +389,7 @@ export default {
     },
 
     formatCurrency(value) {
-      if (!value || value === 0) return "Sob Consulta";
+      if (!value || value === 0) return "Consultar cachê";
       return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(value);
     },
     handleNavigateToArtist(slug) {
@@ -294,3 +403,221 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+
+.artist-search-wrap {
+  position: relative;
+  width: min(360px, 100%);
+}
+
+.artist-search-wrap .artist-search {
+  width: 100%;
+}
+
+.artist-autocomplete {
+  position: absolute;
+  z-index: 50;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  overflow: hidden;
+  background: #10121b;
+  border: 1px solid rgba(255,108,34,.45);
+  border-radius: 13px;
+  box-shadow: 0 18px 42px rgba(0,0,0,.48);
+}
+
+.artist-autocomplete-item {
+  width: 100%;
+  min-height: 58px;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 10px 12px;
+  border: 0;
+  border-bottom: 1px solid rgba(255,255,255,.07);
+  background: transparent;
+  color: #fff;
+  text-align: left;
+  cursor: pointer;
+}
+
+.artist-autocomplete-item:last-child {
+  border-bottom: 0;
+}
+
+.artist-autocomplete-item:hover,
+.artist-autocomplete-item:focus {
+  outline: 0;
+  background: rgba(255,108,34,.10);
+}
+
+.artist-autocomplete-icon {
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 9px;
+  background: rgba(255,108,34,.12);
+  color: #ff6c22;
+  font-size: 17px;
+}
+
+.artist-autocomplete-copy {
+  min-width: 0;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.artist-autocomplete-copy strong {
+  overflow: hidden;
+  color: #f7f7f8;
+  font-size: 13px;
+  font-family: monospace;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.artist-autocomplete-copy small {
+  color: #8f98aa;
+  font-size: 11px;
+}
+
+.artist-autocomplete-arrow {
+  color: #ff6c22;
+  opacity: .72;
+}
+
+.catalog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 22px;
+}
+
+.artist-search {
+  width: min(360px, 100%);
+  height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 13px;
+  background: #10121b;
+  border: 1px solid rgba(255,255,255,.11);
+  border-radius: 12px;
+  transition: border-color .2s ease, box-shadow .2s ease, background-color .2s ease;
+}
+
+.artist-search:focus-within {
+  background: #12151f;
+  border-color: rgba(255,108,34,.62);
+  box-shadow: 0 0 0 3px rgba(255,108,34,.08);
+}
+
+.artist-search > i {
+  color: #ff6c22;
+  font-size: 18px;
+  flex: 0 0 auto;
+}
+
+.artist-search input {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #fff;
+  font-size: 13px;
+  font-family: monospace;
+}
+
+.artist-search input::placeholder {
+  color: #7f8798;
+}
+
+.artist-search-clear {
+  border: 0;
+  background: transparent;
+  color: #9ca3af;
+  padding: 2px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.artist-search-clear:hover {
+  color: #fff;
+}
+
+.artist-result-card {
+  border: 1px solid rgba(255,255,255,.13) !important;
+  transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+}
+
+.artist-result-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(255,108,34,.72) !important;
+  box-shadow: 0 14px 32px rgba(0,0,0,.34), 0 0 0 1px rgba(255,108,34,.08);
+}
+
+.artist-result-card:hover .artist-card-img {
+  transform: scale(1.025);
+}
+
+.artist-card-img {
+  transition: transform .28s ease;
+}
+
+.artist-slogan {
+  color: #9ca3af !important;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+@media (max-width: 767.98px) {
+  .catalog-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .artist-search-wrap,
+  .artist-search {
+    width: 100%;
+  }
+}
+
+.artist-name-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 42px;
+  border: 1px solid rgba(255, 107, 32, 0.35);
+  border-radius: 12px;
+  background: rgba(18, 20, 31, 0.92);
+  padding: 0 42px 0 44px;
+}
+.artist-name-search > i {
+  position: absolute;
+  left: 16px;
+  color: #ff6b20;
+  font-size: 18px;
+}
+.artist-name-search input {
+  width: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #fff;
+  font-family: inherit;
+  font-size: 13px;
+}
+.artist-name-search input::placeholder {
+  color: rgba(255,255,255,.45);
+}
+
+</style>
