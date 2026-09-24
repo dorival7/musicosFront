@@ -1,9 +1,10 @@
 <!-- eslint-disable vue/no-parsing-error -->
 <template>
-  <section class="section pb-0 position-relative overflow-visible" id="hero"
-    style="padding-top: 140px; padding-bottom: 60px; background-color: #0a0b10 !important; z-index: 20;">
-    <!-- PADRÃO DE FUNDO SUTIL DO VELZON -->
-    <div class="bg-overlay bg-overlay-pattern opacity-25"></div>
+  <section class="section pb-0 position-relative overflow-visible seven-hero-cinematic" id="hero"
+    style="padding-top: 140px; padding-bottom: 60px; z-index: 20;">
+    <!-- FOTO DE PALCO + CAMADAS DE CONTRASTE; conteúdo e busca originais preservados -->
+    <div class="seven-hero-photo" aria-hidden="true"></div>
+    <div class="seven-hero-shade" aria-hidden="true"></div>
 
     <div class="container position-relative z-1">
       <div class="row justify-content-center text-center">
@@ -16,7 +17,7 @@
               style="background-color: rgba(255, 108, 34, 0.05) !important; letter-spacing: 1px;">
               ⚡ ENCONTRE • COMPARE • CONTRATE COM SEGURANÇA
             </span>
-            <h1 class="display-4 fw-bold text-white mb-3 lh-base font-monospace text-uppercase"
+            <h1 class="display-5 fw-bold text-white mb-3 lh-base font-monospace text-uppercase"
               style="letter-spacing: -1px;">
               ENCONTRE O ARTISTA CERTO. <br />
               <span class="text-primary">VEJA A DISPONIBILIDADE. CONTRATE.</span>
@@ -195,6 +196,34 @@ export default {
 </script>
 
 <style scoped>
+.seven-hero-cinematic {
+  background:#07090e !important;
+  min-height:760px;
+  display:flex;
+  align-items:center;
+}
+.seven-hero-photo {
+  position:absolute; inset:0;
+  background:url('~@/assets/images/banner-artist-default.jpg') center 64%/cover no-repeat;
+  opacity:.78;
+  filter:saturate(.88) contrast(.96) brightness(.72);
+  pointer-events:none;
+}
+.seven-hero-shade {
+  position:absolute; inset:0; z-index:0;
+  background:
+    linear-gradient(90deg,rgba(5,7,12,.18) 0%,rgba(5,7,12,.44) 28%,rgba(5,7,12,.72) 50%,rgba(5,7,12,.44) 72%,rgba(5,7,12,.18) 100%),
+    linear-gradient(180deg,rgba(5,7,12,.12) 0%,rgba(5,7,12,.18) 55%,rgba(5,7,12,.68) 92%,#0a0b10 100%);
+  pointer-events:none;
+}
+.seven-hero-cinematic .container{z-index:2!important}
+.seven-hero-cinematic h1{text-shadow:0 5px 28px rgba(0,0,0,.72)}
+.seven-hero-cinematic .lead{text-shadow:0 2px 16px rgba(0,0,0,.72)}
+@media(max-width:767.98px){
+  .seven-hero-cinematic{min-height:auto;padding-top:125px!important}
+  .seven-hero-photo{background-position:center 62%;opacity:.72;filter:saturate(.9) contrast(.96) brightness(.62)}
+}
+
 .sevenshows-search-monolith {
   background-color: #161925 !important;
   border: 1px solid rgba(255, 255, 255, 0.08) !important;

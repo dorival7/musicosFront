@@ -9,10 +9,14 @@
     <div class="vertical-overlay" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent.show"></div>
 
     <!-- COMPONENTE 2: ABERTURA HERO COM BARRA DE BUSCA EM LINHA -->
-    <HeroPublic />
+    <section class="home-session hero-session">
+      <BContainer fluid class="p-0">
+        <HeroPublic />
+      </BContainer>
+    </section>
 
     <!-- JORNADA RÁPIDA DO CONTRATANTE -->
-    <section class="contractor-journey">
+    <section class="home-session contractor-journey">
       <BContainer>
         <div class="journey-shell">
           <div class="journey-intro"><small>DO PRIMEIRO CLIQUE AO SHOW</small><b>Contrate sem complicação</b></div>
@@ -28,18 +32,19 @@
     </section>
 
     <!-- CARROSSEL DE ARTISTAS EM DESTAQUE (MANTIDO DO DESIGN BASE) -->
-    <div class="pt-5 mt-5">
+    <section class="home-session featured-artists-session">
       <BContainer>
         <BRow>
           <BCol lg="12">
-            <div class="text-center mt-5">
+            <div class="home-session-header text-center">
               <h5 class="fs-20 text-white font-monospace text-uppercase mb-1" style="letter-spacing: 0.5px;">
                 Artistas em <span class="text-primary text-decoration-underline">Destaque</span> na Plataforma
               </h5>
-              <p class="text-muted small mb-4">Conheça algumas das grandes atrações disponíveis para o seu espetáculo
+              <p class="text-muted small mb-0">Conheça algumas das grandes atrações disponíveis para o seu espetáculo
               </p>
+            </div>
 
-              <div class="trusted-client-slider mt-sm-5 mt-4 mb-sm-5 mb-4">
+            <div class="home-session-body trusted-client-slider">
 
                 <!-- SWIPER REATIVO INTEGRADO AO ECOSSISTEMA SEVENSHOWS -->
                 <swiper class="swiper responsive-swiper rounded gallery-light pb-4" :loop="artistasLista.length > 4"
@@ -114,18 +119,17 @@
                 </div>
 
               </div>
-            </div>
           </BCol>
         </BRow>
       </BContainer>
-    </div>
+    </section>
 
     <!-- SEÇÃO DA TRÍADE DE SEGURANÇA SEVENSHOWS -->
-    <section class="section" id="seguranca">
+    <section class="home-session security-session" id="seguranca">
       <BContainer>
         <BRow class="justify-content-center">
           <BCol lg="8">
-            <div class="text-center mb-5">
+            <div class="home-session-header text-center">
               <h1 class="mb-3 ff-secondary fw-semibold lh-base text-white">Contratação Segura com
                 Tecnologia de Ponta</h1>
               <p class="text-muted fs-15">Garantimos transparência absoluta e proteção jurídica para
@@ -134,9 +138,9 @@
           </BCol>
         </BRow>
 
-        <BRow class="g-3">
+        <BRow class="home-session-body gx-3 gy-0">
           <BCol lg="4">
-            <div class="d-flex p-3 card-h border-0 rounded-3 p-4" style="background-color: #131520;">
+            <div class="d-flex card-h border-0 rounded-3" style="background-color: #131520;">
               <div class="flex-shrink-0 me-3">
                 <div class="avatar-sm icon-effect">
                   <div class="avatar-title bg-transparent text-primary rounded-circle">
@@ -153,7 +157,7 @@
             </div>
           </BCol>
           <BCol lg="4">
-            <div class="d-flex p-3 card-h border-0 rounded-3 p-4" style="background-color: #131520;">
+            <div class="d-flex card-h border-0 rounded-3" style="background-color: #131520;">
               <div class="flex-shrink-0 me-3">
                 <div class="avatar-sm icon-effect">
                   <div class="avatar-title bg-transparent text-primary rounded-circle">
@@ -169,7 +173,7 @@
             </div>
           </BCol>
           <BCol lg="4">
-            <div class="d-flex p-3 card-h border-0 rounded-3 p-4" style="background-color: #131520;">
+            <div class="d-flex card-h border-0 rounded-3" style="background-color: #131520;">
               <div class="flex-shrink-0 me-3">
                 <div class="avatar-sm icon-effect">
                   <div class="avatar-title bg-transparent text-primary rounded-circle">
@@ -191,12 +195,11 @@
     <!-- ==================================================================== -->
     <!-- SEÇÃO 1: COMO FUNCIONA PARA CONTRATANTES (LINHA DO TEMPO VISUAL)     -->
     <!-- ==================================================================== -->
-    <section class="section border-top border-light border-opacity-5" id="como-funciona"
-      style="padding-top: 80px; padding-bottom: 80px;">
+    <section class="home-session how-it-works-session" id="como-funciona">
       <BContainer>
         <BRow class="justify-content-center">
           <BCol lg="8">
-            <div class="text-center mb-5 animate__animated animate__fadeIn">
+            <div class="home-session-header text-center animate__animated animate__fadeIn">
               <span
                 class="badge bg-primary-subtle text-primary fw-bold text-uppercase px-3 py-2 rounded-pill fs-11 mb-2">
                 🛡️ O MELHOR PARA O SEU EVENTO!!!
@@ -208,7 +211,7 @@
           </BCol>
         </BRow>
 
-        <BRow class="g-4">
+        <BRow class="home-session-body gx-4 home-session-grid">
           <!-- PASSO 01 -->
           <BCol lg="4" md="6">
             <div class="p-4 rounded-3 h-100 position-relative border border-light border-opacity-5 modern-card"
@@ -267,12 +270,21 @@
       </BContainer>
     </section>
 
+    <!-- MOMENTO VISUAL — mantém a narrativa e acrescenta emoção de palco -->
+    <section class="home-session seven-stage-break" aria-label="A experiência do palco começa na Seven Shows">
+      <BContainer class="position-relative" style="z-index:2;">
+        <div class="seven-stage-break-copy">
+          <span>DO PRIMEIRO CLIQUE AO PALCO</span>
+          <h2>TECNOLOGIA PARA CONTRATAR.<br><b>EMOÇÃO PARA VIVER.</b></h2>
+          <p>Encontre o artista certo, organize cada etapa da contratação e deixe o espetáculo acontecer.</p>
+        </div>
+      </BContainer>
+    </section>
+
     <!-- ==================================================================== -->
-    <!-- ÁREA DO MÚSICO — AQUISIÇÃO, ENCANTAMENTO E CONVERSÃO                -->
+    <!-- ÁREA DO MÚSICO — cada bloco principal é uma home-session independente -->
     <!-- ==================================================================== -->
-    <section class="artist-growth-section" id="vantagens-musico">
-      <div class="artist-glow artist-glow-orange"></div>
-      <div class="artist-glow artist-glow-cyan"></div>
+    <section class="home-session artist-intro-session artist-growth-surface" id="vantagens-musico">
       <BContainer class="position-relative" style="z-index: 2;">
         <BRow class="justify-content-center">
           <BCol lg="10" class="text-center">
@@ -289,14 +301,18 @@
             <div class="artist-mini-proof mt-3"><i class="ri-check-line"></i> Cadastre-se e acesse seu painel para começar a configurar sua presença na Seven Shows.</div>
           </BCol>
         </BRow>
+        </BContainer>
+      </section>
 
-        <div class="artist-pain-block">
-          <div class="text-center mb-5">
+    <section class="home-session artist-benefits-session artist-growth-surface">
+        <BContainer>
+      <div class="artist-pain-block">
+          <div class="home-session-header text-center">
             <span class="section-kicker">MENOS IMPROVISO. MAIS PROFISSIONALISMO.</span>
             <h3 class="section-title">MENOS TEMPO ORGANIZANDO.<br><span>MAIS TEMPO TOCANDO.</span></h3>
             <p class="section-copy">A Seven Shows centraliza tarefas que hoje ficam espalhadas entre WhatsApp, agenda, anotações, arquivos e planilhas.</p>
           </div>
-          <BRow class="g-4">
+          <BRow class="home-session-body gx-4 home-session-grid">
             <BCol md="6" lg="4" v-for="beneficio in beneficiosMusico" :key="beneficio.titulo">
               <div class="benefit-card h-100">
                 <div class="benefit-icon"><i :class="beneficio.icone"></i></div>
@@ -308,10 +324,13 @@
               </div>
             </BCol>
           </BRow>
-        </div>
+      </div>
+        </BContainer>
+      </section>
 
-        <!-- MOCKUP DO PAINEL -->
-        <div class="dashboard-showcase">
+    <section class="home-session artist-dashboard-session artist-growth-surface">
+        <BContainer>
+      <div class="dashboard-showcase">
           <BRow class="align-items-center g-5">
             <BCol lg="5">
               <span class="section-kicker">SEU NEGÓCIO NA PALMA DA MÃO</span>
@@ -338,16 +357,19 @@
               </div>
             </BCol>
           </BRow>
-        </div>
+      </div>
+        </BContainer>
+      </section>
 
-        <!-- IA -->
-        <div class="ai-showcase" id="recursos-ia">
-          <div class="text-center mb-5">
+    <section class="home-session artist-ai-session artist-growth-surface" id="recursos-ia">
+        <BContainer>
+      <div class="ai-showcase">
+          <div class="home-session-header text-center">
             <span class="ai-badge"><i class="ri-sparkling-fill"></i> RECURSOS INTELIGENTES SEVEN</span>
             <h3 class="section-title">MAIS QUE UM PAINEL.<br><span>FERRAMENTAS INTELIGENTES PARA O SEU SHOW.</span></h3>
             <p class="section-copy">Tecnologia aplicada a tarefas reais do músico: preparar repertório, trabalhar cifras e criar divulgação sem sair da plataforma.</p>
           </div>
-          <BRow class="g-4">
+          <BRow class="home-session-body gx-4 home-session-grid">
             <BCol lg="4">
               <div class="ai-card h-100"><div class="ai-number">01</div><div class="ai-icon"><i class="ri-music-2-line"></i></div><span>REPERTÓRIO INTELIGENTE</span><h4>Organize melhor o seu show</h4><p>Use recursos inteligentes para estruturar e otimizar seu setlist, organizar a sequência das músicas e trabalhar a dinâmica do espetáculo.</p><div class="ai-tag">SETLIST • ORGANIZAÇÃO • ENERGIA</div></div>
             </BCol>
@@ -359,20 +381,55 @@
             </BCol>
           </BRow>
           <div class="ai-closing">DA PREPARAÇÃO AO PALCO. DA DIVULGAÇÃO AO PAGAMENTO. <b>TUDO NA SEVEN SHOWS.</b></div>
-        </div>
+      </div>
+        </BContainer>
+      </section>
 
-        <!-- MARKETPLACE + CTA -->
-        <div class="marketplace-message">
+    <section class="home-session artist-marketplace-session artist-growth-surface">
+        <BContainer>
+      <div class="marketplace-section">
+        <div class="home-session-header marketplace-message">
           <div class="marketplace-icon"><i class="ri-store-3-line"></i></div>
           <div class="flex-grow-1"><span class="section-kicker">UM DIFERENCIAL QUE VAI ALÉM DA GESTÃO</span><h3>NÃO É APENAS UM PAINEL. <em>É SUA VITRINE PARA NOVOS SHOWS.</em></h3><p>Você administra sua carreira no mesmo ecossistema em que contratantes podem descobrir seu trabalho, conhecer seu perfil e iniciar uma contratação.</p></div>
         </div>
 
-        <div class="final-artist-cta text-center">
+        <div class="home-session-body marketplace-body">
+          <div class="marketplace-body-item">
+            <div class="marketplace-body-icon"><i class="ri-profile-line"></i></div>
+            <div><span>SEU PERFIL É SUA VITRINE</span><p>Apresente seu repertório, estilos, fotos, vídeos e as informações que ajudam o contratante a conhecer o seu trabalho.</p></div>
+          </div>
+          <div class="marketplace-body-flow"><i class="ri-arrow-right-line"></i></div>
+          <div class="marketplace-body-item">
+            <div class="marketplace-body-icon"><i class="ri-search-eye-line"></i></div>
+            <div><span>SEJA ENCONTRADO</span><p>Contratantes podem encontrar artistas por cidade, estilo e disponibilidade e chegar diretamente ao seu perfil.</p></div>
+          </div>
+          <div class="marketplace-body-flow"><i class="ri-arrow-right-line"></i></div>
+          <div class="marketplace-body-item">
+            <div class="marketplace-body-icon"><i class="ri-hand-coin-line"></i></div>
+            <div><span>RECEBA OPORTUNIDADES</span><p>Do perfil à proposta e à contratação, a oportunidade continua dentro do mesmo ecossistema Seven Shows.</p></div>
+          </div>
+        </div>
+      </div>
+        </BContainer>
+      </section>
+
+    <section class="home-session artist-final-cta-session artist-growth-surface">
+        <BContainer>
+      <div class="final-artist-cta final-artist-cta-visual text-center">
           <span class="section-kicker">PRONTO PARA PROFISSIONALIZAR SEUS SHOWS?</span>
           <h3>COLOQUE SUA CARREIRA NO <span>PRÓXIMO PALCO.</span></h3>
           <p>Crie sua presença na Seven Shows, entre no painel e conheça os recursos disponíveis para organizar e vender melhor o seu trabalho.</p>
           <router-link to="/quero-vender" class="artist-cta artist-cta-primary artist-cta-large"><i class="ri-rocket-fill"></i> QUERO FAZER PARTE DA SEVEN SHOWS</router-link>
-        </div>
+      </div>
+        </BContainer>
+    </section>
+
+    <!-- PUBLICIDADE / PARCEIROS SEVEN SHOWS
+         Mantida após toda a narrativa institucional para não interromper
+         a jornada de contratantes e artistas na landing page. -->
+    <section class="home-session advertising-session">
+      <BContainer fluid class="p-0">
+        <PaidAdvertising />
       </BContainer>
     </section>
 
@@ -392,6 +449,7 @@ import 'swiper/css/pagination';
 import "@/assets/scss/public-theme.css";
 import NavbarPublic from "@/components/public/NavbarPublic.vue";
 import HeroPublic from "@/components/public/HeroPublic.vue";
+import PaidAdvertising from "@/components/public/PaidAdvertising.vue";
 
 export default {
   data() {
@@ -413,7 +471,8 @@ export default {
     Swiper,
     SwiperSlide,
     NavbarPublic,
-    HeroPublic
+    HeroPublic,
+    PaidAdvertising
   },
   methods: {
     // 🆕 INTEGRADO: Varre a API pública e popula o carrossel reativamente
@@ -533,8 +592,29 @@ export default {
 
 <style scoped>
 .contractor-journey{padding:38px 0 0;background:#0a0b10}.journey-shell{display:flex;align-items:center;justify-content:center;gap:18px;padding:20px 24px;border:1px solid rgba(255,255,255,.07);border-radius:18px;background:linear-gradient(90deg,rgba(255,108,34,.055),rgba(255,255,255,.018),rgba(10,179,156,.04))}.journey-intro{display:flex;flex-direction:column;padding-right:22px;border-right:1px solid rgba(255,255,255,.08)}.journey-intro small{color:#ff6c22;font:800 9px monospace;letter-spacing:1px}.journey-intro b{color:#fff;font-size:14px;margin-top:3px}.journey-step{display:flex;align-items:center;gap:9px}.journey-step>i{color:#ff6c22;font-size:20px}.journey-step span{display:flex;flex-direction:column}.journey-step b{color:#fff;font-size:12px}.journey-step small{color:#737b8c;font-size:10px}.journey-arrow{color:#343a48}.artist-growth-section{position:relative;overflow:hidden;padding:110px 0 90px;background:linear-gradient(180deg,#090a0f 0%,#0d0f17 48%,#08090d 100%);border-top:1px solid rgba(255,255,255,.06)}
-.artist-glow{position:absolute;border-radius:50%;filter:blur(100px);pointer-events:none;opacity:.13}.artist-glow-orange{width:500px;height:500px;background:#ff6c22;top:80px;left:-250px}.artist-glow-cyan{width:500px;height:500px;background:#00c8c8;top:420px;right:-300px}.artist-eyebrow,.section-kicker,.ai-badge{display:inline-flex;align-items:center;gap:8px;color:#ff7a35;font:800 12px/1 monospace;letter-spacing:1.4px;text-transform:uppercase}.artist-eyebrow{padding:10px 16px;border:1px solid rgba(255,108,34,.35);border-radius:30px;background:rgba(255,108,34,.07)}.artist-entry-label{display:flex;flex-direction:column;align-items:center;gap:14px;margin-bottom:10px}.artist-eyebrow{font-size:13px;padding:12px 22px;border-color:rgba(255,108,34,.58);background:linear-gradient(90deg,rgba(255,108,34,.14),rgba(255,108,34,.05));box-shadow:0 0 28px rgba(255,108,34,.10)}.artist-audience-callout{color:#fff;font:900 clamp(18px,2vw,25px)/1.25 monospace;letter-spacing:.4px;text-transform:uppercase}.artist-main-title{margin:24px auto 18px;color:#fff;font:900 clamp(34px,4.2vw,58px)/1.08 monospace;letter-spacing:-2px;max-width:1000px}.artist-main-title span,.section-title span,.final-artist-cta h3 span{background:linear-gradient(90deg,#ff6c22,#ff9d66);-webkit-background-clip:text;-webkit-text-fill-color:transparent}.artist-lead,.section-copy{max-width:820px;margin:0 auto;color:#aeb4c2;font-size:17px;line-height:1.75}.artist-cta{min-height:52px;padding:0 28px;border-radius:28px;display:inline-flex;align-items:center;justify-content:center;gap:9px;text-decoration:none!important;font:900 12px/1 monospace;letter-spacing:.6px;transition:.25s}.artist-cta-primary{color:#fff!important;background:linear-gradient(135deg,#ff5d16,#ff7b32);box-shadow:0 12px 30px rgba(255,108,34,.24)}.artist-cta-primary:hover{transform:translateY(-2px);box-shadow:0 16px 38px rgba(255,108,34,.35)}.artist-cta-ghost{color:#e9edf5!important;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.035)}.artist-mini-proof{color:#b7c2d3;font-size:14px;font-weight:500;line-height:1.55;margin-top:18px!important}.artist-mini-proof i{color:#18d5bd;font-size:16px;margin-right:4px}.artist-mini-proof i{color:#0ab39c}.artist-pain-block,.dashboard-showcase,.ai-showcase{margin-top:110px}.section-title{color:#fff;font:900 clamp(28px,3.1vw,42px)/1.15 monospace;letter-spacing:-1.2px;margin:14px 0 16px}.benefit-card{display:flex;gap:17px;padding:25px;border:1px solid rgba(255,255,255,.08);border-radius:18px;background:linear-gradient(145deg,rgba(22,24,35,.95),rgba(13,15,23,.95));transition:.25s}.benefit-card:hover{transform:translateY(-4px);border-color:rgba(255,108,34,.38);box-shadow:0 16px 35px rgba(0,0,0,.25)}.benefit-icon{width:46px;height:46px;flex:0 0 46px;border-radius:13px;display:flex;align-items:center;justify-content:center;color:#ff6c22;font-size:21px;background:rgba(255,108,34,.09);border:1px solid rgba(255,108,34,.2)}.benefit-card small{color:#ff7a35;font:800 10px monospace;letter-spacing:.8px}.benefit-card h4{color:#fff;font-size:16px;margin:6px 0 8px}.benefit-card p{color:#8f96a5;font-size:13px;line-height:1.6;margin:0}.dashboard-showcase{padding:60px;border-radius:28px;border:1px solid rgba(255,255,255,.07);background:radial-gradient(circle at 85% 20%,rgba(10,179,156,.08),transparent 34%),#0c0e15}.showcase-list{margin-top:28px;display:grid;gap:16px}.showcase-list>div{display:flex;gap:12px}.showcase-list i{color:#0ab39c;font-size:21px}.showcase-list span{display:flex;flex-direction:column}.showcase-list b{color:#fff;font-size:14px}.showcase-list small{color:#7f8796;font-size:12px;margin-top:3px}.dashboard-mockup{border:1px solid rgba(255,255,255,.13);border-radius:18px;background:#10131d;box-shadow:0 30px 70px rgba(0,0,0,.45);overflow:hidden;transform:perspective(1200px) rotateY(-2deg)}.mockup-top{height:38px;display:flex;align-items:center;gap:6px;padding:0 13px;background:#171a25;border-bottom:1px solid rgba(255,255,255,.06)}.mockup-top>span{width:8px;height:8px;border-radius:50%;background:#3d4251}.mockup-top div{margin-left:12px;color:#555e70;font:10px monospace}.mockup-body{display:flex;min-height:360px}.mockup-body aside{width:58px;padding:18px 0;display:flex;flex-direction:column;align-items:center;gap:20px;background:#0b0d13;border-right:1px solid rgba(255,255,255,.05);color:#4f586b}.mock-logo{width:29px;height:29px;border-radius:9px;display:grid;place-items:center;background:#ff6c22;color:#fff;font-weight:900}.mockup-body aside i{font-size:17px}.mockup-body aside i.active{color:#ff6c22}.mockup-body main{padding:24px;flex:1}.mock-welcome{display:flex;flex-direction:column}.mock-welcome small{color:#ff6c22;font:9px monospace}.mock-welcome b{color:#fff;font-size:20px;margin:4px 0}.mock-welcome span{color:#687184;font-size:10px}.mock-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:22px 0}.mock-stats>div{padding:14px;border-radius:10px;background:#171a25;border:1px solid rgba(255,255,255,.05);display:flex;flex-direction:column}.mock-stats i{color:#0ab39c;font-size:17px}.mock-stats b{color:#fff;font-size:11px;margin:8px 0 2px}.mock-stats span{color:#626b7d;font-size:8px}.mock-chart{height:145px;padding:15px;border-radius:11px;background:#171a25}.mock-chart-title{display:flex;justify-content:space-between;color:#fff;font-size:10px}.mock-chart-title span{color:#60697a;font-size:8px}.bars{height:90px;display:flex;align-items:end;gap:9px;padding-top:12px}.bars i{flex:1;min-height:18%;border-radius:4px 4px 0 0;background:linear-gradient(#ff7a35,#71351c)}.ai-showcase{padding-top:20px}.ai-badge{padding:10px 16px;border-radius:25px;color:#75e7db;background:rgba(10,179,156,.08);border:1px solid rgba(10,179,156,.2)}.ai-card{position:relative;overflow:hidden;padding:30px;border-radius:20px;background:linear-gradient(145deg,#141722,#0d0f17);border:1px solid rgba(255,255,255,.08);transition:.25s}.ai-card:hover{transform:translateY(-5px);border-color:rgba(10,179,156,.3)}.ai-number{position:absolute;right:20px;top:10px;color:rgba(255,255,255,.035);font:900 70px monospace}.ai-icon{width:52px;height:52px;border-radius:15px;display:grid;place-items:center;background:linear-gradient(135deg,rgba(255,108,34,.14),rgba(10,179,156,.12));color:#ff7a35;font-size:23px;margin-bottom:22px}.ai-card>span{color:#62d8cc;font:800 10px monospace;letter-spacing:1px}.ai-card h4{color:#fff;font-size:19px;margin:8px 0 10px}.ai-card p{color:#8e96a6;font-size:13px;line-height:1.7}.ai-tag{display:inline-block;margin-top:10px;color:#697386;font:9px monospace;letter-spacing:.7px}.ai-closing{text-align:center;margin-top:35px;color:#8e96a6;font:800 12px monospace;letter-spacing:.7px}.ai-closing b{color:#ff7a35}.marketplace-message{margin-top:100px;padding:38px 42px;border-radius:22px;display:flex;gap:25px;align-items:center;background:linear-gradient(110deg,rgba(255,108,34,.09),rgba(10,179,156,.06));border:1px solid rgba(255,108,34,.2)}.marketplace-icon{width:68px;height:68px;flex:0 0 68px;border-radius:18px;display:grid;place-items:center;color:#ff6c22;font-size:30px;background:rgba(255,108,34,.1)}.marketplace-message h3{color:#fff;font:900 26px monospace;margin:9px 0}.marketplace-message h3 em{font-style:normal;color:#ff7a35}.marketplace-message p{color:#929aaa;margin:0;line-height:1.7}.final-artist-cta{margin-top:100px;padding:65px 25px;border-top:1px solid rgba(255,255,255,.07)}.final-artist-cta h3{color:#fff;font:900 clamp(30px,4vw,48px) monospace;margin:16px 0}.final-artist-cta p{color:#929aaa;max-width:700px;margin:0 auto 28px;line-height:1.7}.artist-cta-large{min-height:58px;padding:0 34px}
-@media(max-width:991px){.journey-shell{flex-wrap:wrap;justify-content:flex-start}.journey-intro{width:100%;border-right:0;border-bottom:1px solid rgba(255,255,255,.08);padding:0 0 14px}.journey-arrow{display:none}.dashboard-showcase{padding:35px 22px}.dashboard-mockup{transform:none}.contractor-journey{padding:38px 0 0;background:#0a0b10}.journey-shell{display:flex;align-items:center;justify-content:center;gap:18px;padding:20px 24px;border:1px solid rgba(255,255,255,.07);border-radius:18px;background:linear-gradient(90deg,rgba(255,108,34,.055),rgba(255,255,255,.018),rgba(10,179,156,.04))}.journey-intro{display:flex;flex-direction:column;padding-right:22px;border-right:1px solid rgba(255,255,255,.08)}.journey-intro small{color:#ff6c22;font:800 9px monospace;letter-spacing:1px}.journey-intro b{color:#fff;font-size:14px;margin-top:3px}.journey-step{display:flex;align-items:center;gap:9px}.journey-step>i{color:#ff6c22;font-size:20px}.journey-step span{display:flex;flex-direction:column}.journey-step b{color:#fff;font-size:12px}.journey-step small{color:#737b8c;font-size:10px}.journey-arrow{color:#343a48}.artist-growth-section{padding-top:80px}.marketplace-message{align-items:flex-start}.artist-main-title{letter-spacing:-1px}.artist-pain-block,.dashboard-showcase,.ai-showcase{margin-top:80px}}
+.artist-glow{position:absolute;border-radius:50%;filter:blur(100px);pointer-events:none;opacity:.13}.artist-glow-orange{width:500px;height:500px;background:#ff6c22;top:80px;left:-250px}.artist-glow-cyan{width:500px;height:500px;background:#00c8c8;top:420px;right:-300px}.artist-eyebrow,.section-kicker,.ai-badge{display:inline-flex;align-items:center;gap:8px;color:#ff7a35;font:800 12px/1 monospace;letter-spacing:1.4px;text-transform:uppercase}.artist-eyebrow{padding:10px 16px;border:1px solid rgba(255,108,34,.35);border-radius:30px;background:rgba(255,108,34,.07)}.artist-entry-label{display:flex;flex-direction:column;align-items:center;gap:14px;margin-bottom:10px}.artist-eyebrow{font-size:13px;padding:12px 22px;border-color:rgba(255,108,34,.58);background:linear-gradient(90deg,rgba(255,108,34,.14),rgba(255,108,34,.05));box-shadow:0 0 28px rgba(255,108,34,.10)}.artist-audience-callout{color:#fff;font:900 clamp(18px,2vw,25px)/1.25 monospace;letter-spacing:.4px;text-transform:uppercase}.artist-main-title{margin:24px auto 18px;color:#fff;font:900 clamp(34px,4.2vw,58px)/1.08 monospace;letter-spacing:-2px;max-width:1000px}.artist-main-title span,.section-title span,.final-artist-cta h3 span{background:linear-gradient(90deg,#ff6c22,#ff9d66);-webkit-background-clip:text;-webkit-text-fill-color:transparent}.artist-lead,.section-copy{max-width:820px;margin:0 auto;color:#aeb4c2;font-size:17px;line-height:1.75}.artist-cta{min-height:52px;padding:0 28px;border-radius:28px;display:inline-flex;align-items:center;justify-content:center;gap:9px;text-decoration:none!important;font:900 12px/1 monospace;letter-spacing:.6px;transition:.25s}.artist-cta-primary{color:#fff!important;background:linear-gradient(135deg,#ff5d16,#ff7b32);box-shadow:0 12px 30px rgba(255,108,34,.24)}.artist-cta-primary:hover{transform:translateY(-2px);box-shadow:0 16px 38px rgba(255,108,34,.35)}.artist-cta-ghost{color:#e9edf5!important;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.035)}.artist-mini-proof{color:#b7c2d3;font-size:14px;font-weight:500;line-height:1.55;margin-top:18px!important}.artist-mini-proof i{color:#18d5bd;font-size:16px;margin-right:4px}.artist-mini-proof i{color:#0ab39c}.artist-pain-block,.dashboard-showcase,.ai-showcase{margin-top:0}.section-title{color:#fff;font:900 clamp(28px,3.1vw,42px)/1.15 monospace;letter-spacing:-1.2px;margin:14px 0 16px}.benefit-card{display:flex;gap:17px;padding:25px;border:1px solid rgba(255,108,34,.28);border-radius:18px;background:linear-gradient(145deg,rgba(22,24,35,.95),rgba(13,15,23,.95));transition:.25s}.benefit-card:hover{transform:translateY(-4px);border-color:rgba(255,108,34,.75);box-shadow:0 16px 35px rgba(0,0,0,.25)}.benefit-icon{width:46px;height:46px;flex:0 0 46px;border-radius:13px;display:flex;align-items:center;justify-content:center;color:#ff6c22;font-size:21px;background:rgba(255,108,34,.09);border:1px solid rgba(255,108,34,.2)}.benefit-card small{color:#ff7a35;font:800 10px monospace;letter-spacing:.8px}.benefit-card h4{color:#fff;font-size:16px;margin:6px 0 8px}.benefit-card p{color:#8f96a5;font-size:13px;line-height:1.6;margin:0}.dashboard-showcase{position:relative;isolation:isolate;overflow:hidden;padding:60px;border-radius:28px;border:1px solid rgba(255,255,255,.09);background:
+radial-gradient(circle at 78% 34%,rgba(0,200,200,.14),transparent 31%),
+radial-gradient(circle at 10% 18%,rgba(255,108,34,.11),transparent 30%),
+linear-gradient(125deg,#0d0f17 0%,#0a1118 52%,#071318 100%);box-shadow:inset 0 1px 0 rgba(255,255,255,.025),0 28px 80px rgba(0,0,0,.18)}
+.dashboard-showcase::before{content:"";position:absolute;z-index:-2;inset:-25%;pointer-events:none;background:repeating-radial-gradient(ellipse at 78% 50%,transparent 0 44px,rgba(0,200,200,.045) 45px 46px,transparent 47px 72px);transform:rotate(-8deg);opacity:.8}
+.dashboard-showcase::after{content:"";position:absolute;z-index:-1;pointer-events:none;width:520px;height:520px;right:-145px;top:-170px;border-radius:50%;background:radial-gradient(circle,rgba(0,200,200,.13) 0%,rgba(0,200,200,.045) 35%,transparent 70%);filter:blur(10px)}
+.dashboard-showcase>.row{position:relative;z-index:1}.showcase-list{margin-top:28px;display:grid;gap:16px}.showcase-list>div{display:flex;gap:12px}.showcase-list i{color:#0ab39c;font-size:21px}.showcase-list span{display:flex;flex-direction:column}.showcase-list b{color:#fff;font-size:14px}.showcase-list small{color:#7f8796;font-size:12px;margin-top:3px}.dashboard-mockup{border:1px solid rgba(255,255,255,.13);border-radius:18px;background:#10131d;box-shadow:0 30px 70px rgba(0,0,0,.45);overflow:hidden;transform:perspective(1200px) rotateY(-2deg)}.mockup-top{height:38px;display:flex;align-items:center;gap:6px;padding:0 13px;background:#171a25;border-bottom:1px solid rgba(255,255,255,.06)}.mockup-top>span{width:8px;height:8px;border-radius:50%;background:#3d4251}.mockup-top div{margin-left:12px;color:#555e70;font:10px monospace}.mockup-body{display:flex;min-height:360px}.mockup-body aside{width:58px;padding:18px 0;display:flex;flex-direction:column;align-items:center;gap:20px;background:#0b0d13;border-right:1px solid rgba(255,255,255,.05);color:#4f586b}.mock-logo{width:29px;height:29px;border-radius:9px;display:grid;place-items:center;background:#ff6c22;color:#fff;font-weight:900}.mockup-body aside i{font-size:17px}.mockup-body aside i.active{color:#ff6c22}.mockup-body main{padding:24px;flex:1}.mock-welcome{display:flex;flex-direction:column}.mock-welcome small{color:#ff6c22;font:9px monospace}.mock-welcome b{color:#fff;font-size:20px;margin:4px 0}.mock-welcome span{color:#687184;font-size:10px}.mock-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:22px 0}.mock-stats>div{padding:14px;border-radius:10px;background:#171a25;border:1px solid rgba(255,255,255,.05);display:flex;flex-direction:column}.mock-stats i{color:#0ab39c;font-size:17px}.mock-stats b{color:#fff;font-size:11px;margin:8px 0 2px}.mock-stats span{color:#626b7d;font-size:8px}.mock-chart{height:145px;padding:15px;border-radius:11px;background:#171a25}.mock-chart-title{display:flex;justify-content:space-between;color:#fff;font-size:10px}.mock-chart-title span{color:#60697a;font-size:8px}.bars{height:90px;display:flex;align-items:end;gap:9px;padding-top:12px}.bars i{flex:1;min-height:18%;border-radius:4px 4px 0 0;background:linear-gradient(#ff7a35,#71351c)}.ai-showcase{position:relative;overflow:hidden;padding:72px 28px 60px;border:1px solid rgba(255,255,255,.09);border-radius:28px;background:linear-gradient(90deg,rgba(5,7,12,.94),rgba(5,7,12,.76)),url('~@/assets/images/banner-artist-default.jpg') 46% -190px/auto 118% no-repeat;box-shadow:0 28px 70px rgba(0,0,0,.22)}
+.ai-showcase::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 80% 40%,rgba(0,200,200,.16),transparent 34%),radial-gradient(circle at 15% 80%,rgba(255,108,34,.12),transparent 28%);pointer-events:none}
+.ai-showcase>*{position:relative;z-index:2}.ai-badge{padding:10px 16px;border-radius:25px;color:#75e7db;background:rgba(10,179,156,.08);border:1px solid rgba(10,179,156,.2)}.ai-card{position:relative;overflow:hidden;padding:30px;border-radius:20px;background:linear-gradient(145deg,#141722,#0d0f17);border:1px solid rgba(255,255,255,.08);transition:.25s}.ai-card:hover{transform:translateY(-5px);border-color:rgba(10,179,156,.3)}.ai-number{position:absolute;right:20px;top:10px;color:rgba(255,255,255,.035);font:900 70px monospace}.ai-icon{width:52px;height:52px;border-radius:15px;display:grid;place-items:center;background:linear-gradient(135deg,rgba(255,108,34,.14),rgba(10,179,156,.12));color:#ff7a35;font-size:23px;margin-bottom:22px}.ai-card>span{color:#62d8cc;font:800 10px monospace;letter-spacing:1px}.ai-card h4{color:#fff;font-size:19px;margin:8px 0 10px}.ai-card p{color:#8e96a6;font-size:13px;line-height:1.7}.ai-tag{display:inline-block;margin-top:10px;color:#697386;font:9px monospace;letter-spacing:.7px}.ai-closing{text-align:center;margin-top:35px;color:#8e96a6;font:800 12px monospace;letter-spacing:.7px}.ai-closing b{color:#ff7a35}.marketplace-message{margin-top:0;padding:38px 42px;border-radius:22px;display:flex;gap:25px;align-items:center;background:linear-gradient(110deg,rgba(255,108,34,.09),rgba(10,179,156,.06));border:1px solid rgba(255,108,34,.2)}.marketplace-icon{width:68px;height:68px;flex:0 0 68px;border-radius:18px;display:grid;place-items:center;color:#ff6c22;font-size:30px;background:rgba(255,108,34,.1)}.marketplace-message h3{color:#fff;font:900 26px monospace;margin:9px 0}.marketplace-message h3 em{font-style:normal;color:#ff7a35}.marketplace-message p{color:#929aaa;margin:0;line-height:1.7}.final-artist-cta{margin-top:0;padding:65px 25px;border-top:1px solid rgba(255,255,255,.07)}.final-artist-cta h3{color:#fff;font:900 clamp(30px,4vw,48px) monospace;margin:16px 0}.final-artist-cta p{color:#929aaa;max-width:700px;margin:0 auto 28px;line-height:1.7}.artist-cta-large{min-height:58px;padding:0 34px}
+
+/* v1.3.0 — camada visual cinematográfica sem remover conteúdo existente */
+.seven-stage-break{position:relative;min-height:430px;display:flex;align-items:center;overflow:hidden;background:url('~@/assets/images/banner-artist-default.jpg') center 72%/cover no-repeat;border-top:1px solid rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.06)}
+.seven-stage-break::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(5,7,12,.96) 0%,rgba(5,7,12,.72) 45%,rgba(5,7,12,.20) 78%,rgba(5,7,12,.42) 100%)}
+.seven-stage-break::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,#0a0b10 0%,transparent 22%,transparent 78%,#090a0f 100%);z-index:1;pointer-events:none}
+.seven-stage-break-copy{position:relative;z-index:3;max-width:680px;padding:86px 0}
+.seven-stage-break-copy>span{color:#63ded2;font:900 12px monospace;letter-spacing:1.6px}
+.seven-stage-break-copy h2{color:#fff;font:900 clamp(34px,4.2vw,58px)/1.08 monospace;letter-spacing:-1.6px;margin:14px 0 18px;text-shadow:0 4px 24px rgba(0,0,0,.55)}
+.seven-stage-break-copy h2 b{color:#ff7a35;font-weight:900}
+.seven-stage-break-copy p{max-width:610px;color:#d2d8e3;font-size:17px;line-height:1.7;margin:0}
+.final-artist-cta-visual{position:relative;overflow:hidden;border:1px solid rgba(255,255,255,.09)!important;border-radius:28px;padding:78px 28px!important;background:linear-gradient(110deg,rgba(255,108,34,.055),rgba(255,255,255,.018),rgba(10,179,156,.04))!important;box-shadow:0 28px 70px rgba(0,0,0,.20)}
+.final-artist-cta-visual::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 80% 40%,rgba(0,200,200,.08),transparent 34%),radial-gradient(circle at 15% 80%,rgba(255,108,34,.07),transparent 28%);pointer-events:none}
+.final-artist-cta-visual>*{position:relative;z-index:2}
+@media(max-width:991px){.journey-shell{flex-wrap:wrap;justify-content:flex-start}.journey-intro{width:100%;border-right:0;border-bottom:1px solid rgba(255,255,255,.08);padding:0 0 14px}.journey-arrow{display:none}.dashboard-showcase{padding:35px 22px}.dashboard-mockup{transform:none}.contractor-journey{padding:38px 0 0;background:#0a0b10}.journey-shell{display:flex;align-items:center;justify-content:center;gap:18px;padding:20px 24px;border:1px solid rgba(255,255,255,.07);border-radius:18px;background:linear-gradient(90deg,rgba(255,108,34,.055),rgba(255,255,255,.018),rgba(10,179,156,.04))}.journey-intro{display:flex;flex-direction:column;padding-right:22px;border-right:1px solid rgba(255,255,255,.08)}.journey-intro small{color:#ff6c22;font:800 9px monospace;letter-spacing:1px}.journey-intro b{color:#fff;font-size:14px;margin-top:3px}.journey-step{display:flex;align-items:center;gap:9px}.journey-step>i{color:#ff6c22;font-size:20px}.journey-step span{display:flex;flex-direction:column}.journey-step b{color:#fff;font-size:12px}.journey-step small{color:#737b8c;font-size:10px}.journey-arrow{color:#343a48}.artist-growth-section{padding-top:80px}.marketplace-message{align-items:flex-start}.artist-main-title{letter-spacing:-1px}.artist-pain-block,.dashboard-showcase,.ai-showcase{margin-top:0}}
 @media(max-width:575px){.artist-main-title{font-size:32px}.artist-lead,.section-copy{font-size:15px}.dashboard-showcase{padding:28px 16px}.mockup-body main{padding:14px}.mock-stats{grid-template-columns:1fr}.mock-chart{display:none}.marketplace-message{padding:28px 20px;flex-direction:column}.marketplace-message h3{font-size:21px}.artist-cta{width:100%}.ai-closing{line-height:1.7}}
 
 /* v06 — legibilidade da vitrine do painel do artista */
@@ -596,9 +676,10 @@ export default {
   letter-spacing:.7px;
 }
 .ai-card .ai-number{
-  opacity:.16!important;
-  color:#778399!important;
+  opacity:.42!important;
+  color:#9aa8bd!important;
   font-size:58px!important;
+  text-shadow:0 0 18px rgba(117,231,219,.10);
 }
 .ai-card .ai-icon{
   width:54px!important;
@@ -610,6 +691,316 @@ export default {
 @media(max-width:767.98px){
   .ai-card p{font-size:14px!important}
   .ai-card h4{font-size:19px!important}
+}
+
+/* v1.4.1 — corpo explicativo da vitrine entre a chamada e o CTA final */
+.marketplace-body{margin:26px 18px 0;padding:26px 28px;display:grid;grid-template-columns:1fr auto 1fr auto 1fr;align-items:stretch;gap:18px;border:1px solid rgba(255,255,255,.07);border-radius:20px;background:rgba(10,12,18,.54)}
+.marketplace-body-item{display:flex;gap:14px;align-items:flex-start;padding:6px 4px}.marketplace-body-icon{width:42px;height:42px;flex:0 0 42px;display:grid;place-items:center;border-radius:12px;color:#63ded2;font-size:20px;background:rgba(10,179,156,.08);border:1px solid rgba(10,179,156,.17)}
+.marketplace-body-item span{display:block;color:#fff;font:900 12px/1.35 monospace;letter-spacing:.7px;margin:2px 0 7px}.marketplace-body-item p{margin:0;color:#909aac;font-size:13px;line-height:1.6}.marketplace-body-flow{display:flex;align-items:center;color:rgba(255,108,34,.55);font-size:20px}
+@media(max-width:991px){.marketplace-body{grid-template-columns:1fr;gap:8px;margin-left:0;margin-right:0}.marketplace-body-flow{display:none}.marketplace-body-item{padding:10px 4px}}
+
+/* v1.4.12 — estrutura vertical definitiva da Home.
+   Todas as áreas principais são sections irmãs diretas de .seven-portal.
+   A section não cria espaço interno vertical; o único gutter entre sections é 70px. */
+.seven-portal > .home-session{
+  margin:0!important;
+  padding-top:0!important;
+  padding-bottom:0!important;
+}
+.seven-portal > .home-session + .home-session{
+  margin-top:70px!important;
+}
+
+/* O antigo wrapper artist-growth-area foi removido para não quebrar o fluxo das sections. */
+.artist-growth-surface{
+  position:relative;
+  background:linear-gradient(180deg,#090a0f 0%,#0d0f17 48%,#08090d 100%);
+}
+.artist-intro-session{overflow:hidden;border-top:1px solid rgba(255,255,255,.06)}
+.artist-final-cta-session{border-bottom:1px solid rgba(255,255,255,.06)}
+
+/* Remove somente espaçamentos externos legados. O padding interno dos cards/blocos visuais é preservado. */
+.contractor-journey{padding-top:0!important;padding-bottom:0!important}
+.featured-artists-session > .container{padding-top:0!important;padding-bottom:0!important}
+.featured-artists-session .text-center.mt-5{margin-top:0!important}
+.featured-artists-session .trusted-client-slider{margin-top:32px!important;margin-bottom:0!important}
+.artist-pain-block,.dashboard-showcase,.ai-showcase,.marketplace-section,.final-artist-cta{margin-top:0!important}
+.artist-marketplace-session .marketplace-body{margin-top:28px!important}
+.advertising-session :deep(.seven-ads){padding-top:0!important;padding-bottom:0!important;margin-top:0!important}
+
+
+
+
+/* v1.4.26 — Vitrine: cada etapa passa a ser um card visual independente. */
+.seven-portal .artist-marketplace-session .marketplace-body {
+  border: 0 !important;
+  background: transparent !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+}
+.seven-portal .artist-marketplace-session .marketplace-body-item {
+  padding: 22px !important;
+  border: 1px solid rgba(255, 108, 34, .34) !important;
+  border-radius: 18px;
+  background: rgba(10, 12, 18, .72);
+  transition: border-color .22s ease, box-shadow .22s ease, transform .22s ease;
+}
+.seven-portal .artist-marketplace-session .marketplace-body-item:hover {
+  border-color: rgba(255, 108, 34, .92) !important;
+  box-shadow: 0 12px 30px rgba(255, 108, 34, .12);
+  transform: translateY(-2px);
+}
+@media (max-width: 991px) {
+  .seven-portal .artist-marketplace-session .marketplace-body-item { padding: 20px !important; }
+}
+
+</style>
+
+<style scoped>
+/* v1.4.13 — contrato estrutural: toda home-session tem BContainer como filho direto. */
+.artist-intro-session::before,
+.artist-intro-session::after{
+  content:"";
+  position:absolute;
+  border-radius:50%;
+  filter:blur(100px);
+  pointer-events:none;
+  opacity:.13;
+  z-index:0;
+}
+.artist-intro-session::before{width:500px;height:500px;background:#ff6c22;top:80px;left:-250px}
+.artist-intro-session::after{width:500px;height:500px;background:#00c8c8;top:420px;right:-300px}
+
+/* v1.4.26 — Vitrine: cada etapa passa a ser um card visual independente. */
+.seven-portal .artist-marketplace-session .marketplace-body {
+  border: 0 !important;
+  background: transparent !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+}
+.seven-portal .artist-marketplace-session .marketplace-body-item {
+  padding: 22px !important;
+  border: 1px solid rgba(255, 108, 34, .34) !important;
+  border-radius: 18px;
+  background: rgba(10, 12, 18, .72);
+  transition: border-color .22s ease, box-shadow .22s ease, transform .22s ease;
+}
+.seven-portal .artist-marketplace-session .marketplace-body-item:hover {
+  border-color: rgba(255, 108, 34, .92) !important;
+  box-shadow: 0 12px 30px rgba(255, 108, 34, .12);
+  transform: translateY(-2px);
+}
+@media (max-width: 991px) {
+  .seven-portal .artist-marketplace-session .marketplace-body-item { padding: 20px !important; }
+}
+
+</style>
+
+<style scoped>
+/* v1.4.14 — ritmo vertical único da Home.
+   70px existem SOMENTE entre home-session irmãs.
+   16px é o ritmo header -> conteúdo dentro de uma seção. */
+.seven-portal > .home-session {
+  margin-block: 0 !important;
+  padding-block: 0 !important;
+  min-height: 0 !important;
+}
+
+.seven-portal > .home-session + .home-session {
+  margin-top: 70px !important;
+}
+
+/* O BContainer não participa do ritmo vertical. */
+.seven-portal > .home-session > :deep(.container),
+.seven-portal > .home-session > :deep(.container-fluid) {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+/* Headers das seções: mesma distância até o conteúdo. */
+.security-session .text-center.mb-5,
+.how-it-works-session .text-center.mb-5,
+.artist-benefits-session .text-center.mb-5,
+.artist-ai-session .text-center.mb-5 {
+  margin-bottom: 16px !important;
+}
+
+/* Artistas em destaque: remove margens Bootstrap concorrentes. */
+.featured-artists-session .text-center.mt-5 {
+  margin-top: 0 !important;
+}
+.featured-artists-session .trusted-client-slider {
+  margin-top: 16px !important;
+  margin-bottom: 0 !important;
+}
+.featured-artists-session .trusted-client-slider > .text-center.mt-4 {
+  margin-top: 32px !important;
+}
+
+/* Classes específicas não podem criar um segundo espaçamento estrutural. */
+.contractor-journey,
+.seven-stage-break,
+.artist-intro-session,
+.artist-benefits-session,
+.artist-dashboard-session,
+.artist-ai-session,
+.artist-marketplace-session,
+.artist-final-cta-session,
+.advertising-session {
+  margin-block: 0 !important;
+  padding-block: 0 !important;
+  min-height: 0 !important;
+}
+
+/* Momento visual: mantém imagem/overlay, mas sem 86px escondidos em cima/baixo. */
+.seven-stage-break {
+  display: block !important;
+}
+.seven-stage-break-copy {
+  padding-block: 32px !important;
+}
+
+/* Blocos visuais internos: respiro consistente, sem corredores verticais. */
+.dashboard-showcase {
+  padding-top: 32px !important;
+  padding-bottom: 32px !important;
+}
+.ai-showcase {
+  padding-top: 32px !important;
+  padding-bottom: 32px !important;
+}
+.marketplace-message {
+  margin-top: 0 !important;
+}
+.artist-marketplace-session .marketplace-body {
+  margin-top: 16px !important;
+}
+.final-artist-cta,
+.final-artist-cta-visual {
+  margin-top: 0 !important;
+  padding-top: 32px !important;
+  padding-bottom: 32px !important;
+}
+
+/* Evita que o componente de publicidade acrescente outro gutter externo. */
+.advertising-session :deep(.seven-ads) {
+  margin-block: 0 !important;
+  padding-block: 0 !important;
+}
+
+/* v1.4.15 — contrato único header -> body.
+   Classes visuais não controlam mais a distância entre cabeçalho e conteúdo. */
+.home-session-header {
+  margin: 0 !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+.home-session-body {
+  margin-top: 16px !important;
+  margin-bottom: 0 !important;
+}
+
+/* v1.4.24 — o gutter vertical do Bootstrap (g-4) criava espaço antes da primeira linha.
+   O espaçamento header -> body fica exclusivamente em 16px; row-gap atua só ENTRE linhas de cards. */
+.home-session-grid {
+  --bs-gutter-y: 0 !important;
+  row-gap: 24px;
+}
+
+/* v1.4.19 — piloto Segurança: padding interno único dos cards.
+   O grid cuida apenas do layout; o card cuida do próprio respiro. */
+.security-session .card-h {
+  padding: 24px !important;
+  height: 100%;
+}
+
+/* v1.4.20 — 16px VISUAIS entre o último texto do header e o body.
+   Remove margens tipográficas e gutter vertical que antes se somavam aos 32px estruturais. */
+.home-session-header > :last-child {
+  margin-bottom: 0 !important;
+}
+.security-session .home-session-body > :deep(*) {
+  margin-top: 0 !important;
+}
+
+/* Neutraliza espaçamentos legados somente nos pares padronizados. */
+.featured-artists-session .home-session-header,
+.security-session .home-session-header,
+.how-it-works-session .home-session-header,
+.artist-benefits-session .home-session-header,
+.artist-ai-session .home-session-header,
+.artist-marketplace-session .home-session-header {
+  margin-bottom: 0 !important;
+}
+.artist-marketplace-session .marketplace-body.home-session-body {
+  margin-top: 16px !important;
+}
+
+
+/* v1.4.23 — padrão único de borda para os cards da Home.
+   Estado normal já delimita o card; hover apenas reforça a mesma linguagem visual. */
+.seven-portal .modern-card,
+.seven-portal .security-session .card-h,
+.seven-portal .benefit-card,
+.seven-portal .ai-card {
+  border: 1px solid rgba(255, 108, 34, .34) !important;
+  transition: border-color .22s ease, box-shadow .22s ease, transform .22s ease !important;
+}
+
+.seven-portal .modern-card:hover,
+.seven-portal .security-session .card-h:hover,
+.seven-portal .benefit-card:hover,
+.seven-portal .ai-card:hover {
+  border-color: rgba(255, 108, 34, .92) !important;
+  box-shadow: 0 12px 30px rgba(255, 108, 34, .12) !important;
+}
+
+@media (max-width: 991px) {
+  .seven-portal > .home-session + .home-session {
+    margin-top: 70px !important;
+  }
+  .seven-stage-break-copy,
+  .dashboard-showcase,
+  .ai-showcase,
+  .final-artist-cta,
+  .final-artist-cta-visual {
+    padding-top: 32px !important;
+    padding-bottom: 32px !important;
+  }
+}
+
+/* v1.4.25 — Vitrine: mesmo contrato visual das demais sections.
+   Header -> body = 16px; sem margens laterais/verticais legadas no body. */
+.artist-marketplace-session .marketplace-message.home-session-header {
+  margin: 0 !important;
+}
+.artist-marketplace-session .marketplace-body.home-session-body {
+  margin: 16px 0 0 !important;
+}
+
+/* v1.4.26 — Vitrine: cada etapa passa a ser um card visual independente. */
+.seven-portal .artist-marketplace-session .marketplace-body {
+  border: 0 !important;
+  background: transparent !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+}
+.seven-portal .artist-marketplace-session .marketplace-body-item {
+  padding: 22px !important;
+  border: 1px solid rgba(255, 108, 34, .34) !important;
+  border-radius: 18px;
+  background: rgba(10, 12, 18, .72);
+  transition: border-color .22s ease, box-shadow .22s ease, transform .22s ease;
+}
+.seven-portal .artist-marketplace-session .marketplace-body-item:hover {
+  border-color: rgba(255, 108, 34, .92) !important;
+  box-shadow: 0 12px 30px rgba(255, 108, 34, .12);
+  transform: translateY(-2px);
+}
+@media (max-width: 991px) {
+  .seven-portal .artist-marketplace-session .marketplace-body-item { padding: 20px !important; }
 }
 
 </style>

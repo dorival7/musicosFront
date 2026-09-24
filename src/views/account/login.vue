@@ -47,16 +47,18 @@ export default {
 
         // Salva o Token JWT legítimo retornado pelo C#
         localStorage.setItem('jwt', response.data.token);
+        localStorage.setItem('roles', JSON.stringify(response.data.roles || []));
         
         // Salva o status de onboarding que o roteador vai ler
         localStorage.setItem('profileStatus', response.data.profileStatus);
         
-        const userData = { name: response.data.name || "Músico SevenShows", email: this.email };
+        const userData = { name: response.data.name || "SevenShows", email: this.email, roles: response.data.roles || [] };
         localStorage.setItem('user', JSON.stringify(userData));
         localStorage.setItem('userdata', JSON.stringify(userData));
 
         // Envia para a Dashboard (onde o interceptador agirá)
-        this.$router.push('/musicos/dashboard');
+        const roles = response.data.roles || [];
+        this.$router.push(roles.includes('SuperAdmin') ? '/admin/dashboard' : '/musicos/dashboard');
 
       } catch (error) {
         this.processing = false;

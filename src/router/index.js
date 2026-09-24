@@ -6,11 +6,13 @@ import appConfig from "../../app.config";
 // 🚀 HUB DE ROTAS SEVENSHOWS (MODULARIZADO DENTRO DE MUSICOS)
 import musicosRoutes from "../musicos/routes";
 import publicRoutes from "../musicos/rotasPublicas";
+import adminRoutes from "../admin/routes";
 
 const router = createRouter({
   history: createWebHistory(),
   routes: [
     ...publicRoutes,
+    ...adminRoutes,
     ...musicosRoutes,
     
     {
@@ -70,7 +72,13 @@ router.beforeEach(async (routeTo, routeFrom, next) => {
 
   axios.defaults.headers.common['authorization'] = 'Bearer ' + token;
 
-  // Liberdade total para os fluxos internos
+  const requiredRole = routeTo.matched.map(r => r.meta?.role).find(Boolean);
+  if (requiredRole) {
+    let roles = [];
+    try { roles = JSON.parse(localStorage.getItem('roles') || '[]'); } catch (_) { roles = []; }
+    if (!roles.includes(requiredRole)) return next({ name: 'login' });
+  }
+
   next();
 });
 

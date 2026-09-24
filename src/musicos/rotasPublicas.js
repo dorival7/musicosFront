@@ -41,6 +41,12 @@ export default [
     }
   },
   {
+    path: "/parceiros/:slug",
+    name: "ParceiroPublico",
+    component: () => import("@/views/public/parceiros/ParceiroPublico.vue"),
+    meta: { layout: "public", public: true, title: "Parceiro Seven Shows" }
+  },
+  {
     path: "/checkout/contratacao/:pacoteId",
     name: "CheckoutContratacao",
     component: () => import("@/views/public/checkout/CheckoutContratacao.vue"),

@@ -22,7 +22,21 @@ export default {
     simplebar
   },
   computed: {
-    // CAPTURA REATIVA DOS DADOS DO MÚSICO LOGADO NO LOCALSTORAGE
+    // Somente Tenant deve consumir notificações da agenda do músico.
+    isTenant() {
+      try {
+        const rolesRaw = localStorage.getItem("roles");
+        const roles = rolesRaw ? JSON.parse(rolesRaw) : [];
+        if (Array.isArray(roles) && roles.includes("Tenant")) return true;
+
+        const userRaw = localStorage.getItem("user");
+        const user = userRaw ? JSON.parse(userRaw) : {};
+        return Array.isArray(user.roles) && user.roles.includes("Tenant");
+      } catch (e) {
+        return false;
+      }
+    },
+    // CAPTURA REATIVA DOS DADOS DO USUÁRIO LOGADO NO LOCALSTORAGE
     currentUser() {
       const userRaw = localStorage.getItem('user');
       if (userRaw) {
@@ -38,6 +52,12 @@ export default {
   methods: {
     ...layoutMethods,
     async loadPendingRequests() {
+      // SuperAdmin e Contratante não têm acesso ao endpoint /tenants/agenda/requests.
+      if (!this.isTenant) {
+        this.pendingRequests = [];
+        return;
+      }
+
       this.loadingNotifications = true;
       try {
         const token = localStorage.getItem("jwt");
@@ -157,8 +177,10 @@ export default {
 
   mounted() {
     i18n.locale = "pt";
-    this.loadPendingRequests();
-    this.notificationsTimer = window.setInterval(this.loadPendingRequests, 60000);
+    if (this.isTenant) {
+      this.loadPendingRequests();
+      this.notificationsTimer = window.setInterval(this.loadPendingRequests, 60000);
+    }
 
     document.addEventListener("scroll", function () {
       var pageTopbar = document.getElementById("page-topbar");
