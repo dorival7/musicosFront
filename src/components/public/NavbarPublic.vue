@@ -7,20 +7,22 @@
         <img :src="logoSevenShows" alt="SevenShows Logo" style="height: 32px; width: auto; object-fit: contain;" />
       </router-link>
       
-      <button class="navbar-toggler py-0 fs-20 text-white border-0" type="button" v-b-toggle.navbarSupportedContent>
-        <i class="ri-menu-line"></i>
+      <button class="navbar-toggler py-0 fs-20 text-white border-0" type="button"
+        :aria-expanded="menuMobileAberto ? 'true' : 'false'" aria-controls="navbarSupportedContent"
+        @click="alternarMenuMobile">
+        <i :class="menuMobileAberto ? 'ri-close-line' : 'ri-menu-line'"></i>
       </button>
 
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <div class="collapse navbar-collapse" :class="{ show: menuMobileAberto }" id="navbarSupportedContent">
         <ul class="navbar-nav mx-auto mt-2 mt-lg-0">
           <!-- 🚀 CORREÇÃO DE ROTA: Aponta estritamente para o caminho da Landing Page (/visualizar-lp) -->
           <li class="nav-item">
-            <a class="nav-link fs-14 text-white fw-bold" href="javascript:void(0)" @click="$route.path === '/visualizar-lp' ? rolarSuave('#como-funciona') : $router.push({ path: '/visualizar-lp', hash: '#como-funciona' })" style="opacity: 0.85; cursor: pointer;">Como Funciona</a>
+            <a class="nav-link fs-14 text-white fw-bold" href="javascript:void(0)" @click="navegarSecao('#como-funciona')" style="opacity: 0.85; cursor: pointer;">Como Funciona</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link fs-14 text-white fw-bold" href="javascript:void(0)" @click="$route.path === '/visualizar-lp' ? rolarSuave('#seguranca') : $router.push({ path: '/visualizar-lp', hash: '#seguranca' })" style="opacity: 0.85; cursor: pointer;">Segurança</a>
+            <a class="nav-link fs-14 text-white fw-bold" href="javascript:void(0)" @click="navegarSecao('#seguranca')" style="opacity: 0.85; cursor: pointer;">Segurança</a>
           </li>
-          <li class="nav-item"><router-link class="nav-link fs-14 text-white fw-bold" to="/artistas" style="opacity: 0.85;">Encontrar Artistas</router-link></li>
+          <li class="nav-item"><router-link class="nav-link fs-14 text-white fw-bold" to="/artistas" style="opacity: 0.85;" @click="fecharMenuMobile">Encontrar Artistas</router-link></li>
         </ul>
 
         <div class="d-flex align-items-center gap-3">
@@ -78,7 +80,8 @@ export default {
   data() {
     return {
       logoSevenShows,
-      usuarioLogado: null
+      usuarioLogado: null,
+      menuMobileAberto: false
     };
   },
   computed: {
@@ -89,6 +92,20 @@ export default {
     }
   },
   methods: {
+    alternarMenuMobile() {
+      this.menuMobileAberto = !this.menuMobileAberto;
+    },
+    fecharMenuMobile() {
+      this.menuMobileAberto = false;
+    },
+    navegarSecao(seletorId) {
+      this.fecharMenuMobile();
+      if (this.$route.path === "/visualizar-lp") {
+        this.$nextTick(() => this.rolarSuave(seletorId));
+      } else {
+        this.$router.push({ path: "/visualizar-lp", hash: seletorId });
+      }
+    },
     // Varre o armazenamento local em busca de uma sessão de faturamento ativa
     verificarSessaoAtiva() {
       const dadosUsuarioStr = localStorage.getItem("user");
@@ -139,3 +156,95 @@ export default {
 </script>
 
 
+
+<style scoped>
+/* v1.4.32 — Home responsiva: navegação mobile sem duplicar a página. */
+@media (max-width: 991.98px) {
+  #navbar {
+    padding: 10px 0 !important;
+  }
+
+  #navbar .container {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  #navbar .navbar-brand img {
+    height: 29px !important;
+  }
+
+  #navbar .navbar-toggler {
+    width: 42px;
+    height: 42px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, .045);
+  }
+
+  #navbarSupportedContent {
+    margin-top: 10px;
+    padding: 14px;
+    border: 1px solid rgba(255, 255, 255, .08);
+    border-radius: 14px;
+    background: rgba(10, 11, 16, .98);
+    box-shadow: 0 18px 40px rgba(0, 0, 0, .28);
+  }
+
+  #navbarSupportedContent .navbar-nav {
+    margin: 0 !important;
+  }
+
+  #navbarSupportedContent .nav-link {
+    padding: 11px 8px;
+  }
+
+  #navbarSupportedContent > .d-flex {
+    margin-top: 10px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255, 255, 255, .07);
+    flex-direction: column;
+    align-items: stretch !important;
+    gap: 8px !important;
+  }
+
+  #navbarSupportedContent > .d-flex .btn,
+  #navbarSupportedContent > .d-flex > a {
+    width: 100%;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #navbarSupportedContent .dropdown > button {
+    min-height: 44px;
+  }
+}
+
+
+/* v1.4.45 — mobile: logo centralizado no header, independente do botão de menu. */
+@media (max-width: 767.98px) {
+  #navbar .container {
+    position: relative;
+    min-height: 42px;
+  }
+
+  #navbar .navbar-brand {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    margin: 0 !important;
+    padding: 0 !important;
+    z-index: 2;
+  }
+
+  #navbar .navbar-toggler {
+    margin-left: auto;
+    position: relative;
+    z-index: 3;
+  }
+}
+</style>

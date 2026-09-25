@@ -47,9 +47,12 @@
             <div class="home-session-body trusted-client-slider">
 
                 <!-- SWIPER REATIVO INTEGRADO AO ECOSSISTEMA SEVENSHOWS -->
-                <swiper class="swiper responsive-swiper rounded gallery-light pb-4" :loop="artistasLista.length > 4"
+                <swiper v-if="artistasLista.length" :key="`featured-${artistasLista.length}`"
+                  class="swiper responsive-swiper rounded gallery-light pb-4" :loop="artistasLista.length > 4"
                   :autoplay="{ delay: 3000, disableOnInteraction: false }" :modules="[Autoplay]" :slidesPerView="1"
+                  :observer="true" :observeParents="true" :updateOnWindowResize="true"
                   :spaceBetween="20" :breakpoints="{
+                    480: { slidesPerView: 1.35, spaceBetween: 16 },
                     640: { slidesPerView: 2, spaceBetween: 20 },
                     768: { slidesPerView: 3, spaceBetween: 30 },
                     1200: { slidesPerView: 4, spaceBetween: 30 }
@@ -108,6 +111,15 @@
                     </div>
                   </swiper-slide>
                 </swiper>
+
+                <div v-else-if="loading" class="featured-mobile-state">
+                  <span class="spinner-border spinner-border-sm" role="status"></span>
+                  <span>Carregando artistas em destaque...</span>
+                </div>
+                <div v-else class="featured-mobile-state">
+                  <i class="ri-music-2-line"></i>
+                  <span>Os artistas em destaque serão carregados em instantes.</span>
+                </div>
 
                 <!-- BOTÃO INSTITUCIONAL DE NAVEGAÇÃO -->
                 <div class="text-center mt-4 animate__animated animate__fadeInUp">
@@ -350,7 +362,7 @@
                   <aside><div class="mock-logo">7</div><i class="ri-home-5-line active"></i><i class="ri-calendar-event-line"></i><i class="ri-file-list-3-line"></i><i class="ri-wallet-3-line"></i><i class="ri-magic-line"></i></aside>
                   <main>
                     <div class="mock-welcome"><small>PAINEL DO ARTISTA</small><b>Olá, músico 👋</b><span>Veja como está sua agenda e suas oportunidades.</span></div>
-                    <div class="mock-stats"><div><i class="ri-calendar-check-line"></i><b>Agenda</b><span>Próximos shows</span></div><div><i class="ri-hand-coin-line"></i><b>Propostas</b><span>Em negociação</span></div><div><i class="ri-wallet-line"></i><b>Financeiro</b><span>Recebimentos</span></div></div>
+                    <div class="mock-stats"><div><i class="ri-calendar-check-line"></i><b>Agenda</b><span>Próximos shows</span></div><div><i class="ri-hand-coin-line"></i><b>Propostas</b><span>Em negociação</span></div><div><i class="ri-wallet-line"></i><b>Financeiro</b><span>Recebimentos</span></div><div><i class="ri-file-list-3-line"></i><b>Contratos</b><span>Documentos</span></div><div><i class="ri-music-2-line"></i><b>Repertório</b><span>Setlists e músicas</span></div><div><i class="ri-brush-3-line"></i><b>Designer</b><span>Artes para shows</span></div></div>
                     <div class="mock-chart"><div class="mock-chart-title"><b>Visão da carreira</b><span>Últimos meses</span></div><div class="bars"><i style="height:34%"></i><i style="height:52%"></i><i style="height:43%"></i><i style="height:70%"></i><i style="height:61%"></i><i style="height:88%"></i><i style="height:78%"></i></div></div>
                   </main>
                 </div>
@@ -371,13 +383,13 @@
           </div>
           <BRow class="home-session-body gx-4 home-session-grid">
             <BCol lg="4">
-              <div class="ai-card h-100"><div class="ai-number">01</div><div class="ai-icon"><i class="ri-music-2-line"></i></div><span>REPERTÓRIO INTELIGENTE</span><h4>Organize melhor o seu show</h4><p>Use recursos inteligentes para estruturar e otimizar seu setlist, organizar a sequência das músicas e trabalhar a dinâmica do espetáculo.</p><div class="ai-tag">SETLIST • ORGANIZAÇÃO • ENERGIA</div></div>
+              <div class="ai-card h-100"><div class="ai-number">01</div><div class="ai-icon"><span class="ai-icon-glyph" aria-hidden="true">♫</span></div><span>REPERTÓRIO INTELIGENTE</span><h4>Organize melhor o seu show</h4><p>Use recursos inteligentes para estruturar e otimizar seu setlist, organizar a sequência das músicas e trabalhar a dinâmica do espetáculo.</p><div class="ai-tag">SETLIST • ORGANIZAÇÃO • ENERGIA</div></div>
             </BCol>
             <BCol lg="4">
-              <div class="ai-card h-100"><div class="ai-number">02</div><div class="ai-icon"><i class="ri-guitar-line"></i></div><span>CIFRAS NO TOM CERTO</span><h4>Menos tempo refazendo acordes</h4><p>Pesquise a música, trabalhe a cifra e faça a transposição para a tonalidade que você precisa, deixando o material pronto para tocar.</p><div class="ai-tag">CIFRAS • TOM • TRANSPOSIÇÃO</div></div>
+              <div class="ai-card h-100"><div class="ai-number">02</div><div class="ai-icon"><span class="ai-icon-glyph" aria-hidden="true">♯</span></div><span>CIFRAS NO TOM CERTO</span><h4>Menos tempo refazendo acordes</h4><p>Pesquise a música, trabalhe a cifra e faça a transposição para a tonalidade que você precisa, deixando o material pronto para tocar.</p><div class="ai-tag">CIFRAS • TOM • TRANSPOSIÇÃO</div></div>
             </BCol>
             <BCol lg="4">
-              <div class="ai-card h-100"><div class="ai-number">03</div><div class="ai-icon"><i class="ri-brush-3-line"></i></div><span>SEVEN DESIGNER</span><h4>Divulgação pronta para as redes</h4><p>Crie artes dos seus shows dentro da Seven Shows e exporte materiais no formato ideal para Stories e Status, mantendo sua divulgação sempre ativa.</p><div class="ai-tag">DESIGN • STORIES • WHATSAPP</div></div>
+              <div class="ai-card h-100"><div class="ai-number">03</div><div class="ai-icon"><span class="ai-icon-glyph" aria-hidden="true">✦</span></div><span>SEVEN DESIGNER</span><h4>Divulgação pronta para as redes</h4><p>Crie artes dos seus shows dentro da Seven Shows e exporte materiais no formato ideal para Stories e Status, mantendo sua divulgação sempre ativa.</p><div class="ai-tag">DESIGN • STORIES • WHATSAPP</div></div>
             </BCol>
           </BRow>
           <div class="ai-closing">DA PREPARAÇÃO AO PALCO. DA DIVULGAÇÃO AO PAGAMENTO. <b>TUDO NA SEVEN SHOWS.</b></div>
@@ -754,6 +766,166 @@ linear-gradient(125deg,#0d0f17 0%,#0a1118 52%,#071318 100%);box-shadow:inset 0 1
   .seven-portal .artist-marketplace-session .marketplace-body-item { padding: 20px !important; }
 }
 
+
+/* v1.4.41 — mobile: ícones estáveis nos recursos + painel com mais funções. */
+.ai-icon-glyph{display:grid;place-items:center;width:100%;height:100%;font:900 27px/1 Georgia,serif;color:#ff7a35}
+@media (max-width: 767.98px) {
+  .dashboard-mockup .mockup-body { min-height: 0 !important; }
+  .dashboard-mockup .mock-stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+    margin: 14px 0 0 !important;
+  }
+  .dashboard-mockup .mock-stats > div {
+    min-width: 0;
+    padding: 10px 8px !important;
+  }
+  .dashboard-mockup .mock-stats i { font-size: 16px !important; }
+  .dashboard-mockup .mock-stats b { font-size: 9px !important; margin: 6px 0 2px !important; }
+  .dashboard-mockup .mock-stats span { font-size: 7px !important; line-height: 1.25 !important; }
+  .ai-card .ai-icon { display:grid !important; visibility:visible !important; opacity:1 !important; }
+  .ai-card .ai-icon-glyph { display:grid !important; visibility:visible !important; opacity:1 !important; }
+  .marketplace-message .marketplace-icon { position:relative !important; margin:0 0 4px !important; flex:0 0 54px !important; }
+  .marketplace-message .section-kicker,
+  .final-artist-cta .section-kicker { display:block; line-height:1.45 !important; }
+}
+
+
+/* v1.4.42 — mobile: ícone da vitrine alinhado à esquerda do kicker. */
+@media (max-width: 767.98px) {
+  .marketplace-message {
+    position: relative !important;
+    display: block !important;
+    padding: 28px 20px !important;
+  }
+  .marketplace-message > .flex-grow-1 {
+    display: block !important;
+  }
+  .marketplace-message .marketplace-icon {
+    position: absolute !important;
+    top: 22px !important;
+    left: 20px !important;
+    width: 42px !important;
+    height: 42px !important;
+    margin: 0 !important;
+    font-size: 22px !important;
+  }
+  .marketplace-message .section-kicker {
+    display: flex !important;
+    align-items: center !important;
+    min-height: 42px !important;
+    padding-left: 54px !important;
+    margin: 0 0 12px !important;
+    line-height: 1.35 !important;
+  }
+  .marketplace-message h3 {
+    margin: 0 0 10px !important;
+  }
+}
+
+
+/* v1.4.44 — mobile: delimitação visual das sections.
+   Mantém o ritmo de 40px da v1.4.43, mas transforma o espaço vazio em
+   uma transição visual clara entre blocos. Hero/topo permanece intocado. */
+@media (max-width: 767.98px) {
+  /* Da vitrine de artistas em diante, cada nova section ganha um divisor.
+     O espaço total continua 40px: 20px antes + divisor + 20px depois. */
+  .seven-portal > .featured-artists-session,
+  .seven-portal > .security-session,
+  .seven-portal > .how-it-works-session,
+  .seven-portal > .seven-stage-break,
+  .seven-portal > .artist-intro-session,
+  .seven-portal > .artist-benefits-session,
+  .seven-portal > .artist-dashboard-session,
+  .seven-portal > .artist-ai-session,
+  .seven-portal > .artist-marketplace-session,
+  .seven-portal > .artist-final-cta-session,
+  .seven-portal > .advertising-session {
+    position: relative;
+    margin-top: 20px !important;
+    padding-top: 20px !important;
+    border-top: 1px solid rgba(255,255,255,.075);
+  }
+
+  /* Linha curta em destaque para marcar a troca de conteúdo sem pesar. */
+  .seven-portal > .featured-artists-session::before,
+  .seven-portal > .security-session::before,
+  .seven-portal > .how-it-works-session::before,
+  .seven-portal > .seven-stage-break::before,
+  .seven-portal > .artist-intro-session::before,
+  .seven-portal > .artist-benefits-session::before,
+  .seven-portal > .artist-dashboard-session::before,
+  .seven-portal > .artist-ai-session::before,
+  .seven-portal > .artist-marketplace-session::before,
+  .seven-portal > .artist-final-cta-session::before,
+  .seven-portal > .advertising-session::before {
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: 18px;
+    width: 54px;
+    height: 1px;
+    background: #ff6c22;
+    opacity: .72;
+    pointer-events: none;
+  }
+}
+
+
+/* v1.4.49 — mobile: hierarquia cromática da seção de segurança.
+   Ícones em laranja; títulos dos três cards em teal. */
+@media (max-width: 767.98px) {
+  .security-session .home-session-body .avatar-title {
+    color: #ff6c22 !important;
+  }
+
+  .security-session .home-session-body h5 {
+    color: #18d5bd !important;
+  }
+}
+
+
+/* v1.4.51 — mobile: etapas 01/02/03 com números laranja e ícones teal. */
+@media (max-width: 767.98px) {
+  .how-it-works-session .home-session-grid .modern-card > .display-4 {
+    color: #ff6c22 !important;
+  }
+
+  .how-it-works-session .home-session-grid .modern-card > .avatar-sm,
+  .how-it-works-session .home-session-grid .modern-card > .avatar-sm i {
+    color: #18d5bd !important;
+  }
+}
+
+
+/* v1.4.53 — mobile: ritmo laranja/teal nos benefícios do músico.
+   Cards pares usam teal em ícone, microtítulo e borda; ímpares permanecem
+   laranja. Títulos principais e textos continuam neutros. */
+@media (max-width: 767.98px) {
+  .artist-benefits-session .home-session-grid > div:nth-child(even) .benefit-card {
+    border-color: rgba(10,179,156,.34) !important;
+    background: linear-gradient(145deg, rgba(10,179,156,.055), rgba(13,15,23,.96) 48%) !important;
+  }
+
+  .artist-benefits-session .home-session-grid > div:nth-child(even) .benefit-icon {
+    color: #18d5bd !important;
+    background: rgba(10,179,156,.10) !important;
+    border-color: rgba(10,179,156,.30) !important;
+  }
+
+  .artist-benefits-session .home-session-grid > div:nth-child(even) .benefit-card small {
+    color: #62d9c9 !important;
+  }
+
+  .artist-benefits-session .home-session-grid > div:nth-child(odd) .benefit-icon {
+    color: #ff6c22 !important;
+  }
+
+  .artist-benefits-session .home-session-grid > div:nth-child(odd) .benefit-card small {
+    color: #ff7a35 !important;
+  }
+}
+
 </style>
 
 <style scoped>
@@ -792,6 +964,63 @@ linear-gradient(125deg,#0d0f17 0%,#0a1118 52%,#071318 100%);box-shadow:inset 0 1
 }
 @media (max-width: 991px) {
   .seven-portal .artist-marketplace-session .marketplace-body-item { padding: 20px !important; }
+}
+
+
+/* v1.4.41 — mobile: ícones estáveis nos recursos + painel com mais funções. */
+.ai-icon-glyph{display:grid;place-items:center;width:100%;height:100%;font:900 27px/1 Georgia,serif;color:#ff7a35}
+@media (max-width: 767.98px) {
+  .dashboard-mockup .mockup-body { min-height: 0 !important; }
+  .dashboard-mockup .mock-stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+    margin: 14px 0 0 !important;
+  }
+  .dashboard-mockup .mock-stats > div {
+    min-width: 0;
+    padding: 10px 8px !important;
+  }
+  .dashboard-mockup .mock-stats i { font-size: 16px !important; }
+  .dashboard-mockup .mock-stats b { font-size: 9px !important; margin: 6px 0 2px !important; }
+  .dashboard-mockup .mock-stats span { font-size: 7px !important; line-height: 1.25 !important; }
+  .ai-card .ai-icon { display:grid !important; visibility:visible !important; opacity:1 !important; }
+  .ai-card .ai-icon-glyph { display:grid !important; visibility:visible !important; opacity:1 !important; }
+  .marketplace-message .marketplace-icon { position:relative !important; margin:0 0 4px !important; flex:0 0 54px !important; }
+  .marketplace-message .section-kicker,
+  .final-artist-cta .section-kicker { display:block; line-height:1.45 !important; }
+}
+
+
+/* v1.4.42 — mobile: ícone da vitrine alinhado à esquerda do kicker. */
+@media (max-width: 767.98px) {
+  .marketplace-message {
+    position: relative !important;
+    display: block !important;
+    padding: 28px 20px !important;
+  }
+  .marketplace-message > .flex-grow-1 {
+    display: block !important;
+  }
+  .marketplace-message .marketplace-icon {
+    position: absolute !important;
+    top: 22px !important;
+    left: 20px !important;
+    width: 42px !important;
+    height: 42px !important;
+    margin: 0 !important;
+    font-size: 22px !important;
+  }
+  .marketplace-message .section-kicker {
+    display: flex !important;
+    align-items: center !important;
+    min-height: 42px !important;
+    padding-left: 54px !important;
+    margin: 0 0 12px !important;
+    line-height: 1.35 !important;
+  }
+  .marketplace-message h3 {
+    margin: 0 0 10px !important;
+  }
 }
 
 </style>
@@ -1001,6 +1230,728 @@ linear-gradient(125deg,#0d0f17 0%,#0a1118 52%,#071318 100%);box-shadow:inset 0 1
 }
 @media (max-width: 991px) {
   .seven-portal .artist-marketplace-session .marketplace-body-item { padding: 20px !important; }
+}
+
+
+/* v1.4.41 — mobile: ícones estáveis nos recursos + painel com mais funções. */
+.ai-icon-glyph{display:grid;place-items:center;width:100%;height:100%;font:900 27px/1 Georgia,serif;color:#ff7a35}
+@media (max-width: 767.98px) {
+  .dashboard-mockup .mockup-body { min-height: 0 !important; }
+  .dashboard-mockup .mock-stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+    margin: 14px 0 0 !important;
+  }
+  .dashboard-mockup .mock-stats > div {
+    min-width: 0;
+    padding: 10px 8px !important;
+  }
+  .dashboard-mockup .mock-stats i { font-size: 16px !important; }
+  .dashboard-mockup .mock-stats b { font-size: 9px !important; margin: 6px 0 2px !important; }
+  .dashboard-mockup .mock-stats span { font-size: 7px !important; line-height: 1.25 !important; }
+  .ai-card .ai-icon { display:grid !important; visibility:visible !important; opacity:1 !important; }
+  .ai-card .ai-icon-glyph { display:grid !important; visibility:visible !important; opacity:1 !important; }
+  .marketplace-message .marketplace-icon { position:relative !important; margin:0 0 4px !important; flex:0 0 54px !important; }
+  .marketplace-message .section-kicker,
+  .final-artist-cta .section-kicker { display:block; line-height:1.45 !important; }
+}
+
+
+/* v1.4.42 — mobile: ícone da vitrine alinhado à esquerda do kicker. */
+@media (max-width: 767.98px) {
+  .marketplace-message {
+    position: relative !important;
+    display: block !important;
+    padding: 28px 20px !important;
+  }
+  .marketplace-message > .flex-grow-1 {
+    display: block !important;
+  }
+  .marketplace-message .marketplace-icon {
+    position: absolute !important;
+    top: 22px !important;
+    left: 20px !important;
+    width: 42px !important;
+    height: 42px !important;
+    margin: 0 !important;
+    font-size: 22px !important;
+  }
+  .marketplace-message .section-kicker {
+    display: flex !important;
+    align-items: center !important;
+    min-height: 42px !important;
+    padding-left: 54px !important;
+    margin: 0 0 12px !important;
+    line-height: 1.35 !important;
+  }
+  .marketplace-message h3 {
+    margin: 0 0 10px !important;
+  }
+}
+
+</style>
+
+<style scoped>
+/* v1.4.32 — primeira homologação responsiva da Home (mobile/tablet).
+   Desktop aprovado permanece inalterado acima de 991px. */
+@media (max-width: 991.98px) {
+  .seven-portal {
+    overflow-x: clip;
+  }
+
+  .seven-portal > .home-session + .home-session {
+    margin-top: 52px !important;
+  }
+
+  .seven-portal > .home-session > :deep(.container) {
+    padding-left: 18px !important;
+    padding-right: 18px !important;
+  }
+
+  .journey-shell {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    padding: 18px;
+  }
+
+  .journey-intro {
+    grid-column: 1 / -1;
+    width: 100%;
+    padding: 0 0 14px;
+    border-right: 0;
+    border-bottom: 1px solid rgba(255,255,255,.08);
+  }
+
+  .journey-step {
+    min-width: 0;
+  }
+
+  .journey-arrow {
+    display: none;
+  }
+
+  .dashboard-showcase,
+  .ai-showcase {
+    border-radius: 22px;
+  }
+
+  .dashboard-mockup {
+    margin-top: 28px;
+  }
+
+  .marketplace-message {
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .seven-portal > .home-session + .home-session {
+    margin-top: 44px !important;
+  }
+
+  .home-session-header h2,
+  .section-title {
+    font-size: 27px !important;
+    line-height: 1.16 !important;
+  }
+
+  .home-session-header p,
+  .section-copy {
+    font-size: 14px !important;
+    line-height: 1.65 !important;
+  }
+
+  .featured-artists-session .trusted-client-slider > .text-center.mt-4 a {
+    width: 100%;
+    min-height: 48px;
+    height: auto !important;
+    padding: 11px 16px !important;
+    white-space: normal;
+    line-height: 1.35;
+  }
+
+  .security-session .card-h,
+  .benefit-card,
+  .ai-card,
+  .seven-portal .artist-marketplace-session .marketplace-body-item {
+    padding: 20px !important;
+  }
+
+  .benefit-card {
+    gap: 14px;
+  }
+
+  .artist-entry-label {
+    gap: 10px;
+  }
+
+  .artist-audience-callout {
+    font-size: 17px;
+  }
+
+  .artist-main-title {
+    margin-top: 18px;
+    font-size: 30px !important;
+    line-height: 1.1;
+    letter-spacing: -1px;
+  }
+
+  .artist-cta {
+    width: 100%;
+    min-height: 48px;
+    padding: 0 18px;
+  }
+
+  .dashboard-showcase,
+  .ai-showcase {
+    padding: 24px 18px !important;
+    border-radius: 18px;
+  }
+
+  .mockup-body {
+    min-height: 300px;
+  }
+
+  .mockup-body aside {
+    width: 44px;
+    gap: 17px;
+  }
+
+  .mockup-body main {
+    padding: 14px;
+    min-width: 0;
+  }
+
+  .mock-welcome b {
+    font-size: 16px;
+  }
+
+  .mock-stats {
+    grid-template-columns: 1fr;
+    margin: 15px 0;
+  }
+
+  .mock-chart {
+    display: none;
+  }
+
+  .marketplace-message {
+    padding: 24px 20px !important;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .marketplace-icon {
+    width: 54px;
+    height: 54px;
+    flex-basis: 54px;
+    font-size: 25px;
+  }
+
+  .marketplace-message h3 {
+    font-size: 20px;
+    line-height: 1.25;
+  }
+
+  .marketplace-body {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  .marketplace-body-flow {
+    display: none !important;
+  }
+
+  .seven-stage-break-copy {
+    padding: 26px 0 !important;
+  }
+}
+
+@media (max-width: 575.98px) {
+  /* v1.4.40 — fluxo de contratação inline no mobile. */
+  .journey-shell {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    column-gap: 6px;
+    row-gap: 14px;
+    padding: 18px 14px;
+  }
+
+  .journey-intro {
+    grid-column: 1 / -1;
+  }
+
+  .journey-step {
+    min-width: 0;
+    padding: 2px 0;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 5px;
+    text-align: center;
+  }
+
+  .journey-step > i {
+    width: auto;
+    min-height: 22px;
+    font-size: 19px;
+    line-height: 22px;
+    text-align: center;
+  }
+
+  .journey-step span {
+    align-items: center;
+    min-width: 0;
+  }
+
+  .journey-step b {
+    font-size: 11px;
+    line-height: 1.15;
+  }
+
+  .journey-step small {
+    margin-top: 2px;
+    font-size: 8px;
+    line-height: 1.2;
+    white-space: normal;
+  }
+}
+
+
+/* v1.4.33 — robustez do carrossel assíncrono no mobile. */
+.featured-mobile-state {
+  min-height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  text-align: center;
+  color: #8f96a5;
+  font: 12px/1.5 monospace;
+  border: 1px solid rgba(255,108,34,.18);
+  border-radius: 16px;
+  background: #131520;
+}
+.featured-mobile-state i { color: #ff6c22; font-size: 22px; }
+@media (max-width: 767.98px) {
+  /* v1.4.37 — mobile: um card completo por vez, sem cortes laterais.
+     A largura fica sob controle do Swiper; não sobrescrever width do slide. */
+  .featured-artists-session .trusted-client-slider {
+    width: 100%;
+    min-width: 0;
+    overflow: hidden;
+  }
+  .featured-artists-session .responsive-swiper {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow: hidden;
+    padding: 2px 0 18px !important;
+  }
+  .featured-artists-session .swiper-wrapper {
+    min-width: 0;
+  }
+  .featured-artists-session .swiper-slide {
+    max-width: 100%;
+    min-width: 0;
+    height: auto;
+    box-sizing: border-box;
+  }
+  .featured-artists-session .swiper-slide .modern-card {
+    width: 100% !important;
+    max-width: 100%;
+    min-width: 0;
+    min-height: 340px !important;
+    height: 100%;
+    box-sizing: border-box;
+  }
+  .featured-artists-session .swiper-slide .modern-card > .position-relative {
+    height: 160px !important;
+    min-height: 160px !important;
+  }
+  .featured-artists-session .swiper-slide .modern-card .p-3 {
+    min-width: 0;
+    padding: 16px !important;
+  }
+  .featured-artists-session .swiper-slide .modern-card p {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+  .featured-artists-session .trusted-client-slider > .text-center.mt-4 {
+    margin-top: 12px !important;
+  }
+  .featured-artists-session .trusted-client-slider .btn {
+    width: 100%;
+    max-width: 100%;
+    min-height: 48px;
+    height: auto !important;
+    padding: 12px 16px !important;
+    white-space: normal;
+    line-height: 1.25;
+  }
+
+  /* v1.4.39 — foto maior no card de artista mobile; conteúdo preservado. */
+  .featured-artists-session .swiper-slide .modern-card {
+    min-height: 0 !important;
+    height: auto !important;
+  }
+  .featured-artists-session .swiper-slide .modern-card > .position-relative {
+    height: 225px !important;
+    min-height: 225px !important;
+  }
+  .featured-artists-session .swiper-slide .modern-card .p-3 {
+    flex-grow: 0 !important;
+    padding: 15px 14px 16px !important;
+  }
+  .featured-artists-session .swiper-slide .modern-card .text-truncate-2 {
+    min-height: 0 !important;
+    margin-bottom: 20px !important;
+  }
+  .featured-artists-session .swiper-slide .modern-card p.mt-auto {
+    margin-top: 0 !important;
+  }
+}
+
+/* v1.4.41 — mobile: ícones estáveis nos recursos + painel com mais funções. */
+.ai-icon-glyph{display:grid;place-items:center;width:100%;height:100%;font:900 27px/1 Georgia,serif;color:#ff7a35}
+@media (max-width: 767.98px) {
+  .dashboard-mockup .mockup-body { min-height: 0 !important; }
+  .dashboard-mockup .mock-stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+    margin: 14px 0 0 !important;
+  }
+  .dashboard-mockup .mock-stats > div {
+    min-width: 0;
+    padding: 10px 8px !important;
+  }
+  .dashboard-mockup .mock-stats i { font-size: 16px !important; }
+  .dashboard-mockup .mock-stats b { font-size: 9px !important; margin: 6px 0 2px !important; }
+  .dashboard-mockup .mock-stats span { font-size: 7px !important; line-height: 1.25 !important; }
+  .ai-card .ai-icon { display:grid !important; visibility:visible !important; opacity:1 !important; }
+  .ai-card .ai-icon-glyph { display:grid !important; visibility:visible !important; opacity:1 !important; }
+  /* mobile — ícone e kicker da vitrine na mesma linha */
+  .marketplace-message {
+    display:grid !important;
+    grid-template-columns:54px minmax(0, 1fr);
+    column-gap:12px !important;
+    row-gap:14px !important;
+    align-items:center !important;
+  }
+  .marketplace-message > .flex-grow-1 { display:contents; }
+  .marketplace-message .marketplace-icon {
+    grid-column:1;
+    grid-row:1;
+    position:relative !important;
+    margin:0 !important;
+    width:54px !important;
+    height:54px !important;
+    flex:0 0 54px !important;
+  }
+  .marketplace-message .section-kicker {
+    grid-column:2;
+    grid-row:1;
+    display:block;
+    line-height:1.45 !important;
+    margin:0 !important;
+  }
+  .marketplace-message h3,
+  .marketplace-message p { grid-column:1 / -1; }
+  .marketplace-message h3 { grid-row:2; margin:0 !important; }
+  .marketplace-message p { grid-row:3; }
+  .final-artist-cta .section-kicker { display:block; line-height:1.45 !important; }
+}
+
+
+/* v1.4.42 — mobile: ícone da vitrine alinhado à esquerda do kicker. */
+@media (max-width: 767.98px) {
+  .marketplace-message {
+    position: relative !important;
+    display: block !important;
+    padding: 28px 20px !important;
+  }
+  .marketplace-message > .flex-grow-1 {
+    display: block !important;
+  }
+  .marketplace-message .marketplace-icon {
+    position: absolute !important;
+    top: 22px !important;
+    left: 20px !important;
+    width: 42px !important;
+    height: 42px !important;
+    margin: 0 !important;
+    font-size: 22px !important;
+  }
+  .marketplace-message .section-kicker {
+    display: flex !important;
+    align-items: center !important;
+    min-height: 42px !important;
+    padding-left: 54px !important;
+    margin: 0 0 12px !important;
+    line-height: 1.35 !important;
+  }
+  .marketplace-message h3 {
+    margin: 0 0 10px !important;
+  }
+}
+
+
+
+/* v1.4.43 — mobile: ritmo vertical único entre todas as sections.
+   O espaçamento estrutural fica somente no margin-top da section seguinte;
+   nenhum ajuste desta regra alcança desktop/tablet. */
+@media (max-width: 767.98px) {
+  .seven-portal > .home-session + .home-session {
+    margin-top: 40px !important;
+  }
+
+  /* Remove sobras externas dos blocos que formam o início/fim visual da section. */
+  .seven-portal > .home-session > :deep(.container),
+  .seven-portal > .home-session > :deep(.container-fluid) {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+  }
+
+  .featured-artists-session .trusted-client-slider,
+  .artist-pain-block,
+  .dashboard-showcase,
+  .ai-showcase,
+  .marketplace-section,
+  .final-artist-cta {
+    margin-bottom: 0 !important;
+  }
+}
+
+
+/* v1.4.45 — mobile: separação estrutural real entre sections.
+   A delimitação passa a ser feita por respiro vertical, não por linha decorativa.
+   Hero/topo e desktop permanecem inalterados. */
+@media (max-width: 767.98px) {
+  .seven-portal > .home-session + .home-session {
+    margin-top: 64px !important;
+    padding-top: 0 !important;
+    border-top: 0 !important;
+  }
+
+  .seven-portal > .home-session + .home-session::before {
+    content: none !important;
+    display: none !important;
+  }
+}
+
+
+/* v1.4.46 — mobile: reforço do verde/teal como segunda cor de vida da LP.
+   O laranja continua sendo a cor principal de ação; o teal passa a marcar
+   tecnologia, inteligência e gestão sem alterar o desktop. */
+@media (max-width: 767.98px) {
+  /* Áreas de produto/tecnologia recebem luz teal muito suave. */
+  .artist-benefits-session,
+  .artist-dashboard-session,
+  .artist-ai-session,
+  .artist-marketplace-session {
+    position: relative;
+    isolation: isolate;
+  }
+
+  .artist-benefits-session::after,
+  .artist-dashboard-session::after,
+  .artist-ai-session::after,
+  .artist-marketplace-session::after {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    pointer-events: none;
+    width: 260px;
+    height: 260px;
+    border-radius: 50%;
+    background: rgba(10, 179, 156, .11);
+    filter: blur(72px);
+  }
+
+  .artist-benefits-session::after { top: 8%; right: -150px; }
+  .artist-dashboard-session::after { top: 22%; left: -150px; }
+  .artist-ai-session::after { top: 6%; right: -135px; background: rgba(10, 179, 156, .14); }
+  .artist-marketplace-session::after { top: 18%; left: -155px; }
+
+  /* Pequenos sinais de tecnologia em teal, preservando os CTAs laranja. */
+  .artist-benefits-session .benefit-card:nth-child(even) .benefit-icon,
+  .artist-dashboard-session .showcase-list i {
+    color: #18d5bd !important;
+  }
+
+  .artist-benefits-session .benefit-card:nth-child(even) .benefit-icon {
+    background: rgba(10,179,156,.09) !important;
+    border-color: rgba(10,179,156,.28) !important;
+  }
+
+  .artist-dashboard-session .section-kicker,
+  .artist-ai-session .ai-badge {
+    color: #62d9c9 !important;
+  }
+
+  .artist-ai-session .ai-badge {
+    border-color: rgba(10,179,156,.30) !important;
+    background: rgba(10,179,156,.07) !important;
+    box-shadow: 0 0 26px rgba(10,179,156,.06);
+  }
+
+  .artist-ai-session .ai-card {
+    border-color: rgba(10,179,156,.22) !important;
+    background: linear-gradient(145deg, rgba(10,25,27,.72), rgba(13,15,23,.96)) !important;
+  }
+
+  .artist-ai-session .ai-card .ai-icon,
+  .artist-ai-session .ai-card > span:not(.ai-number) {
+    color: #62d9c9 !important;
+  }
+
+  /* Vitrine: apenas uma borda/luz teal de apoio; conteúdo e CTA seguem laranja. */
+  .artist-marketplace-session .marketplace-message {
+    background: linear-gradient(135deg, rgba(255,108,34,.045), rgba(10,179,156,.055)) !important;
+    border-color: rgba(10,179,156,.22) !important;
+  }
+}
+
+
+
+/* v1.4.47 — mobile: teal presente desde o topo da LP.
+   Mantém laranja para ação/comercial e usa teal como luz de tecnologia
+   também nas primeiras sections. Desktop permanece inalterado. */
+@media (max-width: 767.98px) {
+  .hero-session,
+  .contractor-journey,
+  .featured-artists-session,
+  .security-session,
+  .how-it-works-session {
+    position: relative;
+    isolation: isolate;
+  }
+
+  .hero-session::after,
+  .contractor-journey::after,
+  .featured-artists-session::after,
+  .security-session::after,
+  .how-it-works-session::after {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    pointer-events: none;
+    width: 250px;
+    height: 250px;
+    border-radius: 50%;
+    background: rgba(10,179,156,.10);
+    filter: blur(72px);
+  }
+
+  .hero-session::after { top: 24%; right: -155px; background: rgba(10,179,156,.13); }
+  .contractor-journey::after { top: 12%; left: -155px; }
+  .featured-artists-session::after { top: 24%; right: -150px; }
+  .security-session::after { top: 18%; left: -150px; background: rgba(10,179,156,.12); }
+  .how-it-works-session::after { top: 20%; right: -150px; }
+
+  /* Teal pontual nos elementos informativos; botões/CTAs seguem laranja. */
+  .contractor-journey .journey-card:nth-child(even) i,
+  .security-session .security-card:nth-child(even) i,
+  .how-it-works-session .step-card:nth-child(even) i {
+    color: #18d5bd !important;
+  }
+
+  .featured-artists-session .home-session-header p,
+  .security-session .home-session-header p {
+    text-shadow: 0 0 20px rgba(10,179,156,.10);
+  }
+}
+
+
+
+/* v1.4.48 — mobile: teal realmente visível desde o topo.
+   Em v1.4.47 os glows estavam atrás do background das sections (z-index -1),
+   portanto quase não apareciam. Agora a cor entra no próprio fundo e nos
+   elementos informativos, preservando laranja para CTA/comercial. */
+@media (max-width: 767.98px) {
+  .hero-session {
+    background-image:
+      radial-gradient(circle at 96% 28%, rgba(10,179,156,.18) 0, rgba(10,179,156,.07) 23%, transparent 48%) !important;
+  }
+
+  .contractor-journey {
+    background-image: linear-gradient(115deg, rgba(10,179,156,.075), transparent 44%) !important;
+  }
+  .contractor-journey .journey-shell {
+    border-color: rgba(10,179,156,.22) !important;
+    box-shadow: inset 0 0 26px rgba(10,179,156,.035);
+  }
+  .contractor-journey .journey-step:nth-of-type(2) > i,
+  .contractor-journey .journey-step:nth-of-type(4) > i { color:#18d5bd !important; }
+
+  .featured-artists-session {
+    background-image: radial-gradient(circle at 0 32%, rgba(10,179,156,.11), transparent 44%) !important;
+  }
+  .featured-artists-session .modern-card {
+    box-shadow: 0 0 0 1px rgba(10,179,156,.08), 0 18px 38px rgba(0,0,0,.18);
+  }
+  .featured-artists-session .badge.bg-info,
+  .featured-artists-session .text-info { color:#62d9c9 !important; }
+
+  .security-session {
+    background-image: linear-gradient(145deg, rgba(10,179,156,.075), transparent 42%) !important;
+  }
+  .security-session .card-h:nth-child(even),
+  .security-session .row > div:nth-child(even) .card-h {
+    border:1px solid rgba(10,179,156,.20) !important;
+    background:linear-gradient(135deg, rgba(10,179,156,.07), #131520 48%) !important;
+  }
+  .security-session .row > div:nth-child(even) .avatar-title { color:#18d5bd !important; }
+
+  .how-it-works-session {
+    background-image: radial-gradient(circle at 100% 38%, rgba(10,179,156,.12), transparent 46%) !important;
+  }
+  .how-it-works-session .home-session-grid > div:nth-child(even) .modern-card,
+  .how-it-works-session .home-session-grid > div:nth-child(even).modern-card {
+    border-color:rgba(10,179,156,.24) !important;
+    background:linear-gradient(145deg, rgba(10,179,156,.07), rgba(19,21,32,.96)) !important;
+  }
+  .how-it-works-session .home-session-grid > div:nth-child(even) .avatar-sm,
+  .how-it-works-session .home-session-grid > div:nth-child(even) .text-primary { color:#18d5bd !important; }
+
+  /* O teal acompanha também a transição para o bloco do músico. */
+  .seven-stage-break {
+    box-shadow: inset 0 30px 70px rgba(10,179,156,.055), inset 0 -30px 70px rgba(10,179,156,.035);
+  }
+  .artist-intro-session {
+    background-image: radial-gradient(circle at 4% 18%, rgba(10,179,156,.13), transparent 43%) !important;
+  }
+
+  /* Desativa os glows antigos invisíveis/concorrentes. */
+  .hero-session::after,
+  .contractor-journey::after,
+  .featured-artists-session::after,
+  .security-session::after,
+  .how-it-works-session::after { content:none !important; }
+}
+
+
+/* v1.4.52 — mobile: os números 01/02/03 permanecem todos laranja.
+   Regra posicionada após v1.4.48 para impedir o card 02 de herdar teal. */
+@media (max-width: 767.98px) {
+  .how-it-works-session .home-session-grid > div .modern-card > .display-4,
+  .how-it-works-session .home-session-grid > div:nth-child(even) .modern-card > .display-4 {
+    color: #ff6c22 !important;
+  }
+}
+
+
+/* v1.4.50 — mobile: correção final dos ícones da seção de segurança.
+   Esta regra fica após v1.4.48 para impedir que o card central volte a teal. */
+@media (max-width: 767.98px) {
+  .security-session .home-session-body .avatar-title,
+  .security-session .home-session-body .avatar-title i {
+    color: #ff6c22 !important;
+  }
+
+  .security-session .home-session-body h5 {
+    color: #18d5bd !important;
+  }
 }
 
 </style>

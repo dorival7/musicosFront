@@ -58,9 +58,32 @@ export default {
     hasImage(ad) { return Boolean(ad.desktopImageUrl || ad.mobileImageUrl); },
     img(u) {
       if (!u) return '';
-      if (/^https?:/.test(u)) return u;
-      const b = (process.env.VUE_APP_API_BASE_URL || '').replace(/\/api\/?$/, '');
-      return `${b}${u.startsWith('/') ? '' : '/'}${u}`;
+
+      const configuredApi = process.env.VUE_APP_API_BASE_URL || '';
+      const configuredOrigin = configuredApi.replace(/\/api\/?$/, '');
+
+      // Em desenvolvimento pela rede local, URLs de mídia podem vir do backend
+      // como http://localhost:5297/uploads/.... No celular, localhost é o próprio
+      // aparelho. Trocamos somente o host local pelo hostname usado no navegador,
+      // preservando protocolo, porta e caminho. Nenhum IP fica fixo no projeto.
+      const adaptLocalhostForLan = (value) => {
+        if (process.env.NODE_ENV === 'production' || typeof window === 'undefined') return value;
+        try {
+          const parsed = new URL(value, window.location.origin);
+          if (['localhost', '127.0.0.1'].includes(parsed.hostname) &&
+              !['localhost', '127.0.0.1'].includes(window.location.hostname)) {
+            parsed.hostname = window.location.hostname;
+          }
+          return parsed.toString();
+        } catch (_) {
+          return value;
+        }
+      };
+
+      if (/^https?:/i.test(u)) return adaptLocalhostForLan(u);
+
+      const base = adaptLocalhostForLan(configuredOrigin);
+      return `${base}${u.startsWith('/') ? '' : '/'}${u}`;
     },
     externalUrl(url) {
       if (!url) return '';

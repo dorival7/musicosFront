@@ -335,3 +335,140 @@ export default {
   color: #ffffff !important;
 }
 </style>
+
+<style scoped>
+/* v1.4.32 — Hero mobile: mesma estrutura e lógica, composição adaptativa. */
+@media (max-width: 767.98px) {
+  .seven-hero-cinematic {
+    padding: 104px 0 28px !important;
+    min-height: 0 !important;
+    align-items: flex-start;
+  }
+
+  .seven-hero-cinematic .container {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+
+  .seven-hero-photo {
+    background-position: 42% center;
+    opacity: .62;
+    filter: saturate(.9) contrast(1) brightness(.54);
+  }
+
+  .seven-hero-shade {
+    background:
+      linear-gradient(180deg, rgba(5,7,12,.30) 0%, rgba(5,7,12,.48) 42%, rgba(5,7,12,.88) 78%, #0a0b10 100%),
+      linear-gradient(90deg, rgba(5,7,12,.30), rgba(5,7,12,.58));
+  }
+
+  .seven-hero-cinematic .badge {
+    max-width: 100%;
+    padding: 8px 11px !important;
+    font-size: 10px !important;
+    line-height: 1.45;
+    white-space: normal;
+  }
+
+  .seven-hero-cinematic h1 {
+    font-size: clamp(29px, 8.3vw, 38px) !important;
+    line-height: 1.08 !important;
+    letter-spacing: -1.1px !important;
+    margin-bottom: 14px !important;
+  }
+
+  .seven-hero-cinematic h1 br {
+    display: none;
+  }
+
+  .seven-hero-cinematic .lead {
+    font-size: 14px !important;
+    line-height: 1.65 !important;
+    margin-bottom: 24px !important;
+  }
+
+  .seven-hero-cinematic .row.justify-content-center.mt-4.mb-5.pb-4 {
+    margin-top: 8px !important;
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+  }
+
+  .seven-hero-cinematic h4 {
+    font-size: 12px !important;
+    line-height: 1.5;
+    letter-spacing: .7px !important;
+  }
+
+  .sevenshows-search-monolith {
+    height: auto !important;
+    min-height: 0 !important;
+    padding: 8px !important;
+    border-radius: 18px !important;
+    display: grid !important;
+    grid-template-columns: 42px minmax(0, 1fr);
+    gap: 4px 0;
+  }
+
+  .sevenshows-icon-box {
+    grid-column: 1;
+    grid-row: 1;
+    padding: 0 !important;
+  }
+
+  .sevenshows-icon-box i {
+    font-size: 21px !important;
+  }
+
+  .sevenshows-search-monolith > .flex-grow-1 {
+    grid-column: 2;
+    grid-row: 1;
+    min-width: 0;
+    height: 48px !important;
+  }
+
+  .sevenshows-input-field {
+    padding: 0 8px !important;
+    font-size: 13px !important;
+  }
+
+  .sevenshows-input-field::placeholder {
+    font-size: 12px;
+  }
+
+  .sevenshows-btn-box {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    height: auto !important;
+    margin-top: 4px;
+  }
+
+  .sevenshows-submit-btn {
+    width: 100%;
+    height: 48px !important;
+    border-radius: 12px !important;
+    padding: 0 18px !important;
+  }
+
+  .sevenshows-autocomplete-dropdown {
+    top: 50px !important;
+    left: -42px !important;
+    width: calc(100% + 42px) !important;
+    max-height: 230px !important;
+  }
+
+  .autocomplete-item {
+    padding: 12px 14px !important;
+    font-size: 12px !important;
+  }
+
+  .hero-shape-svg {
+    display: none;
+  }
+}
+
+@media (max-width: 389.98px) {
+  .seven-hero-cinematic h1 {
+    font-size: 28px !important;
+  }
+}
+</style>

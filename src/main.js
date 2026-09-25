@@ -23,6 +23,39 @@ import '@/assets/scss/mermaid.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle';
 
 // ====================================================================
+// DESENVOLVIMENTO EM REDE LOCAL
+// Quando o front for aberto por outro dispositivo (ex.: celular),
+// troca somente o host da API local pelo mesmo host usado no navegador.
+// Assim nenhum IP da rede fica fixo no projeto.
+// Em produção esta regra não é aplicada.
+// ====================================================================
+if (process.env.NODE_ENV !== 'production' && typeof window !== 'undefined') {
+  const apiBase = process.env.VUE_APP_API_BASE_URL || '';
+
+  try {
+    const apiUrl = new URL(apiBase);
+    const apiHostLocal = ['localhost', '127.0.0.1'].includes(apiUrl.hostname);
+    const navegadorEmOutroHost = !['localhost', '127.0.0.1'].includes(window.location.hostname);
+
+    if (apiHostLocal && navegadorEmOutroHost) {
+      const origemApiLocal = `${apiUrl.protocol}//${window.location.hostname}${apiUrl.port ? `:${apiUrl.port}` : ''}`;
+      const origemConfigurada = `${apiUrl.protocol}//${apiUrl.host}`;
+
+      axios.interceptors.request.use((config) => {
+        if (typeof config.url === 'string' && config.url.startsWith(origemConfigurada)) {
+          config.url = origemApiLocal + config.url.substring(origemConfigurada.length);
+        }
+        return config;
+      });
+
+      console.info(`[Seven Shows] API local via rede: ${origemApiLocal}`);
+    }
+  } catch (e) {
+    console.warn('[Seven Shows] Não foi possível preparar a API para rede local.', e);
+  }
+}
+
+// ====================================================================
 // INTERCEPTADOR GLOBAL DE RESPOSTAS AXIOS: TRATAMENTO DE SESSÃO EXPIRADA (401)
 // ====================================================================
 axios.interceptors.response.use(
