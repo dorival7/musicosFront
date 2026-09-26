@@ -17,20 +17,20 @@
         <ul class="navbar-nav mx-auto mt-2 mt-lg-0">
           <!-- 🚀 CORREÇÃO DE ROTA: Aponta estritamente para o caminho da Landing Page (/visualizar-lp) -->
           <li class="nav-item">
-            <a class="nav-link fs-14 text-white fw-bold" href="javascript:void(0)" @click="navegarSecao('#como-funciona')" style="opacity: 0.85; cursor: pointer;">Como Funciona</a>
+            <a class="nav-link fs-14 text-white fw-bold" href="javascript:void(0)" @click="navegarSecao('#como-funciona')" style="opacity: 0.85; cursor: pointer;"><i class="ri-information-line mobile-menu-icon"></i><span>Como funciona</span></a>
           </li>
           <li class="nav-item">
-            <a class="nav-link fs-14 text-white fw-bold" href="javascript:void(0)" @click="navegarSecao('#seguranca')" style="opacity: 0.85; cursor: pointer;">Segurança</a>
+            <a class="nav-link fs-14 text-white fw-bold" href="javascript:void(0)" @click="navegarSecao('#seguranca')" style="opacity: 0.85; cursor: pointer;"><i class="ri-shield-check-line mobile-menu-icon"></i><span>Segurança</span></a>
           </li>
-          <li class="nav-item"><router-link class="nav-link fs-14 text-white fw-bold" to="/artistas" style="opacity: 0.85;" @click="fecharMenuMobile">Encontrar Artistas</router-link></li>
+          <li class="nav-item"><router-link class="nav-link fs-14 text-white fw-bold" to="/artistas" style="opacity: 0.85;" @click="fecharMenuMobile"><i class="ri-search-eye-line mobile-menu-icon"></i><span>Encontrar artistas</span></router-link></li>
         </ul>
 
         <div class="d-flex align-items-center gap-3">
           <!-- CENÁRIO A: VISITANTE (DESLOGADO) -->
           <template v-if="!usuarioLogado">
             <!-- 🚀 ROTA ATUALIZADA: Agora direciona legitimamente para o login do cliente -->
-            <router-link to="/login-cliente" class="btn btn-link fw-bold text-decoration-none text-white fs-14 px-3" style="opacity: 0.9;">Entrar</router-link>
-            <router-link to="/quero-vender" class="btn btn-primary btn-sm fw-bold px-3 shadow-sm rounded-2 text-uppercase fs-12 font-monospace" style="letter-spacing: 0.5px;">Sou Músico | Quero Vender Shows</router-link>
+            <router-link to="/login-cliente" class="btn btn-link fw-bold text-decoration-none text-white fs-14 px-3 mobile-login" style="opacity: 0.9;"><span>Entrar na minha conta</span><i class="ri-arrow-right-line"></i></router-link>
+            <router-link to="/quero-vender" class="btn btn-primary btn-sm fw-bold px-3 shadow-sm rounded-2 text-uppercase fs-12 font-monospace mobile-musician-cta" style="letter-spacing: 0.5px;"><span class="mobile-musician-kicker">É músico ou tem uma banda?</span><strong>Quero vender meus shows</strong><i class="ri-arrow-right-line"></i></router-link>
           </template>
 
           <!-- CENÁRIO B: DROPDOWN PREMIUM CORRIGIDO (MÁXIMA VISIBILIDADE) -->
@@ -170,7 +170,7 @@ export default {
   }
 
   #navbar .navbar-brand img {
-    height: 29px !important;
+    height: 31px !important;
   }
 
   #navbar .navbar-toggler {
@@ -247,4 +247,151 @@ export default {
     z-index: 3;
   }
 }
+
+/* Seven Shows — menu público mobile em tela cheia. Desktop preservado. */
+@media (max-width: 767.98px) {
+  body:has(#navbarSupportedContent.show) {
+    overflow: hidden;
+  }
+
+  #navbar:has(#navbarSupportedContent.show) {
+    z-index: 1055;
+    background: #090b10 !important;
+  }
+
+  #navbar:has(#navbarSupportedContent.show) .navbar-brand {
+    position: fixed;
+    left: 50%;
+    top: 22px;
+    transform: translateX(-50%);
+    z-index: 1062;
+  }
+
+  #navbar:has(#navbarSupportedContent.show) .navbar-brand img {
+    height: 31px !important;
+  }
+
+  #navbar:has(#navbarSupportedContent.show) .navbar-toggler {
+    position: fixed;
+    right: 16px;
+    top: 12px;
+    z-index: 1063;
+    width: 46px;
+    height: 46px;
+    border: 1px solid rgba(255,255,255,.14) !important;
+    background: #171a22;
+    font-size: 26px !important;
+  }
+
+  #navbarSupportedContent.show {
+    display: flex !important;
+    position: fixed;
+    inset: 0;
+    z-index: 1060;
+    margin: 0;
+    padding: 88px 22px 24px;
+    border: 0;
+    border-radius: 0;
+    background: #090b10;
+    box-shadow: none;
+    flex-direction: column;
+    overflow-y: auto;
+  }
+
+  #navbarSupportedContent.show .navbar-nav {
+    width: 100%;
+    flex: 0 0 auto;
+  }
+
+  #navbarSupportedContent.show .nav-item {
+    border-bottom: 1px solid rgba(255,255,255,.07);
+  }
+
+  #navbarSupportedContent.show .nav-link {
+    min-height: 58px;
+    padding: 0 4px;
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    font-size: 16px !important;
+    color: #fff !important;
+    opacity: 1 !important;
+  }
+
+  #navbarSupportedContent.show .mobile-menu-icon {
+    width: 28px;
+    height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    background: rgba(255, 103, 48, .10);
+    color: #ff6730;
+    font-size: 17px;
+    flex: 0 0 28px;
+  }
+
+  #navbarSupportedContent.show > .d-flex {
+    width: 100%;
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 0;
+    gap: 14px !important;
+  }
+
+  #navbarSupportedContent.show .mobile-login {
+    min-height: 52px !important;
+    padding: 0 4px !important;
+    justify-content: space-between !important;
+    font-size: 15px !important;
+    border-bottom: 1px solid rgba(255,255,255,.07);
+    border-radius: 0;
+  }
+
+  #navbarSupportedContent.show .mobile-login i {
+    color: #ff6730;
+    font-size: 20px;
+  }
+
+  #navbarSupportedContent.show .mobile-musician-cta {
+    position: relative;
+    margin-top: auto;
+    min-height: 92px !important;
+    padding: 17px 48px 17px 18px !important;
+    display: flex !important;
+    flex-direction: column;
+    align-items: flex-start !important;
+    justify-content: center !important;
+    gap: 5px;
+    text-align: left;
+    border: 1px solid rgba(255,103,48,.45);
+    border-radius: 14px !important;
+    background: linear-gradient(135deg, rgba(255,103,48,.16), rgba(255,103,48,.06)) !important;
+    color: #fff !important;
+    box-shadow: none !important;
+  }
+
+  #navbarSupportedContent.show .mobile-musician-kicker {
+    color: #aeb4c3;
+    font-size: 10px;
+    line-height: 1.2;
+    letter-spacing: .8px;
+  }
+
+  #navbarSupportedContent.show .mobile-musician-cta strong {
+    color: #ff6730;
+    font-size: 15px;
+    line-height: 1.25;
+  }
+
+  #navbarSupportedContent.show .mobile-musician-cta > i {
+    position: absolute;
+    right: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #ff6730;
+    font-size: 22px;
+  }
+}
+
 </style>

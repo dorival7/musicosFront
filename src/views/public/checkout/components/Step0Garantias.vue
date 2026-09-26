@@ -50,7 +50,7 @@
     <div class="guarantees-divider"></div>
 
     <button class="continue-button" @click="$emit('prosseguir')">
-      Li as garantias e quero escolher a data →
+      ESCOLHER A DATA
     </button>
     <p class="continue-note">✓ Nesta etapa você apenas avança para escolher a data do evento.</p>
   </div>
@@ -116,7 +116,38 @@ export default {
 @media (max-width: 700px) {
   .guarantees-card { padding: 26px 20px; }
   .guarantees-head h2 { font-size: 20px; }
-  .guarantee-item { padding: 15px; gap: 13px; }
-  .guarantee-icon { width: 46px; height: 46px; min-width: 46px; }
+
+  /* Mobile: o ícone participa apenas do cabeçalho do card.
+     Título e descrição passam a usar toda a largura disponível. */
+  .guarantee-item {
+    display: grid;
+    grid-template-columns: 36px minmax(0, 1fr);
+    grid-template-areas:
+      "icon kicker"
+      "title title"
+      "text text";
+    column-gap: 10px;
+    row-gap: 7px;
+    padding: 15px;
+    align-items: center;
+  }
+  .guarantee-item > div:not(.guarantee-icon) { display: contents; }
+  .guarantee-icon {
+    grid-area: icon;
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    font-size: 18px;
+  }
+  .guarantee-kicker {
+    grid-area: kicker;
+    margin: 0;
+    align-self: center;
+  }
+  .guarantee-item h5 {
+    grid-area: title;
+    margin: 1px 0 0;
+  }
+  .guarantee-item p { grid-area: text; }
 }
 </style>

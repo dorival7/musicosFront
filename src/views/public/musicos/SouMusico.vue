@@ -8,7 +8,7 @@
     <!-- ================================================================ -->
     <!-- SEVEN SHOWS PARA ARTISTAS — PÁGINA DE CONVERSÃO                  -->
     <!-- ================================================================ -->
-    <main class="artist-sales">
+    <main class="artist-sales desktop-sales">
 
       <section class="sales-hero">
         <img :src="imagemHeroBackground" class="sales-hero-bg" alt="Show ao vivo" />
@@ -140,12 +140,79 @@
 
     </main>
 
+    <!-- MOBILE: LANDING DE CONVERSÃO ENXUTA PARA ARTISTAS -->
+    <main class="artist-sales mobile-sales">
+      <section class="m-hero">
+        <img :src="imagemHeroBackground" class="m-hero-bg" alt="" aria-hidden="true" />
+        <div class="m-hero-mask"></div>
+        <div class="m-hero-content">
+          <div class="sales-badge">♫ SEVEN SHOWS PARA ARTISTAS</div>
+          <div class="sales-audience">VOCÊ É CANTOR, MÚSICO OU TEM UMA BANDA?</div>
+          <h1>SEU TALENTO NO PALCO.<span>MAIS SHOWS NA AGENDA.</span></h1>
+          <p>Crie sua vitrine, seja encontrado por contratantes e organize seus shows em um só lugar.</p>
+          <button @click="rolarAteOnboarding" type="button" class="sales-primary-btn">COMEÇAR 30 DIAS GRÁTIS →</button>
+          <div class="m-proof"><span>✓ 30 dias grátis</span><span>✓ Você define seu cachê</span><span>✓ Tudo em um só lugar</span></div>
+        </div>
+        <div class="m-hero-scroll"><span>↓</span> CONHEÇA A SEVEN SHOWS</div>
+      </section>
+
+      <section class="m-section m-how">
+        <div class="section-kicker">SIMPLES DO PERFIL AO PALCO</div>
+        <h2>VOCÊ TOCA.<span>A SEVEN ORGANIZA O CAMINHO.</span></h2>
+        <div class="m-steps">
+          <article><b>1</b><div><strong>Crie sua vitrine</strong><p>Mostre fotos, vídeos, repertório, formatos de show e cachês.</p></div></article>
+          <article><b>2</b><div><strong>Receba pedidos</strong><p>O contratante encontra você, consulta sua agenda e solicita uma data.</p></div></article>
+          <article><b>3</b><div><strong>Faça o show e receba</strong><p>A contratação fica organizada e o pagamento protegido pela plataforma.</p></div></article>
+        </div>
+      </section>
+
+      <section class="m-section m-product">
+        <div class="section-kicker teal">SUA VITRINE NA SEVEN SHOWS</div>
+        <h2>SEU TRABALHO PRONTO<span>PARA SER CONTRATADO.</span></h2>
+        <div class="opportunity-card m-demo">
+          <div class="mini-window-top"><span></span><span></span><span></span><small>seven shows • artista</small></div>
+          <div class="mini-profile"><div class="mini-avatar">7</div><div><small>SEU PERFIL</small><strong>Seu palco começa aqui.</strong><span>Fotos, vídeos, formatos, agenda e contratação.</span></div></div>
+          <div class="mini-metrics"><div><i class="ri-eye-line"></i><b>Visibilidade</b><span>para novos contratantes</span></div><div><i class="ri-calendar-event-line"></i><b>Agenda</b><span>conectada à contratação</span></div></div>
+        </div>
+        <button @click="rolarAteOnboarding" type="button" class="m-inline-cta">QUERO CRIAR MINHA VITRINE →</button>
+      </section>
+
+      <section class="m-section m-benefits">
+        <div class="section-kicker">MENOS CORRERIA. MAIS CONTROLE.</div>
+        <h2>O QUE A SEVEN<span>RESOLVE PARA VOCÊ.</span></h2>
+        <div class="m-benefit-list">
+          <article><i class="ri-store-2-line"></i><div><b>Mais oportunidades</b><span>Uma vitrine profissional para novos contratantes encontrarem seu trabalho.</span></div></article>
+          <article><i class="ri-calendar-check-line"></i><div><b>Menos negociação espalhada</b><span>Agenda, formatos, propostas e condições organizados no mesmo fluxo.</span></div></article>
+          <article><i class="ri-shield-check-line"></i><div><b>Pagamento protegido</b><span>Mais segurança para fechar apresentações e receber seu cachê.</span></div></article>
+          <article><i class="ri-line-chart-line"></i><div><b>Gestão em um só lugar</b><span>Shows, oportunidades e financeiro dentro da mesma rotina.</span></div></article>
+        </div>
+      </section>
+
+      <section class="m-section m-tools">
+        <div class="section-kicker teal">✦ FEITO PARA QUEM VIVE DE MÚSICA</div>
+        <h2>FERRAMENTAS DA SEVEN <em class="seven-ia">IA</em><span>FACILITAM A SUA VIDA!</span></h2>
+        <div class="m-tools-row">
+          <article><i class="ri-music-2-line"></i><b>Repertório</b><span>Organize seu setlist.</span></article>
+          <article><i class="ri-magic-line"></i><b>Cifras</b><span>Prepare tons e transposições.</span></article>
+          <article><i class="ri-image-edit-line"></i><b>Divulgação</b><span>Crie artes para suas redes.</span></article>
+        </div>
+      </section>
+
+      <section class="m-section m-plans-intro">
+        <div class="pre-plans-badge">30 DIAS GRÁTIS EM QUALQUER PLANO</div>
+        <h2>COMECE AGORA.<span>ESCOLHA O PLANO QUE COMBINA COM VOCÊ.</span></h2>
+        <p class="m-plans-intro-copy">Conheça a Seven Shows funcionando na sua rotina durante o primeiro mês.</p>
+        <button @click="rolarAteOnboarding" type="button" class="sales-primary-btn m-plans-intro-btn">VER PLANOS E COMEÇAR →</button>
+      </section>
+    </main>
+
+
     <!-- 🏁 ETAPA 0: ESTEIRA REATIVA DE SELEÇÃO DE PLANOS SAAS (VELZON DARK)  -->
         <!-- ==================================================================== -->
         <div id="secao-onboarding" style="grid-column: 1 / -1; max-width: 1000px; margin: 40px auto 0 auto; background: linear-gradient(145deg, #161929, #10121d); border: 1px solid rgba(255,255,255,0.06); border-radius: 24px; padding: 45px; box-shadow: 0 25px 60px rgba(0,0,0,0.6); width: 100%; box-sizing: border-box;">
           
           <!-- INDICADOR DINÂMICO DE ETAPA ATIVA -->
-          <div style="text-align: center; margin-bottom: 35px;">
+          <div class="onboarding-heading" style="text-align: center; margin-bottom: 35px;">
             <div style="display: inline-flex; align-items: center; gap: 8px; background-color: rgba(255,108,34,0.05); border: 1px solid rgba(255,108,34,0.2); padding: 5px 15px; border-radius: 6px;">
               <span style="color: #ff6c22; font-weight: bold; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; font-family: monospace;">
                 Passo {{ etapaOnboarding + 1 }} de 3: {{ etapaOnboarding === 0 ? 'Escolha do Plano Comercial' : 'Preenchimento do Perfil' }}
@@ -163,11 +230,12 @@
           </div>
 
           <!-- 📊 GRID DE CARDS LADO A LADO DINÂMICO (MODELO REPLICADO 1:1) -->
-          <div v-else-if="etapaOnboarding === 0" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; width: 100%; box-sizing: border-box; justify-items: center;">
+          <div v-else-if="etapaOnboarding === 0" ref="planCarousel" class="plan-carousel" @scroll.passive="atualizarIndicePlanos" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; width: 100%; box-sizing: border-box; justify-items: center;">
             
             <div 
               v-for="plano in planosSaaS" 
               :key="plano.id"
+              class="plan-carousel-card"
               :style="{
                 borderColor: plano.monthlyFee > 50 ? '#0ab39c' : 'rgba(255,255,255,0.06)',
                 background: plano.monthlyFee > 50 ? 'linear-gradient(145deg, #181b2f, #10121f)' : 'linear-gradient(145deg, #131524, #10111a)'
@@ -183,10 +251,10 @@
               </div>
 
               <!-- Centro do Card: Bloco de Faturamento com Cifrão -->
-              <div style="background-color: rgba(255,255,255,0.02); border-radius: 12px; padding: 15px; text-align: center; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.03);">
+              <div class="plan-price-box" style="background-color: rgba(255,255,255,0.02); border-radius: 12px; padding: 15px; text-align: center; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.03);">
                 <div style="display:inline-block;background:rgba(10,179,156,.12);border:1px solid rgba(10,179,156,.28);color:#35d7c0;font:800 10px monospace;padding:5px 9px;border-radius:20px;margin-bottom:8px;text-transform:uppercase;">1º mês grátis</div>
                 <span style="display:block;color:#a8b3c6;font-size:10px;font-weight:bold;text-transform:uppercase;font-family:monospace;">Depois</span>
-                <div style="color: #0ab39c; font-size: 22px; font-weight: 900; font-family: monospace; margin-top: 2px;">
+                <div class="plan-price-value" style="color: #0ab39c; font-size: 22px; font-weight: 900; font-family: monospace; margin-top: 2px;">
                   R$ {{ plano.monthlyFee.toFixed(2).replace('.', ',') }}<span style="color: #878a99; font-size: 11px; font-weight: normal; font-family: sans-serif;">/mês</span>
                 </div>
               </div>
@@ -205,7 +273,7 @@
                   <span style="color: #0ab39c; font-weight: bold;">✓</span>
                   <span>Até <strong>{{ plano.maxShowsPerMonth }} formatos</strong> de shows</span>
                 </div>
-                <div style="display: flex; align-items: start; gap: 8px; font-size: 11px; color: #ced4da; border-top: 1px dashed rgba(255,255,255,0.05); padding-top: 10px; margin-top: 2px;">
+                <div class="plan-commission" style="display: flex; align-items: start; gap: 8px; font-size: 11px; color: #ced4da; border-top: 1px dashed rgba(255,255,255,0.05); padding-top: 10px; margin-top: 2px;">
                   <span style="color: #ff6c22; font-weight: bold;">★</span>
                   <span>Taxa de comissão: <strong>{{ plano.defaultTakeRatePercent }}%</strong></span>
                 </div>
@@ -215,6 +283,7 @@
               <button 
                 @click="selecionarPlanoEAvancar(plano.id)"
                 type="button" 
+                class="plan-cta"
                 :style="{ backgroundColor: plano.monthlyFee > 50 ? '#0ab39c' : 'transparent', borderColor: plano.monthlyFee > 50 ? '#0ab39c' : '#3a3f50', color: '#ffffff' }"
                 style="width: 100%; padding: 12px; border: 1px solid; border-radius: 8px; font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; transition: 0.2s;"
                 onmouseover="this.style.borderColor='#ff6c22'; this.style.color='#ff6c22';"
@@ -222,8 +291,12 @@
               >
                 COMEÇAR 30 DIAS GRÁTIS →
               </button>
+              <small class="mobile-plan-trial-note">Você só começa a pagar após o período grátis.</small>
             </div>
 
+          </div>
+          <div v-if="etapaOnboarding === 0 && planosSaaS.length > 1" class="plan-carousel-dots" aria-hidden="true">
+            <span v-for="(plano, index) in planosSaaS" :key="`dot-${plano.id}`" :class="{ active: index === planCarouselIndex }"></span>
           </div>
 
           <!-- ==================================================================== -->
@@ -467,6 +540,47 @@
 .security-section{text-align:center;border-top:1px solid rgba(255,255,255,.05)}.benefit-grid{margin-top:42px}.benefit-grid small{color:var(--orange)}
 .pre-plans{max-width:1000px;margin:15px auto 10px;text-align:center;padding:65px 28px 25px;border-top:1px solid rgba(255,255,255,.07)}.pre-plans-badge{display:inline-block;color:#55decf;border:1px solid rgba(16,205,180,.4);background:rgba(16,205,180,.08);padding:9px 16px;border-radius:30px;font:900 12px monospace;letter-spacing:1px;margin-bottom:20px}.pre-plans h2{font-size:clamp(29px,3.2vw,42px)}.pre-plans p{max-width:720px;margin:20px auto;color:#aab6c8;font-size:15px;line-height:1.65}.arrow-down{color:var(--orange);font-size:28px;margin-top:18px;animation:bounceDown 1.6s infinite}@keyframes bounceDown{50%{transform:translateY(7px)}}
 #secao-onboarding{scroll-margin-top:105px}
+
+.mobile-plan-benefits,.mobile-plan-trial-note{display:none}
+.mobile-sales{display:none}
+@media(max-width:640px){
+  .desktop-sales{display:none!important}.mobile-sales{display:block}.seven-portal{padding-bottom:0!important}
+  .m-hero{position:relative;height:calc(100dvh - 58px);min-height:calc(100svh - 58px);padding:0 22px;text-align:center;display:flex;align-items:center;justify-content:center;overflow:hidden;border-bottom:1px solid rgba(255,255,255,.06);box-sizing:border-box}
+  .m-hero-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;z-index:0;filter:saturate(1.08) contrast(1.16) brightness(.54)}.m-hero-mask{position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,rgba(3,5,8,.22) 0%,rgba(3,5,8,.30) 38%,rgba(3,5,8,.62) 70%,rgba(3,5,8,.94) 100%)}.m-hero-content{position:relative;z-index:2;width:100%;max-width:390px;padding:42px 0 36px;transform:translateY(10px)}
+  .m-hero .sales-badge{font-family:'Inter',sans-serif;font-size:10px;font-weight:800;padding:8px 13px;letter-spacing:1px}.m-hero .sales-audience{font-family:'Inter',sans-serif;font-size:13px;font-weight:800;margin:18px 0 14px;letter-spacing:.25px}
+  .m-hero h1,.mobile-sales h2{margin:0;color:#fff;font-family:'Inter',sans-serif;font-size:42px;font-weight:900;line-height:.98;letter-spacing:-1.6px;text-shadow:0 3px 16px rgba(0,0,0,.72)}.m-hero h1 span,.mobile-sales h2 span{display:block;color:var(--orange);margin-top:7px}
+  .m-hero-content>p{font-family:'Inter',sans-serif;font-size:16px;font-weight:500;line-height:1.5;color:#eef2f7;margin:22px auto 24px;max-width:350px;text-shadow:0 2px 8px rgba(0,0,0,.65)}.m-hero .sales-primary-btn{width:100%;padding:18px 18px;font-family:'Inter',sans-serif;font-size:12px;font-weight:800}.m-hero-scroll{position:absolute;z-index:2;left:0;right:0;bottom:42px;color:#758093;font:800 8px monospace;letter-spacing:1.4px}.m-hero-scroll span{display:block;color:#c7cfda;font-size:18px;line-height:1;margin-bottom:6px}
+  .m-proof{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 14px;margin-top:18px;color:#d5dbe4;font-family:'Inter',sans-serif;font-size:10px;font-weight:700;text-shadow:0 2px 7px rgba(0,0,0,.8)}.m-proof span{white-space:nowrap}
+  .m-section{padding:46px 20px;border-bottom:1px solid rgba(255,255,255,.055);text-align:center}.m-section .section-kicker{font-size:9px;padding:7px 11px;margin-bottom:15px}.mobile-sales h2{font-size:24px}
+  .m-steps{display:flex;flex-direction:column;gap:10px;margin-top:24px;text-align:left}.m-steps article{display:flex;gap:13px;padding:15px;background:#11141f;border:1px solid var(--line);border-radius:14px}.m-steps article>b{flex:0 0 32px;height:32px;border-radius:50%;display:grid;place-items:center;background:rgba(255,108,34,.13);color:var(--orange);font:900 13px monospace}.m-steps strong{color:#fff;font-size:14px}.m-steps p{margin:4px 0 0;color:#909caf;font-size:11px;line-height:1.5}
+  .m-demo{margin-top:22px;text-align:left}.m-demo .mini-profile{padding:20px}.m-demo .mini-metrics{padding:0 20px 20px;grid-template-columns:1fr 1fr}.m-demo .mini-metrics div{padding:13px}.m-demo .mini-profile strong{font-size:17px}.m-inline-cta{width:100%;margin-top:14px;padding:14px;border:1px solid rgba(16,205,180,.4);border-radius:10px;background:rgba(16,205,180,.08);color:#57dfcf;font:900 10px monospace}
+  .m-benefit-list{display:flex;flex-direction:column;gap:9px;margin-top:24px;text-align:left}.m-benefit-list article{display:flex;gap:13px;align-items:flex-start;padding:15px;border-radius:13px;background:#11141f;border:1px solid var(--line)}.m-benefit-list i{font-size:21px;color:var(--orange)}.m-benefit-list b,.m-benefit-list span{display:block}.m-benefit-list b{color:#fff;font-size:13px;margin-bottom:4px}.m-benefit-list span{color:#929db0;font-size:11px;line-height:1.45}
+  .m-tools .seven-ia{font:inherit;font-style:normal;margin-left:.28em}.m-tools-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:24px}.m-tools-row article{padding:14px 8px;background:#11141f;border:1px solid var(--line);border-radius:12px}.m-tools-row i,.m-tools-row b,.m-tools-row span{display:block}.m-tools-row i{color:var(--orange);font-size:20px;margin-bottom:8px}.m-tools-row b{color:#fff;font-size:11px}.m-tools-row span{color:#8f9bad;font-size:9px;line-height:1.35;margin-top:4px}
+  .m-plans-intro{padding-bottom:12px}.m-plans-intro h2{line-height:1.12!important}.m-plans-intro .pre-plans-badge{font-size:11px;padding:9px 15px;font-weight:900;box-shadow:0 0 22px rgba(16,205,180,.12)}.m-plans-intro .m-plans-intro-copy,.m-plans-intro .m-plans-intro-btn{display:none!important}
+  #secao-onboarding{margin-top:0!important;padding:8px 14px 22px!important;border-radius:0 0 16px 16px!important}
+  #secao-onboarding .onboarding-heading{display:none!important}
+
+  #secao-onboarding .plan-carousel{display:flex!important;overflow-x:auto;overflow-y:hidden;gap:10px!important;scroll-snap-type:x mandatory;scroll-padding-inline:0;padding:2px 18px 10px 0!important;margin:0!important;width:100%!important;max-width:100%!important;box-sizing:border-box!important;-webkit-overflow-scrolling:touch;scrollbar-width:none;justify-content:flex-start!important}
+  #secao-onboarding .plan-carousel::-webkit-scrollbar{display:none}
+  #secao-onboarding .plan-carousel-card{flex:0 0 calc(100% - 28px);width:calc(100% - 28px)!important;max-width:none!important;min-width:calc(100% - 28px)!important;scroll-snap-align:start;padding:22px 18px!important;box-sizing:border-box!important}
+  #secao-onboarding .plan-carousel-card h4{font-size:16px!important}
+  #secao-onboarding .plan-price-box{padding:20px 14px!important;margin-bottom:18px!important}
+  #secao-onboarding .plan-price-box>div:first-child{font-size:11px!important;padding:7px 12px!important;margin-bottom:10px!important}
+  #secao-onboarding .plan-price-box>span{font-size:11px!important;margin-bottom:5px!important}
+  #secao-onboarding .plan-price-value{color:#ff6c22!important;font-size:30px!important;line-height:1.05!important;margin-top:5px!important}
+  #secao-onboarding .plan-price-value span{color:#c4cad5!important;font-size:12px!important;font-weight:700!important}
+  #secao-onboarding .plan-carousel-card>div:nth-of-type(3)>div:not(.plan-commission){font-size:13px!important;line-height:1.45!important;gap:10px!important}
+  #secao-onboarding .plan-carousel-card>div:nth-of-type(3)>div:not(.plan-commission)>span:first-child{font-size:15px!important}
+  #secao-onboarding .plan-cta{background:linear-gradient(135deg,#ff6c22,#ff8138)!important;border-color:#ff6c22!important;color:#fff!important;font-size:11px!important;padding:15px 12px!important;box-shadow:0 9px 22px rgba(255,108,34,.22)!important}
+  #secao-onboarding .mobile-plan-benefits{display:flex;flex-direction:column;gap:10px;padding:13px 0 2px;border-top:1px solid rgba(255,255,255,.05)}
+  #secao-onboarding .mobile-plan-benefits>div{display:flex;gap:8px;align-items:flex-start}.mobile-plan-benefits>div>span{color:#0ab39c;font-weight:900}.mobile-plan-benefits p{margin:0;display:flex;flex-direction:column;gap:2px}.mobile-plan-benefits strong{color:#f2f4f8;font-size:11px}.mobile-plan-benefits small{color:#8792a5;font-size:9px;line-height:1.4}
+  #secao-onboarding .plan-commission{margin-top:10px!important;padding:12px 10px!important;border:1px solid rgba(255,108,34,.18)!important;border-radius:9px;background:rgba(255,108,34,.045)}
+  #secao-onboarding .mobile-plan-trial-note{display:block;color:#7f899a;font-size:9px;line-height:1.4;text-align:center;margin-top:9px}
+  #secao-onboarding .plan-carousel-dots{display:flex;justify-content:center;gap:7px;margin:10px 0 2px}
+  #secao-onboarding .plan-carousel-dots span{width:6px;height:6px;border-radius:50%;background:#454b5c;transition:.2s}
+  #secao-onboarding .plan-carousel-dots span.active{width:18px;border-radius:8px;background:#ff6c22}
+
+}
 @media(max-width:900px){.pain-grid,.smart-grid,.benefit-grid{grid-template-columns:1fr 1fr}.opportunity-section{grid-template-columns:1fr}.opportunity-section h2{text-align:center}.opportunity-copy{text-align:center}.opportunity-copy ul{display:inline-block;text-align:left}}
 @media(max-width:640px){.sales-hero{min-height:690px}.sales-hero-content{padding-top:55px}.sales-lead{font-size:16px}.trial-pill{flex-direction:column;gap:3px}.sales-proof{line-height:1.8}.pain-grid,.smart-grid,.benefit-grid{grid-template-columns:1fr}.sales-section{padding:65px 20px}.sales-section h2{font-size:29px}.mini-metrics{grid-template-columns:1fr}}
 </style>
@@ -501,6 +615,7 @@ export default {
       erroCep: false,
       etapaOnboarding: 0, // 0 = Planos, 1 = Acesso, 2 = Localidade, 3 = Compliance
       planosSaaS: [],
+      planCarouselIndex: 0,
       
       // Validador local volátil para checagem de igualdade de credenciais
       confirmarPasswordLocal: "",
@@ -537,6 +652,15 @@ export default {
     };
   },
   methods: {
+    atualizarIndicePlanos() {
+      const el = this.$refs.planCarousel;
+      if (!el || !el.children.length) return;
+      const card = el.children[0];
+      const gap = parseFloat(getComputedStyle(el).gap || 0);
+      const passo = card.getBoundingClientRect().width + gap;
+      this.planCarouselIndex = Math.max(0, Math.min(this.planosSaaS.length - 1, Math.round(el.scrollLeft / passo)));
+    },
+
     // 🧠 CARGA DINÂMICA: Consome o endpoint público do C# para listar os planos ativos
     async carregarPlanosDisponiveis() {
       this.loadingPlanos = true;

@@ -3,11 +3,11 @@
   <div style="background-color: #0a0b10; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; font-family: monospace;">
     
     <!-- CARD CENTRAL DE ALTO CONTRASTE (VELZON DARK STYLE) -->
-    <div class="animate__animated animate__fadeIn" style="width: 100%; max-width: 450px; background-color: #131520; border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; padding: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); text-align: left;">
+    <div class="login-cliente-card animate__animated animate__fadeIn" style="width: 100%; max-width: 450px; background-color: #131520; border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; padding: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); text-align: left;">
       
       <!-- LOGO / CABEÇALHO -->
       <div style="text-align: center; margin-bottom: 30px;">
-        <h3 style="color: #ffffff; font-weight: bold; text-transform: uppercase; font-size: 22px; margin: 0 0 8px 0; letter-spacing: 0.5px;">Seven<span style="color: #ff6c22;">Shows</span></h3>
+        <img :src="logoSevenShows" alt="SevenShows Logo" style="height: 40px; width: auto; max-width: 100%; object-fit: contain; margin: 0 0 10px 0;" />
         <p style="color: #878a99; font-size: 13px; margin: 0;">Área de Acesso do Contratante</p>
       </div>
 
@@ -56,11 +56,14 @@
 <script>
 /* eslint-disable */
 import axios from "axios";
+import logoSevenShows from "@/assets/images/logo-light.png";
 
 export default {
   name: "LoginContratante",
   data() {
     return {
+      logoSevenShows,
+
       // 🚀 ESTADOS REATIVOS DO FORMULÁRIO
       email: "",
       password: "",
@@ -112,3 +115,12 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+@media (max-width: 600px) {
+  .login-cliente-card {
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+  }
+}
+</style>

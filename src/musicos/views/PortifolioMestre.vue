@@ -123,3 +123,20 @@ export default {
   color: #ffffff !important;
 }
 </style>
+
+<style scoped>
+@media (max-width: 767.98px) {
+  .container-fluid { padding: 12px 6px 20px !important; }
+  .container-fluid > .d-flex:first-child { align-items: center !important; text-align: center; margin-bottom: 14px !important; gap: 10px !important; }
+  .container-fluid > .d-flex:first-child .text-start { text-align: center !important; width: 100%; }
+  .container-fluid > .d-flex:first-child h3 { font-size: 18px !important; line-height: 1.15; margin-bottom: 6px !important; }
+  .container-fluid > .d-flex:first-child p { font-size: 12px !important; line-height: 1.45; max-width: 330px; margin-left: auto; margin-right: auto; }
+  .container-fluid > .d-flex:first-child .badge { font-size: 10px !important; padding: 6px 10px !important; }
+  .container-fluid > .d-flex:first-child > button { width: 100%; min-height: 44px; }
+  .row.mb-4 { margin-bottom: 12px !important; }
+  .nav-pills-custom { display: grid; grid-template-columns: 1fr 1fr; width: 100%; gap: 8px !important; }
+  .nav-pills-custom .nav-item { width: 100%; }
+  .nav-pills-custom .nav-link { width: 100%; padding: 10px 6px !important; font-size: 11px !important; text-align: center; min-height: 44px; display: flex; align-items: center; justify-content: center; }
+  .card.shadow-sm.border-0.rounded-3 > .card-body { padding: 6px !important; }
+}
+</style>

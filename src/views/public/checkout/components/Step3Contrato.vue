@@ -10,7 +10,8 @@
 
     <div class="intro">
       <span class="eyebrow">PASSO 3 · CONFIRMAÇÃO DO SHOW</span>
-      <h2>CONFIRME OS DETALHES DO SEU SHOW</h2>
+      <h2 class="desktop-confirm-title">CONFIRME OS DETALHES DO SEU SHOW</h2>
+      <h2 class="mobile-confirm-title">CONFIRA SEU AGENDAMENTO</h2>
       <p>Confira os dados da apresentação e garanta o seu agendamento.</p>
     </div>
 
@@ -22,6 +23,26 @@
         <div class="show-item"><small>DATA E HORÁRIO</small><strong>{{ dataFormatada }}</strong><span>Início às {{ horarioShow }}h</span></div>
         <div class="show-item"><small>ADICIONAIS</small><strong>{{ horasExtras }}h extra{{ horasExtras === 1 ? '' : 's' }}</strong><span>Deslocamento validado via CEP</span></div>
       </div>
+
+      <!-- No mobile este é o resumo final da contratação; evita duplicar o card lateral. -->
+      <div class="mobile-financial-summary">
+        <div class="financial-row">
+          <span>Cachê do show</span>
+          <strong>{{ formatarMoeda(pacoteInfo?.precoBase || pacoteInfo?.PrecoBase || 0) }}</strong>
+        </div>
+        <div v-if="horasExtras > 0" class="financial-row extra">
+          <span>+{{ horasExtras }}h extra{{ horasExtras === 1 ? '' : 's' }}</span>
+          <strong>+{{ formatarMoeda(valorTotalHorasExtras) }}</strong>
+        </div>
+        <div v-if="taxaFrete > 0" class="financial-row logistics">
+          <span>Logística / deslocamento</span>
+          <strong>+{{ formatarMoeda(taxaFrete) }}</strong>
+        </div>
+        <div class="financial-total">
+          <span>TOTAL DA CONTRATAÇÃO</span>
+          <strong>{{ formatarMoeda(totalGeral) }}</strong>
+        </div>
+      </div>
     </section>
 
     <div class="trust-grid">
@@ -29,7 +50,7 @@
         <div class="trust-icon">🔒</div><div><strong>SEU PAGAMENTO FICA PROTEGIDO</strong><p>O valor permanece protegido pela Seven Shows e só é liberado ao artista após a realização do show.</p></div>
       </section>
       <section class="trust-card confirm">
-        <div class="trust-icon">⏱</div><div><strong>CONFIRMAÇÃO DO ARTISTA EM ATÉ 6 HORAS</strong><p>Assim que o agendamento for realizado, o artista recebe a solicitação para confirmar agenda e logística.</p></div>
+        <div class="trust-icon">⏱</div><div><strong>CONFIRMAÇÃO DO ARTISTA EM ATÉ 6 HORAS</strong><p>O artista tem 6 horas para confirmar o seu agendamento ou o seu dinheiro será totalmente reembolsado.</p></div>
       </section>
     </div>
 
@@ -40,9 +61,13 @@
         <div><strong>TERMOS DA CONTRATAÇÃO</strong><p>A contratação é formalizada digitalmente entre você e o artista. Ambos recebem uma cópia do documento por e-mail.</p></div>
       </div>
       <button type="button" class="secondary-btn" @click="modalContratoAtivo = true">LER TERMOS COMPLETOS →</button>
+      <label class="accept-card mobile-terms-accept" for="chkAssinaturaDigitalMobile">
+        <input type="checkbox" v-model="aceitouTermos" id="chkAssinaturaDigitalMobile" />
+        <span><strong>LI E CONCORDO COM OS TERMOS DA CONTRATAÇÃO</strong></span>
+      </label>
     </section>
 
-    <label class="accept-card" for="chkAssinaturaDigital">
+    <label class="accept-card desktop-terms-accept" for="chkAssinaturaDigital">
       <input type="checkbox" v-model="aceitouTermos" id="chkAssinaturaDigital" />
       <span><strong>Li e concordo com os termos da contratação.</strong><button type="button" @click.prevent.stop="modalContratoAtivo = true">Ler termos completos</button></span>
     </label>
@@ -116,6 +141,12 @@ export default {
       modalContratoAtivo: false
     };
   },
+  computed: {
+    valorTotalHorasExtras() {
+      const valorHora = Number(this.pacoteInfo?.extraHourValue || this.pacoteInfo?.ExtraHourValue || 0);
+      return Number(this.horasExtras || 0) * valorHora;
+    }
+  },
   methods: {
     // 🏛️ INTERPOLAÇÃO MONETÁRIA DINÂMICA DENTRO DAS CLÁUSULAS
     formatarMoeda(valor) {
@@ -133,5 +164,18 @@ export default {
 <style scoped>
 .confirmacao-show{background:#131520;border:1px solid rgba(255,255,255,.05);border-radius:16px;padding:40px;box-shadow:0 10px 30px rgba(0,0,0,.5);font-family:monospace;color:#fff}.stepper{display:flex;align-items:center;justify-content:space-between;margin-bottom:38px;padding:0 10px}.step{display:flex;align-items:center;gap:10px;white-space:nowrap}.step span{width:36px;height:36px;border-radius:50%;background:#2a2d3d;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px}.step b{font-size:13px;text-transform:uppercase}.stepper i{flex:1;height:2px;background:rgba(255,255,255,.06);margin:0 15px}.stepper i.done{background:#ff6c22}.step.muted{opacity:.48}.step.active span{background:#ff6c22;box-shadow:0 0 15px rgba(255,108,34,.42)}.intro{text-align:left;margin-bottom:24px}.eyebrow{display:block;color:#ff6c22;font-size:10px;font-weight:800;letter-spacing:1px;margin-bottom:10px}.intro h2{font-family:Arial,sans-serif;font-size:23px;line-height:1.15;margin:0 0 8px;font-weight:900}.intro p{color:#a9afbd;font-size:13px;margin:0}.show-card{background:linear-gradient(135deg,rgba(255,108,34,.08),rgba(255,255,255,.025));border:1px solid rgba(255,108,34,.24);border-radius:14px;padding:20px;margin-bottom:16px}.show-card-title{display:flex;align-items:center;gap:12px;margin-bottom:18px}.icon-box{width:42px;height:42px;border-radius:11px;background:rgba(255,108,34,.14);display:flex;align-items:center;justify-content:center;color:#ff6c22;font-size:20px}.show-card-title div{display:flex;flex-direction:column;gap:4px}.show-card-title small,.show-item small{color:#8d94a5;font-size:9px;font-weight:800;letter-spacing:.7px}.show-card-title strong{font-family:Arial,sans-serif;font-size:18px}.show-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.show-item{background:rgba(0,0,0,.18);border:1px solid rgba(255,255,255,.055);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:5px}.show-item strong{font-size:12px}.show-item span{font-size:10px;color:#9da4b4}.trust-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}.trust-card{display:flex;gap:12px;padding:17px;border-radius:12px;text-align:left}.trust-card.secure{background:rgba(10,179,156,.07);border:1px solid rgba(10,179,156,.28)}.trust-card.confirm{background:rgba(255,183,0,.055);border:1px solid rgba(255,183,0,.2)}.trust-icon{font-size:20px}.trust-card strong{font-size:10px;letter-spacing:.35px}.secure strong{color:#12cdb2}.confirm strong{color:#ffbd38}.trust-card p{color:#b7bdc9;font-size:10px;line-height:1.55;margin:5px 0 0}.terms-card{display:flex;align-items:center;justify-content:space-between;gap:18px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:18px;margin-bottom:14px}.terms-copy{display:flex;gap:12px;text-align:left;align-items:flex-start}.terms-icon{font-size:20px}.terms-copy strong{font-size:11px}.terms-copy p{font-size:10px;color:#aeb4c1;line-height:1.5;margin:5px 0 0;max-width:420px}.secondary-btn{flex:0 0 auto;background:#252a3b;border:1px solid #3c4256;color:#fff;border-radius:8px;padding:12px 15px;font:700 10px monospace;cursor:pointer}.accept-card{display:flex;align-items:flex-start;gap:12px;padding:15px 16px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.07);border-radius:10px;text-align:left;cursor:pointer}.accept-card input{width:19px;height:19px;accent-color:#ff6c22;margin:1px 0 0}.accept-card span{display:flex;flex-direction:column;gap:4px;font-size:11px}.accept-card button{border:0;background:transparent;padding:0;color:#ff8a50;font:700 10px monospace;text-align:left;cursor:pointer;width:max-content}.payment-head{text-align:left;margin:24px 0 12px}.payment-head>span{color:#ff6c22;font-size:9px;font-weight:800;letter-spacing:.8px}.payment-head h3{font-family:Arial,sans-serif;font-size:17px;margin:5px 0 4px}.payment-head p{font-size:10px;color:#8f96a6;margin:0}.payment-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.pay-btn{min-height:78px;border:1px solid #ff6c22;background:#ff6c22;color:#fff;border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:13px;text-align:left;transition:.2s;cursor:pointer;box-shadow:0 6px 18px rgba(255,108,34,.16)}.pay-btn:disabled{background:#292d3e;border-color:#34394b;color:#747b8e;cursor:not-allowed;box-shadow:none}.pay-symbol{font-size:22px}.pay-copy{display:flex;flex-direction:column;gap:3px}.pay-copy small{font-size:9px;font-weight:800}.pay-copy strong{font:800 10px monospace}.pay-copy em{font-style:normal;font-size:9px;opacity:.78}.payment-hint{text-align:center;color:#747b8e;font-size:9px;margin:10px 0 0}.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.88);display:flex;align-items:center;justify-content:center;z-index:9999;padding:20px}.contract-modal{background:#1a1d29;border:1px solid #3a3f50;border-radius:14px;width:min(780px,100%);max-height:90vh;padding:26px;box-shadow:0 20px 55px rgba(0,0,0,.7);box-sizing:border-box;display:flex;flex-direction:column}.modal-header{display:flex;justify-content:space-between;gap:15px;text-align:left;border-bottom:1px solid rgba(255,255,255,.08);padding-bottom:15px;margin-bottom:15px}.modal-header span{color:#ff6c22;font-size:9px;font-weight:800;letter-spacing:.7px}.modal-header h4{font-family:Arial,sans-serif;font-size:17px;margin:5px 0 3px}.modal-header p{color:#9da4b4;font-size:10px;margin:0}.modal-x{width:34px;height:34px;border-radius:50%;border:1px solid #3a3f50;background:#242838;color:#fff;font-size:20px;cursor:pointer}.contract-scroll{overflow-y:auto;text-align:left;color:#ced4da;font-size:11px;line-height:1.65;padding:18px;border:1px solid #34394b;border-radius:8px;background:rgba(0,0,0,.2);flex:1;min-height:280px}.contract-scroll p{margin:0 0 14px}.contract-title{text-align:center;color:#fff;font-weight:800}.modal-close{margin-top:16px;background:#ff6c22;border:0;color:#fff;font:800 11px monospace;padding:15px;border-radius:50px;cursor:pointer}.modal-close:hover,.pay-btn:not(:disabled):hover{filter:brightness(1.08)}
 .payment-head{margin:26px 0 14px}.payment-head>span{font-size:10px;color:#ff7a32}.payment-head h3{font-size:18px;color:#fff;font-weight:900;margin:7px 0 6px}.payment-head p{font-size:11px;line-height:1.45;color:#c2c7d2}.pay-btn{min-height:94px;padding:17px 18px;gap:15px;background:#ff6c22;border-color:#ff7a32}.pay-symbol{font-size:24px;color:#fff;flex:0 0 auto}.pay-copy{gap:5px;min-width:0}.pay-copy small{font-size:9px;color:#fff;opacity:.92;letter-spacing:.45px}.pay-copy strong{font:900 12px/1.25 monospace;color:#fff}.pay-copy strong b{font-size:14px}.pay-copy em{font-size:10px;line-height:1.35;color:#fff;opacity:.92}.pay-btn:disabled{background:#292d3e;border-color:#3b4053;color:#9aa1b3;opacity:.72}.pay-btn:disabled .pay-copy small,.pay-btn:disabled .pay-copy strong,.pay-btn:disabled .pay-copy em,.pay-btn:disabled .pay-symbol{color:#aab0bf;opacity:1}.payment-hint{font-size:10px;line-height:1.4;color:#aab0bf;margin-top:11px}
-@media(max-width:760px){.confirmacao-show{padding:24px 16px}.stepper{padding:0}.step b{display:none}.stepper i{margin:0 7px}.show-grid,.trust-grid,.payment-grid{grid-template-columns:1fr}.terms-card{align-items:stretch;flex-direction:column}.secondary-btn{width:100%}.intro h2{font-size:20px}.contract-modal{padding:18px}.show-card-title strong{font-size:16px}}
+.mobile-financial-summary{display:none}.financial-row,.financial-total{display:flex;align-items:center;justify-content:space-between;gap:14px}.financial-row{padding:10px 0;border-top:1px solid rgba(255,255,255,.06);font-size:11px;color:#b7bdc9}.financial-row strong{color:#fff;font-size:12px}.financial-row.extra strong{color:#ff7a32}.financial-row.logistics strong{color:#12cdb2}.financial-total{margin-top:4px;padding:15px 0 2px;border-top:1px solid rgba(255,255,255,.1)}.financial-total span{font-size:10px;color:#9da4b4;font-weight:800}.financial-total strong{font-family:Arial,sans-serif;font-size:20px;color:#ff6c22}
+.mobile-terms-accept{display:none}
+.mobile-confirm-title{display:none}
+@media(max-width:760px){
+  .confirmacao-show{padding:22px 16px}.stepper{padding:0;margin-bottom:26px}.step b{display:none}.stepper i{margin:0 7px}
+  .desktop-confirm-title{display:none}.mobile-confirm-title{display:block}.intro{margin-bottom:17px}.intro h2{font-size:20px}.intro p{font-size:11px;line-height:1.45}
+  .show-card{padding:15px 16px;margin-bottom:12px}.show-card-title{margin-bottom:10px}.show-card-title strong{font-size:16px}.icon-box{width:36px;height:36px;font-size:17px}
+  .show-grid{display:flex;flex-wrap:wrap;gap:5px 14px;padding:0 0 9px}.show-item{display:block;background:transparent;border:0;border-radius:0;padding:0}.show-item small{display:none}.show-item strong,.show-item span{display:inline;font-size:10px}.show-item strong{color:#fff}.show-item span{color:#9da4b4}.show-item strong:after{content:" · ";color:#666d7d}.show-item:nth-child(2) strong:after{content:" · "}.show-item:nth-child(3) span{display:none}.show-item:nth-child(3) strong:after{content:""}
+  .mobile-financial-summary{display:block;margin-top:2px;padding-top:3px;border-top:1px solid rgba(255,255,255,.06)}.financial-row{padding:8px 0}.financial-total{padding:11px 0 1px}.financial-total strong{font-size:19px}
+  .trust-grid{display:block;margin-bottom:12px;padding:3px 14px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.08);border-radius:12px}.trust-card{padding:12px 0;border:0!important;background:transparent!important;border-radius:0}.trust-card+.trust-card{border-top:1px solid rgba(255,255,255,.07)!important}.trust-icon{font-size:17px}.trust-card p{margin-top:3px;line-height:1.45}
+  .terms-copy p{display:none}.mobile-terms-accept{display:flex;margin-top:0;padding:11px 0 0;border:0;border-top:1px solid rgba(255,255,255,.07);border-radius:0;background:transparent}.desktop-terms-accept{display:none}.terms-card{gap:10px;padding:14px;margin-bottom:10px;align-items:stretch;flex-direction:column}.terms-copy{align-items:center}.terms-icon{font-size:17px}.secondary-btn{width:100%;padding:10px 12px}
+  .payment-head{margin:18px 0 9px}.payment-head h3,.payment-head p{display:none}.payment-head>span{font-size:11px}.payment-grid{grid-template-columns:1fr;gap:8px}.pay-btn{min-height:68px;padding:12px 14px}.pay-copy small{display:none}.pay-copy strong{font-size:11px}.pay-copy em{font-size:9px}.pay-symbol{font-size:20px}.payment-hint{margin-top:8px}
+  .contract-modal{padding:18px}
+}
 </style>

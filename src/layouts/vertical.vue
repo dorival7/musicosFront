@@ -64,14 +64,15 @@ export default {
     },
 
     updateSidebarSize() {
-      let sidebarSize = '';
-      if (window.innerWidth < 1025) {
-        this.sidebarSize = "sm";
+      let sidebarSize = 'lg';
+
+      // No celular, a sidebar deve abrir completa (ícones + textos).
+      // Mantemos o modo compacto da Velzon apenas para tablets.
+      if (window.innerWidth >= 768 && window.innerWidth < 1025) {
         sidebarSize = 'sm';
-      } else {
-        this.sidebarSize = "lg";
-        sidebarSize = 'lg';
       }
+
+      this.sidebarSize = sidebarSize;
       document.documentElement.setAttribute("data-sidebar-size", sidebarSize);
     },
 
@@ -116,9 +117,7 @@ export default {
       });
     }
 
-    if (window.innerWidth < 1025) {
-      document.documentElement.setAttribute("data-sidebar-size", "sm");
-    }
+    this.updateSidebarSize();
 
     window.addEventListener("resize", this.updateSidebarSize);
     

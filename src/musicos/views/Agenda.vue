@@ -11,6 +11,9 @@ export default {
       submittingAction: false,
       successMessage: null,
       errorMessage: null,
+      availabilitySaveState: null, // saving | saved | error
+      availabilitySaveMessage: null,
+      mobileAgendaSection: null,
 
       // Matrizes de dados puros sincronizadas com o C# e MariaDB
       calendarDays: [],
@@ -221,25 +224,75 @@ export default {
 
     // 7. SALVAR GRADE DE ROTINA: Altera a matriz semanal (PUT /availability) de 7 posições
     async handleSaveDayAvailability(dayItem) {
-      this.successMessage = null;
-      this.errorMessage = null;
+      // O feedback desta operação fica junto da grade semanal, onde o músico está editando.
+      this.availabilitySaveState = 'saving';
+      this.availabilitySaveMessage = 'Salvando alterações...';
       try {
         const token = localStorage.getItem('jwt');
         const config = { headers: { Authorization: `Bearer ${token}` } };
         
         const payload = {
           dayOfWeek: dayItem.dayOfWeek,
-          startTime: dayItem.startTime,
-          endTime: dayItem.endTime,
+          startTime: this.normalizeTimeForApi(dayItem.startTime),
+          endTime: this.normalizeTimeForApi(dayItem.endTime),
           isAvailable: dayItem.isAvailable
         };
 
         await axios.put(`${process.env.VUE_APP_API_BASE_URL}/tenants/agenda/availability`, payload, config);
-        this.successMessage = "Configuração de disponibilidade da grade semanal atualizada!";
+        this.availabilitySaveState = 'saved';
+        this.availabilitySaveMessage = 'Alterações salvas automaticamente';
         await this.loadCalendarView();
       } catch (error) {
-        this.errorMessage = "Falha ao salvar a alteração do dia da semana.";
+        this.availabilitySaveState = 'error';
+        this.availabilitySaveMessage = 'Não foi possível salvar. Tente novamente.';
       }
+    },
+
+    formatTimeForDisplay(value) {
+      if (!value) return '';
+      return String(value).slice(0, 5);
+    },
+
+    normalizeTimeForApi(value) {
+      if (!value) return value;
+      const time = String(value).trim();
+      return /^\d{2}:\d{2}$/.test(time) ? `${time}:00` : time;
+    },
+
+    isValidTime(value) {
+      const match = String(value || '').match(/^(\d{2}):(\d{2})$/);
+      if (!match) return false;
+      const hours = Number(match[1]);
+      const minutes = Number(match[2]);
+      return hours >= 0 && hours <= 23 && minutes >= 0 && minutes <= 59;
+    },
+
+    maskTimeValue(value) {
+      const digits = String(value || '').replace(/\D/g, '').slice(0, 4);
+      if (digits.length <= 2) return digits;
+      return `${digits.slice(0, 2)}:${digits.slice(2)}`;
+    },
+
+    handleTimeFocus(dayItem, field, event) {
+      event.target.dataset.originalValue = this.formatTimeForDisplay(dayItem[field]);
+      event.target.select();
+    },
+
+    handleTimeInput(dayItem, field, event) {
+      const masked = this.maskTimeValue(event.target.value);
+      event.target.value = masked;
+      dayItem[field] = masked;
+    },
+
+    handleTimeBlur(dayItem, field, event) {
+      const value = String(dayItem[field] || '').trim();
+      if (!this.isValidTime(value)) {
+        const original = event.target.dataset.originalValue || '';
+        dayItem[field] = original;
+        event.target.value = original;
+        return;
+      }
+      this.handleSaveDayAvailability(dayItem);
     },
 
     // 8. GERENCIADOR DE RECESSO UNIFICADO: Detecta e executa a Inserção (POST) ou Edição (PUT)
@@ -475,7 +528,7 @@ export default {
 </script>
 
 <template>
-  <div>
+  <div class="agenda-page">
     <!-- TÍTULO DA PÁGINA NATIVO DO TEMPLATE VELZON -->
     <div class="row">
       <div class="col-12">
@@ -503,17 +556,17 @@ export default {
       
       <!-- COLUNA DA ESQUERDA: O MAPA DE CALOR MENSAL DO SEVENSHOWS -->
       <div class="col-xl-7 col-lg-12 mb-4">
-        <div class="card h-100 shadow-sm border-0">
-          <div class="card-header bg-light border-0 d-flex justify-content-between align-items-center p-3">
+        <div class="card h-100 shadow-sm border-0 agenda-calendar-card">
+          <div class="card-header bg-light border-0 d-flex justify-content-between align-items-center p-3 agenda-calendar-header">
             <h5 class="card-title mb-0 text-dark fw-bold">
               <i class="ri-calendar-todo-line me-1 text-primary"></i> Visão Geral: {{ getTranslateMonthName(currentMonth) }} de {{ currentYear }}
             </h5>
-            <div class="btn-group">
-              <button type="button" class="btn btn-sm btn-outline-secondary" @click="handleNavigateMonth('prev')">
-                <i class="ri-arrow-left-s-line"></i> Mês Anterior
+            <div class="btn-group agenda-month-nav">
+              <button type="button" class="btn btn-sm btn-outline-secondary" @click="handleNavigateMonth('prev')" aria-label="Mês anterior">
+                <i class="ri-arrow-left-s-line"></i><span class="agenda-nav-label"> Mês Anterior</span>
               </button>
-              <button type="button" class="btn btn-sm btn-outline-secondary" @click="handleNavigateMonth('next')">
-                Próximo Mês <i class="ri-arrow-right-s-line"></i>
+              <button type="button" class="btn btn-sm btn-outline-secondary" @click="handleNavigateMonth('next')" aria-label="Próximo mês">
+                <span class="agenda-nav-label">Próximo Mês </span><i class="ri-arrow-right-s-line"></i>
               </button>
             </div>
           </div>
@@ -525,9 +578,9 @@ export default {
             </div>
 
             <!-- GRID ATÔMICO DE DIAS DO MÊS -->
-            <div v-else class="row g-2 row-cols-xxl-5 row-cols-lg-4 row-cols-md-3 row-cols-2">
+            <div v-else class="row g-2 row-cols-xxl-5 row-cols-lg-4 row-cols-md-3 row-cols-2 agenda-days-grid">
               <div class="col" v-for="day in calendarDays" :key="day.date">
-                <div :class="`card border shadow-none mb-0 bg-${day.color}-subtle border-${day.color} text-center h-100`">
+                <div :class="`card border shadow-none mb-0 bg-${day.color}-subtle border-${day.color} text-center h-100 agenda-day-card`">
                   <div class="p-2 d-flex flex-column h-100 justify-content-between">
                     <div class="mb-2">
                       <span :class="`fs-18 fw-bold text-${day.color === 'light' ? 'dark' : day.color}`">
@@ -562,24 +615,24 @@ export default {
             </div>
 
             <!-- LEGENDA REATIVA DE CORES EXPANDIDA -->
-            <div class="d-flex flex-wrap gap-3 mt-4 pt-3 border-top justify-content-center">
-              <span class="fs-12 text-muted"><i class="ri-checkbox-blank-circle-fill text-success me-1"></i> Disponível</span>
-              <span class="fs-12 text-muted"><i class="ri-checkbox-blank-circle-fill text-info me-1"></i> Confirmado</span>
-              <span class="fs-12 text-muted"><i class="ri-checkbox-blank-circle-fill text-warning me-1"></i> Pré-Agendado</span>
-              <span class="fs-12 text-muted"><i class="ri-checkbox-blank-circle-fill text-secondary me-1"></i> Negociando</span>
-              <span class="fs-12 text-muted"><i class="ri-checkbox-blank-circle-fill text-danger me-1"></i> Travado</span>
-              <span class="fs-12 text-muted"><i class="ri-checkbox-blank-circle-fill text-dark me-1"></i> Folga</span>
+            <div class="d-flex flex-wrap gap-3 mt-4 pt-3 border-top justify-content-center agenda-legend">
+              <span class="fs-12 text-muted agenda-legend-item"><i class="ri-checkbox-blank-circle-fill text-success me-1"></i> Disponível</span>
+              <span class="fs-12 text-muted agenda-legend-item"><i class="ri-checkbox-blank-circle-fill text-info me-1"></i> Confirmado</span>
+              <span class="fs-12 text-muted agenda-legend-item"><i class="ri-checkbox-blank-circle-fill text-warning me-1"></i> Pré-Agendado</span>
+              <span class="fs-12 text-muted agenda-legend-item"><i class="ri-checkbox-blank-circle-fill text-secondary me-1"></i> Negociando</span>
+              <span class="fs-12 text-muted agenda-legend-item"><i class="ri-checkbox-blank-circle-fill text-danger me-1"></i> Travado</span>
+              <span class="fs-12 text-muted agenda-legend-item"><i class="ri-checkbox-blank-circle-fill text-dark me-1"></i> Folga</span>
             </div>
           </div>
         </div>
       </div>
       <!-- COLUNA DA DIREITA: PAINEL DE QUATRO ABAS DE NOMES CURTOS (SEM MOCKS) -->
       <div class="col-xl-5 col-lg-12 mb-4">
-        <div class="card h-100 shadow-sm border-0">
+        <div class="card h-100 shadow-sm border-0 agenda-requests-card">
           
           <!-- SELETOR DE ABAS HORIZONTAIS CURTAS NATIVO DO VELZON -->
-          <div class="card-header p-0 border-0 bg-light">
-            <ul class="nav nav-tabs nav-tabs-custom nav-success fs-12" role="tablist">
+          <div class="card-header p-0 border-0 bg-light d-none d-md-block">
+            <ul class="nav nav-tabs nav-tabs-custom nav-success fs-12 agenda-tabs" role="tablist">
               <li class="nav-item" role="presentation">
                 <a class="nav-link active p-2" data-bs-toggle="tab" href="#recebidasTab" role="tab">
                   Recebidas <span class="badge bg-danger ms-1" v-if="listaRecebidas.length > 0">{{ listaRecebidas.length }}</span>
@@ -597,7 +650,7 @@ export default {
               </li>
               <li class="nav-item" role="presentation">
                 <a class="nav-link p-2" data-bs-toggle="tab" href="#disponibilidadeTab" role="tab">
-                  Disponibilidade
+                  Minha Disponibilidade
                 </a>
               </li>
             </ul>
@@ -606,11 +659,15 @@ export default {
           <div class="card-body tab-content p-3">
             
             <!-- LISTAGEM DA ABA 1: RECEBIDAS (PENDING) -->
-            <div class="tab-pane active" id="recebidasTab" role="tabpanel">
+            <button type="button" class="agenda-accordion-toggle d-md-none" :class="{ active: mobileAgendaSection === 'recebidas' }" @click="mobileAgendaSection = mobileAgendaSection === 'recebidas' ? null : 'recebidas'">
+              <span class="agenda-accordion-label"><i class="ri-inbox-archive-line agenda-accordion-section-icon"></i><span class="agenda-accordion-title">Recebidas</span><span class="badge bg-danger" v-if="listaRecebidas.length > 0">{{ listaRecebidas.length }}</span></span>
+              <i class="agenda-accordion-chevron" :class="mobileAgendaSection === 'recebidas' ? 'ri-arrow-up-s-line' : 'ri-arrow-down-s-line'"></i>
+            </button>
+            <div class="tab-pane active" :class="{ 'mobile-open': mobileAgendaSection === 'recebidas' }" id="recebidasTab" role="tabpanel">
               <div v-if="loadingRequests" class="text-center py-4"><div class="spinner-border text-success avatar-sm" role="status"></div></div>
               <div v-else-if="listaRecebidas.length > 0" class="d-flex flex-column gap-3">
-                <div class="card border shadow-none mb-0" v-for="req in listaRecebidas" :key="req.id">
-                  <div class="card-body p-3" @click="handleOpenEventDetails(req)" style="cursor: pointer;" title="Clique para ver o raio-X detalhado da proposta">
+                <div class="card border shadow-none mb-0 agenda-request-item" v-for="req in listaRecebidas" :key="req.id">
+                  <div class="card-body p-3 agenda-request-body" @click="handleOpenEventDetails(req)" style="cursor: pointer;" title="Clique para ver o raio-X detalhado da proposta">
                     <div class="d-flex justify-content-between align-items-start border-bottom pb-2 mb-2">
                       <div><h6 class="fw-bold text-dark mb-0">{{ req.eventName }}</h6><small class="text-muted">{{ req.contractorName }}</small></div>
                       <span class="badge bg-soft-success text-success fw-bold">{{ new Date(req.eventDate).toLocaleDateString('pt-BR') }}</span>
@@ -633,9 +690,13 @@ export default {
             </div>
 
             <!-- LISTAGEM DA ABA 2: NEGOCIANDO (IN_NEGOTIATION) -->
-            <div class="tab-pane" id="negociandoTab" role="tabpanel">
+            <button type="button" class="agenda-accordion-toggle d-md-none" :class="{ active: mobileAgendaSection === 'negociando' }" @click="mobileAgendaSection = mobileAgendaSection === 'negociando' ? null : 'negociando'">
+              <span class="agenda-accordion-label"><i class="ri-chat-3-line agenda-accordion-section-icon"></i><span class="agenda-accordion-title">Negociando</span><span class="badge bg-secondary" v-if="listaNegociando.length > 0">{{ listaNegociando.length }}</span></span>
+              <i class="agenda-accordion-chevron" :class="mobileAgendaSection === 'negociando' ? 'ri-arrow-up-s-line' : 'ri-arrow-down-s-line'"></i>
+            </button>
+            <div class="tab-pane" :class="{ 'mobile-open': mobileAgendaSection === 'negociando' }" id="negociandoTab" role="tabpanel">
               <div v-if="listaNegociando.length > 0" class="d-flex flex-column gap-3">
-                <div class="card border border-secondary shadow-none mb-0" v-for="req in listaNegociando" :key="req.id">
+                <div class="card border border-secondary shadow-none mb-0 agenda-request-item" v-for="req in listaNegociando" :key="req.id">
                   <div class="card-body p-3" @click="handleOpenEventDetails(req)" style="cursor: pointer;" title="Clique para ver o raio-X detalhado da renegociação">
                     <div class="d-flex justify-content-between align-items-start border-bottom pb-2 mb-2">
                       <div><h6 class="fw-bold text-dark mb-0">{{ req.eventName }}</h6><small class="text-muted">{{ req.contractorName }}</small></div>
@@ -657,7 +718,11 @@ export default {
               <div v-else class="text-center py-4 border rounded border-dashed text-muted fs-12">Não há negociações ativas em pauta.</div>
             </div>
             <!-- LISTAGEM DA ABA 3: RECUSADAS (REJECTED) -->
-            <div class="tab-pane" id="recusadasTab" role="tabpanel">
+            <button type="button" class="agenda-accordion-toggle d-md-none" :class="{ active: mobileAgendaSection === 'recusadas' }" @click="mobileAgendaSection = mobileAgendaSection === 'recusadas' ? null : 'recusadas'">
+              <span class="agenda-accordion-label"><i class="ri-close-circle-line agenda-accordion-section-icon"></i><span class="agenda-accordion-title">Recusadas</span><span class="badge bg-dark" v-if="listaRecusadas.length > 0">{{ listaRecusadas.length }}</span></span>
+              <i class="agenda-accordion-chevron" :class="mobileAgendaSection === 'recusadas' ? 'ri-arrow-up-s-line' : 'ri-arrow-down-s-line'"></i>
+            </button>
+            <div class="tab-pane" :class="{ 'mobile-open': mobileAgendaSection === 'recusadas' }" id="recusadasTab" role="tabpanel">
               <div v-if="listaRecusadas.length > 0" class="d-flex flex-column gap-2">
                 <div class="card border bg-light shadow-none mb-0" v-for="req in listaRecusadas" :key="req.id">
                   <div class="card-body p-3 text-start" @click="handleOpenEventDetails(req)" style="cursor: pointer;" title="Clique para ver o histórico detalhado deste show">
@@ -682,7 +747,11 @@ export default {
             </div>
 
             <!-- LISTAGEM DA ABA 4: DISPONIBILIDADE (EVOLUÍDA COM EDIÇÃO E DELEÇÃO) -->
-            <div class="tab-pane" id="disponibilidadeTab" role="tabpanel">
+            <button type="button" class="agenda-accordion-toggle d-md-none" :class="{ active: mobileAgendaSection === 'disponibilidade' }" @click="mobileAgendaSection = mobileAgendaSection === 'disponibilidade' ? null : 'disponibilidade'">
+              <span class="agenda-accordion-label agenda-accordion-label-wide"><i class="ri-calendar-check-line agenda-accordion-section-icon"></i><span class="agenda-accordion-title">Minha Disponibilidade</span></span>
+              <i class="agenda-accordion-chevron" :class="mobileAgendaSection === 'disponibilidade' ? 'ri-arrow-up-s-line' : 'ri-arrow-down-s-line'"></i>
+            </button>
+            <div class="tab-pane" :class="{ 'mobile-open': mobileAgendaSection === 'disponibilidade' }" id="disponibilidadeTab" role="tabpanel">
               
               <!-- BLOCO A: FORMULÁRIO DE BLOQUEIO MANUAL POR RANGE DE DATAS (FÉRIAS/TURNÊ) -->
               <h6 class="fw-bold text-dark border-bottom pb-1 mb-2 fs-12">
@@ -760,6 +829,18 @@ export default {
               <h6 class="fw-bold text-dark border-bottom pb-1 mb-2 fs-12">
                 <i class="ri-time-line me-1 text-success"></i> Configuração de Agenda Semanal (7 Dias)
               </h6>
+
+              <div
+                v-if="availabilitySaveMessage"
+                class="agenda-autosave-feedback"
+                :class="`is-${availabilitySaveState}`"
+                aria-live="polite"
+              >
+                <i v-if="availabilitySaveState === 'saving'" class="ri-loader-4-line agenda-save-spinner"></i>
+                <i v-else-if="availabilitySaveState === 'saved'" class="ri-checkbox-circle-line"></i>
+                <i v-else class="ri-error-warning-line"></i>
+                <span>{{ availabilitySaveMessage }}</span>
+              </div>
               
               <div class="d-flex flex-column gap-2" v-if="weeklyAvailability.length > 0">
                 <div class="p-2 border rounded bg-white text-start d-flex flex-column gap-2" v-for="day in weeklyAvailability" :key="day.id">
@@ -778,14 +859,14 @@ export default {
                   </div>
                   
                   <!-- CAMPOS DE HORÁRIOS: SURGEM DINAMICAMENTE SE O SLIDER ESTIVER ATIVO (ON) -->
-                  <div class="d-flex gap-2 align-items-center animate__animated animate__fadeIn fs-11" v-if="day.isAvailable">
-                    <div class="input-group input-group-sm">
-                      <span class="input-group-text p-1 fs-10 bg-light text-muted">Das</span>
-                      <input type="text" class="form-control p-1 text-center font-monospace" v-model="day.startTime" @blur="handleSaveDayAvailability(day)" placeholder="19:00:00" />
+                  <div class="agenda-time-editor animate__animated animate__fadeIn" v-if="day.isAvailable">
+                    <div class="agenda-time-field">
+                      <label>INÍCIO</label>
+                      <input type="text" class="form-control text-center" :value="formatTimeForDisplay(day.startTime)" @focus="handleTimeFocus(day, 'startTime', $event)" @input="handleTimeInput(day, 'startTime', $event)" @blur="handleTimeBlur(day, 'startTime', $event)" placeholder="19:00" inputmode="numeric" maxlength="5" autocomplete="off" aria-label="Horário de início" />
                     </div>
-                    <div class="input-group input-group-sm">
-                      <span class="input-group-text p-1 fs-10 bg-light text-muted">Até às</span>
-                      <input type="text" class="form-control p-1 text-center font-monospace" v-model="day.endTime" @blur="handleSaveDayAvailability(day)" placeholder="23:59:00" />
+                    <div class="agenda-time-field">
+                      <label>TÉRMINO</label>
+                      <input type="text" class="form-control text-center" :value="formatTimeForDisplay(day.endTime)" @focus="handleTimeFocus(day, 'endTime', $event)" @input="handleTimeInput(day, 'endTime', $event)" @blur="handleTimeBlur(day, 'endTime', $event)" placeholder="23:59" inputmode="numeric" maxlength="5" autocomplete="off" aria-label="Horário de término" />
                     </div>
                   </div>
 
@@ -981,4 +1062,147 @@ export default {
 
 <style scoped>
 .agenda-contractor-logo { max-width:150px; max-height:82px; object-fit:contain; padding:8px 12px; border:1px solid #e5e7eb; border-radius:10px; background:#fff; }
+
+
+@media (max-width: 767.98px) {
+  /* Mantém a largura útil aprovada na v10: compensa apenas o padding do layout Velzon. */
+  .agenda-page { margin-left: -12px; margin-right: -12px; }
+  .agenda-page > .row { margin-left: 0; margin-right: 0; }
+  .agenda-page > .row > [class*="col-"] { min-width: 0; padding-left: 0; padding-right: 0; }
+
+  /* O título recebe o recuo internamente, sem estreitar calendário/cards. */
+  .page-title-box { padding: 10px 12px 12px; min-height: auto; box-sizing: border-box; display: flex !important; justify-content: center !important; text-align: center; width: 100vw; max-width: 100vw; margin-left: calc(50% - 50vw); margin-right: calc(50% - 50vw); }
+  .page-title-box h4 { font-size: 15px; font-weight: 700; margin: 0; width: 100%; text-align: center; }
+
+  .agenda-calendar-header { padding: 10px 12px !important; gap: 8px; }
+  .agenda-calendar-header .card-title { font-size: 13px; line-height: 1.25; }
+  .agenda-nav-label { display: none; }
+  .agenda-month-nav .btn { width: 34px; height: 32px; padding: 0; display: inline-flex; align-items: center; justify-content: center; }
+  .agenda-month-nav .btn i { font-size: 18px; }
+
+  .agenda-calendar-card > .card-body { padding: 10px !important; }
+  .agenda-days-grid { --bs-gutter-x: 6px; --bs-gutter-y: 6px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin: 0; }
+  .agenda-days-grid > .col { width: auto; padding: 0; }
+  .agenda-day-card { min-height: 78px; border-radius: 7px; }
+  .agenda-day-card .p-2 { padding: 6px !important; }
+  .agenda-day-card .mb-2 { margin-bottom: 4px !important; }
+  .agenda-day-card .fs-18 { font-size: 15px !important; }
+  .agenda-day-card small { font-size: 8px !important; line-height: 1.1; }
+  .agenda-day-card .badge { font-size: 8px !important; line-height: 1.15; padding: 4px 3px !important; border-radius: 4px; }
+  .agenda-legend { display: grid !important; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px 12px !important; margin-top: 14px !important; padding-top: 12px !important; justify-content: stretch !important; }
+  .agenda-legend .fs-12 { font-size: 12px !important; font-weight: 600; line-height: 1.2; }
+  .agenda-legend-item { display: inline-flex; align-items: center; white-space: nowrap; min-width: 0; }
+  .agenda-legend-item i { font-size: 13px !important; margin-right: 5px !important; }
+
+
+  .agenda-accordion-toggle {
+    position: relative; display: flex; align-items: center; justify-content: flex-start; width: 100%; min-height: 48px;
+    margin: 0 0 7px; padding: 10px 42px 10px 62px; border: 1px solid #cfd8e3; border-radius: 9px; background: #e9f2f4;
+    box-shadow: 0 2px 5px rgba(18,38,63,.08); color: #183b46; font-size: 13px; font-weight: 700; text-align: left; transition: .18s ease;
+  }
+  .agenda-accordion-toggle:last-child { margin-bottom: 0; }
+  .agenda-accordion-toggle.active { color: #087f73; border-color: rgba(10,179,156,.55); background: #dff4f1; box-shadow: 0 3px 8px rgba(10,179,156,.12); }
+  .agenda-accordion-chevron { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); font-size: 20px; }
+  .agenda-accordion-label { display: grid; grid-template-columns: 18px 116px 22px; align-items: center; column-gap: 8px; text-align: left; }
+  .agenda-accordion-label-wide { grid-template-columns: 18px auto; }
+  .agenda-accordion-title { white-space: nowrap; }
+  .agenda-accordion-section-icon { position: static; transform: none; font-size: 17px; color: #0ab39c; }
+  .agenda-accordion-label .badge { font-size: 10px; min-width: 20px; padding: 4px 6px; transform: translateX(10px); }
+  .agenda-accordion-toggle + .tab-pane.mobile-open {
+    margin: -8px 0 10px;
+    padding: 12px 10px 10px;
+    border: 1px solid rgba(10,179,156,.25);
+    border-top: 0;
+    border-radius: 0 0 10px 10px;
+    background: #fff;
+  }
+  .agenda-accordion-toggle.active { margin-bottom: 8px; border-radius: 9px 9px 0 0; }
+  .agenda-requests-card > .card-body { padding: 10px !important; background: #f3f6f9; }
+  .agenda-requests-card .tab-content > .tab-pane { display: none !important; }
+  .agenda-requests-card .tab-content > .tab-pane.mobile-open { display: block !important; }
+
+  .agenda-requests-card .card-header { overflow: hidden; }
+  .agenda-tabs { display: grid; grid-template-columns: repeat(4, 1fr); width: 100%; }
+  .agenda-tabs .nav-item { min-width: 0; text-align: center; }
+  .agenda-tabs .nav-link { min-height: 48px; padding: 9px 4px !important; font-size: 10px; font-weight: 600; line-height: 1.15; display: flex; align-items: center; justify-content: center; gap: 4px; flex-wrap: wrap; }
+  .agenda-tabs .nav-link.active { font-weight: 700; }
+  .agenda-tabs .badge { font-size: 9px; margin-left: 0 !important; }
+  .agenda-requests-card > .card-body { padding: 10px !important; }
+
+  .agenda-request-item { border-radius: 8px; }
+  .agenda-request-body { padding: 10px !important; }
+  .agenda-request-body h6 { font-size: 13px; line-height: 1.2; }
+  .agenda-request-body small, .agenda-request-body .small { font-size: 10px !important; }
+  .agenda-request-body .fs-12 { font-size: 10px !important; }
+  .agenda-request-body h5 { font-size: 16px; }
+  .agenda-request-body .btn { min-height: 36px; font-size: 11px; }
+
+  .agenda-autosave-feedback {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    min-height: 34px;
+    margin: 0 0 10px;
+    padding: 7px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .agenda-autosave-feedback.is-saving { background: rgba(41,156,219,.10); color: #299cdb; }
+  .agenda-autosave-feedback.is-saved { background: rgba(10,179,156,.10); color: #0ab39c; }
+  .agenda-autosave-feedback.is-error { background: rgba(240,101,72,.10); color: #f06548; }
+  .agenda-save-spinner { display: inline-block; animation: agendaSpin .8s linear infinite; }
+
+  .agenda-autosave-feedback {
+    position: fixed;
+    left: 50%;
+    bottom: 18px;
+    transform: translateX(-50%);
+    z-index: 1095;
+    width: calc(100vw - 32px);
+    max-width: 360px;
+    margin: 0;
+    min-height: 46px;
+    padding: 11px 14px;
+    border: 1px solid currentColor;
+    box-shadow: 0 8px 28px rgba(0,0,0,.18);
+    background: #fff !important;
+    font-size: 13px;
+    border-radius: 10px;
+  }
+
+  .agenda-time-editor {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    width: 100%;
+    padding-top: 2px;
+  }
+  .agenda-time-field { min-width: 0; }
+  .agenda-time-field label {
+    display: block;
+    margin: 0 0 5px;
+    color: #878a99;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .05em;
+  }
+  .agenda-time-field .form-control {
+    width: 100%;
+    min-width: 0;
+    height: 46px;
+    padding: 8px 10px;
+    border-radius: 7px;
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 1;
+    font-family: inherit;
+  }
+  .agenda-time-field .form-control:focus {
+    border-color: #0ab39c;
+    box-shadow: 0 0 0 3px rgba(10,179,156,.12);
+  }
+}
+
+@keyframes agendaSpin { to { transform: rotate(360deg); } }
 </style>

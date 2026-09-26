@@ -16,6 +16,9 @@ export default {
       pendingRequests: [],
       loadingNotifications: false,
       notificationsTimer: null,
+      lastScrollY: 0,
+      topbarHidden: false,
+      scrollTicking: false,
     };
   },
   components: {
@@ -95,6 +98,49 @@ export default {
       const date = new Date(value);
       if (Number.isNaN(date.getTime())) return "Data a confirmar";
       return date.toLocaleDateString("pt-BR");
+    },
+    handleTopbarScroll() {
+      if (this.scrollTicking) return;
+      this.scrollTicking = true;
+
+      window.requestAnimationFrame(() => {
+        const pageTopbar = document.getElementById("page-topbar");
+        if (!pageTopbar) {
+          this.scrollTicking = false;
+          return;
+        }
+
+        const currentY = window.pageYOffset || document.documentElement.scrollTop || 0;
+        pageTopbar.classList.toggle("topbar-shadow", currentY >= 50);
+
+        if (window.innerWidth <= 767) {
+          const sidebarOpen = document.body.classList.contains("vertical-sidebar-enable");
+          const nearTop = currentY <= 12;
+          const scrollingDown = currentY > this.lastScrollY + 4;
+          const scrollingUp = currentY < this.lastScrollY - 4;
+
+          if (sidebarOpen || nearTop || scrollingUp) {
+            this.topbarHidden = false;
+          } else if (scrollingDown && currentY > 72) {
+            this.topbarHidden = true;
+          }
+
+          pageTopbar.classList.toggle("mobile-topbar-hidden", this.topbarHidden);
+        } else {
+          this.topbarHidden = false;
+          pageTopbar.classList.remove("mobile-topbar-hidden");
+        }
+
+        this.lastScrollY = currentY;
+        this.scrollTicking = false;
+      });
+    },
+    handleTopbarResize() {
+      const pageTopbar = document.getElementById("page-topbar");
+      if (window.innerWidth > 767 && pageTopbar) {
+        this.topbarHidden = false;
+        pageTopbar.classList.remove("mobile-topbar-hidden");
+      }
     },
     toggleHamburgerMenu() {
       var windowSize = document.documentElement.clientWidth;
@@ -182,13 +228,9 @@ export default {
       this.notificationsTimer = window.setInterval(this.loadPendingRequests, 60000);
     }
 
-    document.addEventListener("scroll", function () {
-      var pageTopbar = document.getElementById("page-topbar");
-      if (pageTopbar) {
-        document.body.scrollTop >= 50 || document.documentElement.scrollTop >= 50 ? pageTopbar.classList.add(
-          "topbar-shadow") : pageTopbar.classList.remove("topbar-shadow");
-      }
-    });
+    this.lastScrollY = window.pageYOffset || document.documentElement.scrollTop || 0;
+    window.addEventListener("scroll", this.handleTopbarScroll, { passive: true });
+    window.addEventListener("resize", this.handleTopbarResize);
     if (document.getElementById("topnav-hamburger-icon"))
       document
         .getElementById("topnav-hamburger-icon")
@@ -198,6 +240,8 @@ export default {
     if (this.notificationsTimer) window.clearInterval(this.notificationsTimer);
     const hamburger = document.getElementById("topnav-hamburger-icon");
     if (hamburger) hamburger.removeEventListener("click", this.toggleHamburgerMenu);
+    window.removeEventListener("scroll", this.handleTopbarScroll);
+    window.removeEventListener("resize", this.handleTopbarResize);
   },
 };
 </script>
@@ -236,6 +280,10 @@ export default {
             </span>
           </button>
         </div>
+
+        <router-link to="/musicos/dashboard" class="musicos-mobile-topbar-logo" aria-label="Seven Shows - Início">
+          <img src="@/assets/images/logo-light.png" alt="Seven Shows" />
+        </router-link>
 
         <div class="d-flex align-items-center">
           
@@ -361,3 +409,45 @@ export default {
     </div>
   </header>
 </template>
+
+<style scoped>
+#page-topbar {
+  transition: transform 0.24s ease, box-shadow 0.2s ease;
+  will-change: transform;
+}
+
+.musicos-mobile-topbar-logo {
+  display: none;
+}
+
+@media (max-width: 767.98px) {
+  #page-topbar.mobile-topbar-hidden {
+    transform: translateY(-100%);
+  }
+
+  .navbar-header {
+    position: relative;
+  }
+
+  .musicos-mobile-topbar-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+    max-width: 128px;
+    height: 42px;
+  }
+
+  .musicos-mobile-topbar-logo img {
+    display: block;
+    width: auto;
+    max-width: 128px;
+    max-height: 30px;
+    object-fit: contain;
+  }
+}
+</style>

@@ -65,6 +65,11 @@ export default {
     },
 
     onRoutechange(ele) {
+      // Ao navegar pelo menu no celular, fecha a sidebar e devolve o foco ao conteúdo.
+      if (window.innerWidth < 768) {
+        document.body.classList.remove('vertical-sidebar-enable');
+      }
+
       this.initActiveMenu(ele.path);
       if (document.getElementsByClassName("mm-active").length > 0) {
         const currentPosition = document.getElementsByClassName("mm-active")[0].offsetTop;

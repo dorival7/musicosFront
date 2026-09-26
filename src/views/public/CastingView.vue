@@ -11,7 +11,7 @@
         <!-- ==================================================================== -->
         <!-- 🧭 LADO ESQUERDO: FILTROS LATERAIS (STICKY AVANÇADO)                 -->
         <!-- ==================================================================== -->
-        <BCol lg="3" md="4" class="text-start">
+        <BCol lg="3" md="4" class="text-start desktop-filter-col">
           <div class="card modern-card p-4 border border-light border-opacity-10 shadow-lg position-sticky" style="top: 100px; background-color: #131520 !important;">
             <h5 class="text-white fw-bold font-monospace mb-4 text-uppercase fs-14" style="letter-spacing: 0.5px;">
               <i class="ri-filter-3-line text-primary me-1"></i> Filtrar Artistas
@@ -93,6 +93,52 @@
               >
                 <i class="ri-close-line"></i>
               </button>
+            </div>
+
+            <!-- ESTILOS MOBILE: acesso rápido sem ocupar altura do catálogo -->
+            <div class="mobile-quick-styles" aria-label="Filtrar por estilo musical">
+              <label
+                class="mobile-style-chip"
+                v-for="estilo in filtrosDisponiveis.estilos"
+                :key="'quick-mobile-' + estilo"
+                :class="{ 'is-active': filtrosAtivos.estilos.includes(estilo) }"
+              >
+                <input type="checkbox" v-model="filtrosAtivos.estilos" :value="estilo">
+                <span class="mobile-style-check"><i class="ri-check-line"></i></span>
+                <span>{{ estilo }}</span>
+              </label>
+            </div>
+
+            <!-- FILTROS MOBILE: recolhidos para priorizar o catálogo -->
+            <div class="mobile-filter-shell mt-2">
+              <button
+                type="button"
+                class="mobile-filter-toggle"
+                :aria-expanded="filtrosMobileAberto ? 'true' : 'false'"
+                @click="filtrosMobileAberto = !filtrosMobileAberto"
+              >
+                <span><i class="ri-filter-3-line"></i> Filtrar artistas</span>
+                <i :class="filtrosMobileAberto ? 'ri-arrow-up-s-line' : 'ri-arrow-down-s-line'"></i>
+              </button>
+
+              <div v-show="filtrosMobileAberto" class="mobile-filter-panel">
+                <div class="mb-3">
+                  <label class="form-label text-white fw-bold font-monospace text-uppercase fs-12 mb-2">🎵 Estilo de Som</label>
+                  <div class="mobile-style-options">
+                    <label class="mobile-style-option" v-for="estilo in filtrosDisponiveis.estilos" :key="'mobile-' + estilo">
+                      <input class="form-check-input" type="checkbox" v-model="filtrosAtivos.estilos" :value="estilo">
+                      <span>{{ estilo }}</span>
+                    </label>
+                  </div>
+                </div>
+                <div>
+                  <label class="form-label text-white fw-bold font-monospace text-uppercase fs-12 mb-2">📍 Estado / UF</label>
+                  <select class="form-select bg-dark border border-light border-opacity-10 text-white font-monospace fs-13" v-model="filtrosAtivos.uf">
+                    <option value="">Todos os Estados</option>
+                    <option v-for="uf in filtrosDisponiveis.ufs" :key="'mobile-uf-' + uf" :value="uf">{{ uf }}</option>
+                  </select>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -220,7 +266,8 @@ export default {
       },
       // 🕵️‍♂️ REATIVIDADE TEXTUAL: Suporta buscas por nomes de bandas vindas da Home
       termoBuscaTexto: "",
-      buscaComFoco: false
+      buscaComFoco: false,
+      filtrosMobileAberto: false
     };
   },
   computed: {
@@ -580,15 +627,200 @@ export default {
 }
 
 @media (max-width: 767.98px) {
+  .seven-portal {
+    padding-top: 68px !important;
+  }
+
+  .seven-portal > .container {
+    padding-top: 18px !important;
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+  }
+
+  .desktop-filter-col {
+    display: none !important;
+  }
+
   .catalog-header {
     align-items: stretch;
     flex-direction: column;
+    gap: 10px;
+    margin-bottom: 16px !important;
+  }
+
+  .catalog-title h3 {
+    font-size: 18px !important;
+    margin-bottom: 2px !important;
   }
 
   .artist-search-wrap,
   .artist-search {
     width: 100%;
   }
+
+  .artist-search,
+  .artist-name-search {
+    min-height: 46px;
+  }
+
+
+  .mobile-quick-styles {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    width: 100%;
+    overflow-x: auto;
+    padding: 1px 1px 4px;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .mobile-quick-styles::-webkit-scrollbar {
+    display: none;
+  }
+
+  .mobile-style-chip {
+    flex: 0 0 auto;
+    min-height: 30px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 9px;
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 999px;
+    background: #10121b;
+    color: #aeb4c0;
+    font-size: 10px;
+    font-family: monospace;
+    font-weight: 700;
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .mobile-style-chip input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .mobile-style-check {
+    width: 13px;
+    height: 13px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255,255,255,.28);
+    border-radius: 4px;
+    color: transparent;
+    font-size: 10px;
+    line-height: 1;
+  }
+
+  .mobile-style-chip.is-active {
+    border-color: rgba(255,108,34,.72);
+    background: rgba(255,108,34,.10);
+    color: #fff;
+  }
+
+  .mobile-style-chip.is-active .mobile-style-check {
+    border-color: #ff6c22;
+    background: #ff6c22;
+    color: #0a0b10;
+  }
+
+  .mobile-filter-shell {
+    display: block;
+  }
+
+  .mobile-filter-toggle {
+    width: 100%;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 14px;
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 12px;
+    background: #10121b;
+    color: #f5f5f6;
+    font-size: 12px;
+    font-family: monospace;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .35px;
+  }
+
+  .mobile-filter-toggle span {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .mobile-filter-toggle span i {
+    color: #ff6c22;
+    font-size: 16px;
+  }
+
+  .mobile-filter-panel {
+    margin-top: 8px;
+    padding: 14px;
+    border: 1px solid rgba(255,255,255,.10);
+    border-radius: 12px;
+    background: #131520;
+  }
+
+  .mobile-style-options {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px 10px;
+  }
+
+  .mobile-style-option {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    color: #ced4da;
+    font-size: 12px;
+  }
+
+  .mobile-filter-panel .form-select {
+    min-height: 42px;
+    background-color: #0e1017 !important;
+  }
+
+  .artist-result-card {
+    border-radius: 14px !important;
+  }
+
+  .artist-result-card > .position-relative {
+    height: 184px !important;
+    min-height: 184px !important;
+  }
+
+  /* Mobile: valoriza a foto de capa usando praticamente toda a largura do card. */
+  .artist-result-card .artist-card-img {
+    display: block !important;
+    width: calc(100% - 12px) !important;
+    max-width: none !important;
+    height: 100% !important;
+    margin-left: 6px !important;
+    margin-right: 6px !important;
+    object-fit: cover !important;
+    object-position: center !important;
+  }
+
+  .artist-result-card .p-3 {
+    padding: 14px !important;
+  }
+
+  .artist-result-card:hover {
+    transform: none;
+  }
+}
+
+.mobile-filter-shell {
+  display: none;
 }
 
 .artist-name-search {

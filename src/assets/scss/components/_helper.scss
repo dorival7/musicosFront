@@ -296,3 +296,10 @@ code {
         opacity: 0;
     }
 }
+// Seven Shows - painel mobile: mantém o botão de retorno ao topo próximo ao rodapé/limite inferior.
+// Desktop preserva o posicionamento original do Velzon.
+@media (max-width: 767.98px) {
+    #back-to-top {
+        bottom: 24px;
+    }
+}

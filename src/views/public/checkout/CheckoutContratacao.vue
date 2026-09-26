@@ -34,6 +34,9 @@
               v-else-if="passoAtivo === 1"
               :artistId="pacoteInfo?.userId || pacoteInfo?.UserId"
               :apiBaseUrl="apiBaseUrlGlobal"
+              :aceitaHorasExtras="aceitaHorasExtras"
+              :valorHoraExtra="valorHoraExtraMúsico"
+              :duracaoMinutos="Number(pacoteInfo?.duracaoMinutos || pacoteInfo?.DuracaoMinutos || 0)"
               @atualizar-agenda="receberAtualizacaoAgenda"
               @avancar-etapa="passoAtivo = 2"
             />
@@ -70,7 +73,7 @@
                     <!-- ==================================================================== -->
           <!-- 💎 COLUNA DA DIREITA: DETALHAMENTO TRANSPARENTE DE FATURAMENTO (30%)   -->
           <!-- ==================================================================== -->
-          <div style="width: 340px;">
+          <div class="checkout-summary-column" :class="{ 'checkout-summary-mobile-hidden': passoAtivo < 4, 'checkout-summary-mobile-payment': passoAtivo === 4 }" style="width: 340px;">
             <div style="background-color: #131520; border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); position: sticky; top: 120px; font-family: monospace;">
               
               <h4 style="color: #ffffff; font-weight: bold; text-transform: uppercase; font-size: 14px; margin: 0 0 20px 0; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); letter-spacing: 0.5px;">
@@ -97,7 +100,7 @@
               </div>
 
               <!-- 📋 INFRAESTRUTURA INCLUSA E DESCRIÇÃO DO PACOTE -->
-              <div v-if="pacoteInfo?.descricaoPacote || pacoteInfo?.DescricaoPacote" style="background-color: rgba(255,255,255,0.02); border: 1px dashed rgba(255,255,255,0.05); border-radius: 8px; padding: 14px; margin-bottom: 18px; text-align: left;">
+              <div v-if="pacoteInfo?.descricaoPacote || pacoteInfo?.DescricaoPacote" class="checkout-package-description" style="background-color: rgba(255,255,255,0.02); border: 1px dashed rgba(255,255,255,0.05); border-radius: 8px; padding: 14px; margin-bottom: 18px; text-align: left;">
                 <span style="color: rgba(255,255,255,0.4); font-size: 11px; text-transform: uppercase; display: block; margin-bottom: 4px; font-weight: bold;">📋 O que está incluído neste formato:</span>
                 <p style="color: #a3a3a3; font-size: 12px; line-height: 1.65; margin: 0; white-space: pre-line; word-break: break-word;">
                   {{ pacoteInfo?.descricaoPacote || pacoteInfo?.DescricaoPacote }}
@@ -192,6 +195,7 @@ export default {
       horarioSelecionado: "",
       horasExtrasContratadas: 0,
       valorHoraExtraMúsico: 0,
+      aceitaHorasExtras: false,
       startTimeLimiteArtista: null,
       taxaDeslocamentoFrete: 0,
       quilometrosCalculados: 0 
@@ -300,9 +304,25 @@ export default {
         if (response.data) {
           // 🚀 FONTE ÚNICA DA VERDADE: Popula o objeto com dados do pacote + Join da banda (MariaDB)
           this.pacoteInfo = response.data;
+
+          console.log("this.pacoteInfo", JSON.stringify(this.pacoteInfo))
           
-          // Mantém a sua regra original de hora extra sem quebrar nada
-          this.valorHoraExtraMúsico = response.data.extraHoursValueCharged || response.data.ExtraHoursValueCharged || 150.00;
+          // Hora extra: respeita estritamente a configuração comercial retornada pelo backend.
+          // MariaDB/API pode retornar AcceptExtraHours como 1/0 (número ou string).
+          // Normaliza aqui para booleano antes de enviar ao Step1.
+          const acceptExtraHoursRaw = response.data.acceptExtraHours ?? response.data.AcceptExtraHours ?? false;
+          this.aceitaHorasExtras =
+            acceptExtraHoursRaw === true ||
+            acceptExtraHoursRaw === 1 ||
+            acceptExtraHoursRaw === "1";
+
+          this.valorHoraExtraMúsico = Number(
+            response.data.extraHourValue ??
+            response.data.ExtraHourValue ??
+            response.data.extraHoursValueCharged ??
+            response.data.ExtraHoursValueCharged ??
+            0
+          );
           
           console.log("🎯 [CARGA INICIAL] Dados do Pacote e Banda carregados com sucesso.");
 
@@ -410,3 +430,29 @@ export default {
 };
 
 </script>
+
+
+<style scoped>
+/* Mobile: o resumo fica oculto durante agenda e logística e aparece
+   somente a partir da etapa de revisão/fechamento. Desktop permanece igual. */
+@media (max-width: 767.98px) {
+  .checkout-summary-column.checkout-summary-mobile-hidden {
+    display: none !important;
+  }
+
+  .checkout-summary-column {
+    width: 100% !important;
+  }
+
+  /* Etapa final no mobile: a conferência completa já ocorreu no passo 3. */
+  .checkout-summary-column.checkout-summary-mobile-payment {
+    display: none !important;
+  }
+
+  /* No mobile, o resumo fica objetivo: detalhes extensos do formato
+     continuam disponíveis na vitrine e permanecem visíveis no desktop. */
+  .checkout-package-description {
+    display: none !important;
+  }
+}
+</style>

@@ -77,10 +77,12 @@
 
       <div class="schedule-fields">
         <div class="field-block time-field" :class="{ 'needs-attention': !horarioShow }">
-          <label>⏰ Defina o horário de início <span class="required-badge">OBRIGATÓRIO</span></label>
+          <label>⏰ Defina o horário de início <span class="required-asterisk">*</span></label>
           <p class="field-hint">Informe a hora em que o show deve começar.</p>
-          <div class="time-input-wrap">
-            <input
+          <div class="show-time-row">
+            <div class="time-input-wrap">
+              <input
+              class="time-input-desktop"
               type="time"
               v-model="horarioShow"
               step="300"
@@ -90,18 +92,40 @@
               @focus="timeInputFocused = true"
               @blur="timeInputFocused = false"
               @input="atualizarEstadoGlobal"
-            />
+              />
+              <div class="time-stepper-mobile" role="group" aria-label="Horário de início do show">
+                <button type="button" class="time-step-button" @click="alterarHorarioMobile(-30)" aria-label="Diminuir 30 minutos">−</button>
+                <div class="time-step-value">
+                  <strong>{{ horarioShow || '--:--' }}</strong>
+                  <small>INÍCIO</small>
+                </div>
+                <button type="button" class="time-step-button" @click="alterarHorarioMobile(30)" aria-label="Aumentar 30 minutos">+</button>
+              </div>
+            </div>
+            <div v-if="horarioShow && duracaoMinutos > 0" class="end-time-preview">
+              <small>TÉRMINO PREVISTO</small>
+              <strong>{{ horarioTerminoPrevisto }}</strong>
+            </div>
+          </div>
+          <div v-if="horarioShow && duracaoMinutos > 0" class="show-window-summary">
+            <span>{{ horarioShow }}</span><span class="show-window-arrow">→</span><strong>{{ horarioTerminoPrevisto }}</strong>
+            <small>{{ duracaoTotalFormatada }}</small>
           </div>
           <div v-if="limiteHoraDiaSelecionado && horarioShow && horarioShow < limiteHoraDiaSelecionado" class="time-warning">
             O artista atende apenas a partir das {{ limiteHoraDiaSelecionado }} neste dia.
           </div>
         </div>
 
-        <div class="field-block extra-hours">
+        <div v-if="podeContratarHoraExtra" class="field-block extra-hours">
           <label>⏱️ Estender duração?</label>
+          <small class="extra-hour-rate-mobile">{{ formatCurrency(valorHoraExtra) }} por hora extra de show</small>
           <div class="extra-control">
             <button type="button" @click="alterarHorasExtras(-1)" :disabled="horasExtras === 0">−</button>
-            <div><strong>+{{ horasExtras }}h</strong><small>hora extra</small></div>
+            <div>
+              <strong>+{{ horasExtras }}h</strong>
+              <small class="extra-label-desktop">hora extra</small>
+              <small class="extra-price-mobile"><b>+ {{ formatCurrency(valorTotalHorasExtras) }}</b></small>
+            </div>
             <button type="button" @click="alterarHorasExtras(1)" :disabled="horasExtras >= 5">+</button>
           </div>
         </div>
@@ -113,7 +137,8 @@
         @click="emitirAvancoEtapa"
         :disabled="!horarioShow || (limiteHoraDiaSelecionado && horarioShow < limiteHoraDiaSelecionado)"
       >
-        Confirmar data e avançar para logística <span>→</span>
+        <span class="continue-text-desktop">Confirmar data e avançar para logística</span>
+        <span class="continue-text-mobile">Reservar essa data</span> <span>→</span>
       </button>
     </div>
   </div>
@@ -125,7 +150,10 @@ export default {
   name: "Step1AgendaExtras",
   props: {
     artistId: { type: String, required: true },
-    apiBaseUrl: { type: String, required: true }
+    apiBaseUrl: { type: String, required: true },
+    aceitaHorasExtras: { type: Boolean, default: false },
+    valorHoraExtra: { type: Number, default: 0 },
+    duracaoMinutos: { type: Number, default: 0 }
   },
   emits: ["atualizar-agenda", "avancar-etapa"],
   data() {
@@ -146,7 +174,36 @@ export default {
       limiteHoraDiaSelecionado: null
     };
   },
+  computed: {
+    podeContratarHoraExtra() {
+      return this.aceitaHorasExtras === true && Number(this.valorHoraExtra) > 0;
+    },
+    valorTotalHorasExtras() {
+      return Number(this.horasExtras || 0) * Number(this.valorHoraExtra || 0);
+    },
+    duracaoTotalMinutos() {
+      return Number(this.duracaoMinutos || 0) + (Number(this.horasExtras || 0) * 60);
+    },
+    duracaoTotalFormatada() {
+      const total = this.duracaoTotalMinutos;
+      const horas = Math.floor(total / 60);
+      const minutos = total % 60;
+      if (!horas) return `${minutos} min`;
+      return minutos ? `${horas}h${String(minutos).padStart(2, "0")} de show` : `${horas}h de show`;
+    },
+    horarioTerminoPrevisto() {
+      if (!this.horarioShow || !this.duracaoTotalMinutos) return "";
+      const partes = this.horarioShow.split(":");
+      if (partes.length < 2) return "";
+      const inicio = (Number(partes[0]) * 60) + Number(partes[1]);
+      const fim = (inicio + this.duracaoTotalMinutos) % (24 * 60);
+      return `${String(Math.floor(fim / 60)).padStart(2, "0")}:${String(fim % 60).padStart(2, "0")}`;
+    }
+  },
   methods: {
+    formatCurrency(value) {
+      return Number(value || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+    },
     isDataPassada(dia) {
       const hoje = new Date();
       hoje.setHours(0, 0, 0, 0);
@@ -240,6 +297,31 @@ export default {
       }
     },
 
+    alterarHorarioMobile(deltaMinutos) {
+      let minutosAtuais;
+      if (this.horarioShow) {
+        const [h, m] = this.horarioShow.split(":").map(Number);
+        minutosAtuais = (h * 60) + m;
+      } else if (this.limiteHoraDiaSelecionado) {
+        const [h, m] = this.limiteHoraDiaSelecionado.split(":").map(Number);
+        minutosAtuais = (h * 60) + m;
+      } else {
+        minutosAtuais = 0;
+      }
+
+      let novoTotal = (minutosAtuais + deltaMinutos + (24 * 60)) % (24 * 60);
+
+      // Quando houver horário mínimo informado pela agenda, não permite retroceder antes dele.
+      if (this.limiteHoraDiaSelecionado) {
+        const [minH, minM] = this.limiteHoraDiaSelecionado.split(":").map(Number);
+        const minimo = (minH * 60) + minM;
+        if (deltaMinutos < 0 && novoTotal < minimo) novoTotal = minimo;
+      }
+
+      this.horarioShow = `${String(Math.floor(novoTotal / 60)).padStart(2, "0")}:${String(novoTotal % 60).padStart(2, "0")}`;
+      this.atualizarEstadoGlobal();
+    },
+
     alterarHorasExtras(valor) {
       const novaQuantidade = this.horasExtras + valor;
       if (novaQuantidade >= 0 && novaQuantidade <= 5) {
@@ -304,6 +386,31 @@ export default {
 .calendar-card{position:relative;border:1px solid rgba(255,255,255,.08);border-radius:14px;background:rgba(5,7,13,.28);padding:24px}.calendar-loading{position:absolute;inset:0;background:rgba(19,21,32,.84);display:flex;align-items:center;justify-content:center;border-radius:14px;z-index:5}.calendar-toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}.month-nav{background:#181b27;border:1px solid rgba(255,255,255,.08);border-radius:9px;color:#ff7b38;font-size:12px;font-weight:800;cursor:pointer;padding:10px 14px;transition:.18s ease}.month-nav:hover{border-color:rgba(255,108,34,.6);background:rgba(255,108,34,.08);transform:translateY(-1px)}.month-nav span{font-size:18px;line-height:0;vertical-align:-1px}.current-month{text-align:center;display:flex;flex-direction:column;gap:3px}.current-month small{font-size:9px;color:#73798a;letter-spacing:1.4px}.current-month strong{font-size:16px;text-transform:uppercase;letter-spacing:.4px}
 .weekdays{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;border-bottom:1px solid rgba(255,255,255,.07);padding:0 0 11px;margin-bottom:14px}.weekdays span{color:#9da3b5;font-size:10px;font-weight:800;letter-spacing:.5px}.weekdays .weekend{color:#ff6262}.calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:9px;text-align:center}.day-button{position:relative;min-height:43px;border-radius:7px;font-family:monospace;font-weight:800;transition:.16s ease}.day-button.available{background:#2a2f42;border:1px solid rgba(255,255,255,.16);color:#fff;cursor:pointer}.day-button.available:hover{background:#343a51;border-color:rgba(255,108,34,.75);box-shadow:0 6px 18px rgba(0,0,0,.2);transform:translateY(-2px)}.day-button.selected{background:#0ab39c!important;border-color:#23d9be!important;color:#fff!important;box-shadow:0 0 0 2px rgba(10,179,156,.16),0 0 18px rgba(10,179,156,.35)!important;cursor:pointer}.selected-check{position:absolute;right:6px;top:4px;font-size:9px;color:#fff}.day-button.recess{background:#ef4444;border:1px solid rgba(255,255,255,.04);color:#fff}.day-button.ownReservation{background:#ffb800;border:1px solid rgba(255,255,255,.04);color:#17191f}.day-button.reserved{background:#299cdb;border:1px solid rgba(255,255,255,.04);color:#fff}.day-button.off{background:rgba(42,45,61,.15);border:1px solid rgba(255,255,255,.02);color:rgba(255,255,255,.2)}.day-button.past{background:#171a24!important;border-color:rgba(255,255,255,.055)!important;color:rgba(255,255,255,.42)!important;box-shadow:none!important;transform:none!important;opacity:1}.day-button.past:hover{background:#171a24!important;border-color:rgba(255,255,255,.055)!important;color:rgba(255,255,255,.42)!important;box-shadow:none!important;transform:none!important}.day-button:disabled{cursor:not-allowed}
 .calendar-legend{display:flex;flex-wrap:wrap;justify-content:center;gap:13px 22px;margin-top:24px;padding-top:16px;border-top:1px solid rgba(255,255,255,.07);font-size:10px;font-weight:800;text-transform:uppercase}.legend-item{display:flex;align-items:center;gap:7px;color:#e5e7eb}.legend-dot{width:12px;height:12px;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:8px;font-style:normal}.available-dot{background:#2a2f42;border:1px solid rgba(255,255,255,.2)}.choice{color:#22cdb4}.choice-dot{background:#0ab39c;color:#fff;box-shadow:0 0 7px rgba(10,179,156,.4)}.muted{color:#777d8e}.off-dot{background:rgba(42,45,61,.45);border:1px solid rgba(255,255,255,.06)}.recess-label{color:#ff6262}.recess-dot{background:#ef4444}.reserved-label{color:#45aee7}.reserved-dot{background:#299cdb}.own-label{color:#ffc42b}.own-dot{background:#ffb800}
-.schedule-panel{scroll-margin-top:110px;margin-top:26px;padding:22px;border:1px solid rgba(10,179,156,.22);border-radius:14px;background:linear-gradient(135deg,rgba(10,179,156,.07),rgba(0,0,0,.08))}.selection-confirmed{display:flex;align-items:center;gap:12px;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,.07)}.selection-icon{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#0ab39c;font-weight:900;box-shadow:0 0 15px rgba(10,179,156,.25)}.selection-confirmed div{display:flex;flex-direction:column;gap:3px}.selection-confirmed small{font-size:9px;color:#63d7c5;letter-spacing:1px}.selection-confirmed strong{font-size:14px;text-transform:uppercase}.schedule-fields{display:flex;flex-wrap:wrap;gap:22px;margin-bottom:20px}.field-block{flex:1;min-width:210px}.field-block label{display:block;margin-bottom:8px;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.4px}.field-block input{width:100%;padding:14px 16px;background:#0d0f17;border:1px solid rgba(255,255,255,.12);border-radius:9px;color:#fff;font-size:15px;font-weight:800;outline:none;box-sizing:border-box}.field-block input:focus{border-color:#ff6c22;box-shadow:0 0 0 3px rgba(255,108,34,.08)}.time-field label{display:flex;align-items:center;gap:8px}.required-badge{display:inline-flex;align-items:center;padding:3px 7px;border-radius:999px;background:rgba(255,108,34,.12);border:1px solid rgba(255,108,34,.38);color:#ff7b38;font-size:8px;letter-spacing:.7px}.field-hint{margin:-1px 0 9px;color:#aeb4c3;font-size:10px;line-height:1.45}.time-input-wrap{position:relative}.time-input-wrap input{position:relative;z-index:2;background:transparent}.time-input-wrap:before{content:"";position:absolute;inset:0;background:#0d0f17;border-radius:9px;z-index:0}.time-field.needs-attention .time-input-wrap{border-radius:9px;box-shadow:0 0 0 1px rgba(255,108,34,.68),0 0 18px rgba(255,108,34,.12)}.time-field.needs-attention .time-input-wrap input{border-color:rgba(255,108,34,.58);color:#fff}.time-field.needs-attention .time-input-wrap input::-webkit-calendar-picker-indicator{filter:invert(55%) sepia(95%) saturate(2600%) hue-rotate(342deg) brightness(104%);cursor:pointer}.time-field:not(.needs-attention) .time-input-wrap input{background:#0d0f17}.extra-hours{max-width:250px}.extra-control{height:50px;display:flex;align-items:center;background:#0d0f17;border:1px solid rgba(255,255,255,.12);border-radius:9px;overflow:hidden}.extra-control button{width:58px;height:100%;border:0;background:transparent;color:#ff6c22;font-size:20px;font-weight:900;cursor:pointer}.extra-control button:hover:not(:disabled){background:rgba(255,108,34,.08)}.extra-control button:disabled{opacity:.3;cursor:not-allowed}.extra-control div{flex:1;text-align:center;display:flex;flex-direction:column}.extra-control strong{font-size:14px}.extra-control small{font-size:8px;color:#7f8596;text-transform:uppercase}.time-warning{color:#ff6262;font-size:10px;font-weight:800;margin-top:8px;text-transform:uppercase;line-height:1.4}.continue-button{width:100%;border:1px solid #ff6c22;background:#ff6c22;color:#fff;font-weight:800;text-transform:uppercase;font-family:monospace;font-size:12px;padding:16px 30px;border-radius:50px;box-shadow:0 8px 24px rgba(255,108,34,.2);cursor:pointer;transition:.18s ease}.continue-button:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 10px 28px rgba(255,108,34,.3)}.continue-button:disabled{background:#2a2d3d;border-color:#2a2d3d;color:#878a99;box-shadow:none;cursor:not-allowed}.continue-button span{font-size:16px;margin-left:5px}
+.schedule-panel{scroll-margin-top:110px;margin-top:26px;padding:22px;border:1px solid rgba(10,179,156,.22);border-radius:14px;background:linear-gradient(135deg,rgba(10,179,156,.07),rgba(0,0,0,.08))}.selection-confirmed{display:flex;align-items:center;gap:12px;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,.07)}.selection-icon{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#0ab39c;font-weight:900;box-shadow:0 0 15px rgba(10,179,156,.25)}.selection-confirmed div{display:flex;flex-direction:column;gap:3px}.selection-confirmed small{font-size:9px;color:#63d7c5;letter-spacing:1px}.selection-confirmed strong{font-size:14px;text-transform:uppercase}.schedule-fields{display:flex;flex-wrap:wrap;gap:22px;margin-bottom:20px}.field-block{flex:1;min-width:210px}.field-block label{display:block;margin-bottom:8px;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.4px}.field-block input{width:100%;padding:14px 16px;background:#0d0f17;border:1px solid rgba(255,255,255,.12);border-radius:9px;color:#fff;font-size:15px;font-weight:800;outline:none;box-sizing:border-box}.field-block input:focus{border-color:#ff6c22;box-shadow:0 0 0 3px rgba(255,108,34,.08)}.time-field label{display:flex;align-items:center;gap:8px}.required-asterisk{color:#ff6c22;font-size:14px;font-weight:900;line-height:1}.field-hint{margin:-1px 0 9px;color:#aeb4c3;font-size:10px;line-height:1.45}.show-time-row{display:flex;gap:10px;align-items:stretch}.time-input-wrap{position:relative;flex:1}.end-time-preview{min-width:132px;background:#0d0f17;border:1px solid rgba(10,179,156,.25);border-radius:9px;padding:8px 12px;display:flex;flex-direction:column;justify-content:center}.end-time-preview small{color:#63d7c5;font-size:8px;letter-spacing:.7px}.end-time-preview strong{font-size:15px;margin-top:3px}.show-window-summary{display:none}.time-input-wrap input{position:relative;z-index:2;background:transparent}.time-input-wrap:before{content:"";position:absolute;inset:0;background:#0d0f17;border-radius:9px;z-index:0}.time-field.needs-attention .time-input-wrap{border-radius:9px;box-shadow:0 0 0 1px rgba(255,108,34,.68),0 0 18px rgba(255,108,34,.12)}.time-field.needs-attention .time-input-wrap input{border-color:rgba(255,108,34,.58);color:#fff}.time-field.needs-attention .time-input-wrap input::-webkit-calendar-picker-indicator{filter:invert(55%) sepia(95%) saturate(2600%) hue-rotate(342deg) brightness(104%);cursor:pointer}.time-field:not(.needs-attention) .time-input-wrap input{background:#0d0f17}.extra-hours{max-width:250px}.extra-control{height:50px;display:flex;align-items:center;background:#0d0f17;border:1px solid rgba(255,255,255,.12);border-radius:9px;overflow:hidden}.extra-control button{width:58px;height:100%;border:0;background:transparent;color:#ff6c22;font-size:20px;font-weight:900;cursor:pointer}.extra-control button:hover:not(:disabled){background:rgba(255,108,34,.08)}.extra-control button:disabled{opacity:.3;cursor:not-allowed}.extra-control div{flex:1;text-align:center;display:flex;flex-direction:column}.extra-control strong{font-size:14px}.extra-control small{font-size:8px;color:#7f8596;text-transform:uppercase}.time-warning{color:#ff6262;font-size:10px;font-weight:800;margin-top:8px;text-transform:uppercase;line-height:1.4}.continue-button{width:100%;border:1px solid #ff6c22;background:#ff6c22;color:#fff;font-weight:800;text-transform:uppercase;font-family:monospace;font-size:12px;padding:16px 30px;border-radius:50px;box-shadow:0 8px 24px rgba(255,108,34,.2);cursor:pointer;transition:.18s ease}.continue-button:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 10px 28px rgba(255,108,34,.3)}.continue-button:disabled{background:#2a2d3d;border-color:#2a2d3d;color:#878a99;box-shadow:none;cursor:not-allowed}.continue-button span{font-size:16px;margin-left:5px}
 @media(max-width:760px){.agenda-step{padding:24px 16px}.checkout-stepper{overflow:hidden}.step-item span{display:none}.step-line{margin:0 8px}.calendar-card{padding:16px 10px}.month-nav{padding:9px 8px;font-size:10px}.current-month strong{font-size:13px}.calendar-grid{gap:6px}.day-button{min-height:39px}.calendar-legend{justify-content:flex-start}.extra-hours{max-width:none}}
+
+.time-stepper-mobile { display: none; }
+.continue-text-mobile, .extra-price-mobile, .extra-hour-rate-mobile { display: none; }
+@media (max-width: 767.98px) {
+  .time-input-desktop { display:none; }
+  .time-input-wrap:before { display:none; }
+  .time-stepper-mobile { display:flex; width:100%; height:54px; align-items:stretch; background:#0d0f17; border:1px solid rgba(255,255,255,.12); border-radius:9px; overflow:hidden; }
+  .time-step-button { width:64px; flex:0 0 64px; border:0; background:transparent; color:#ff6c22; font-size:24px; font-weight:900; cursor:pointer; }
+  .time-step-button:active { background:rgba(255,108,34,.10); }
+  .time-step-value { flex:1; min-width:0; display:flex; flex-direction:column; align-items:center; justify-content:center; border-left:1px solid rgba(255,255,255,.07); border-right:1px solid rgba(255,255,255,.07); }
+  .time-step-value strong { color:#fff; font-size:18px; line-height:1.05; letter-spacing:.5px; }
+  .time-step-value small { margin-top:4px; color:#8f94a5; font-size:8px; font-weight:800; letter-spacing:1px; }
+  .continue-text-desktop, .extra-label-desktop { display: none; }
+  .continue-text-mobile { display: inline; }
+  .extra-price-mobile { display:flex; color:#ffb089; font-size:10px; white-space:nowrap; flex-direction:column; align-items:center; line-height:1.2; }
+  .extra-price-mobile b { color:#ff8a4c; font-size:11px; }
+  .extra-hour-rate-mobile { display:block; margin:-3px 0 8px; color:#aeb4c3; font-size:9px; line-height:1.35; }
+  .show-time-row { display:block; }
+  .end-time-preview { display:none; }
+  .show-window-summary { display:flex; align-items:center; gap:8px; margin-top:8px; padding:8px 11px; border:1px solid rgba(10,179,156,.22); background:rgba(10,179,156,.06); border-radius:8px; }
+  .show-window-summary span,.show-window-summary strong { font-size:12px; color:#fff; }
+  .show-window-summary strong { color:#63d7c5; }
+  .show-window-summary .show-window-arrow { color:#ff6c22; }
+  .show-window-summary small { margin-left:auto; color:#8f94a5; font-size:8px; text-transform:uppercase; }
+}
 </style>

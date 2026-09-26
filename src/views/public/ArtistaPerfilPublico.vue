@@ -62,7 +62,7 @@
           
           <!-- COLUNA ESQUERDA: BIOGRAFIA (65%) -->
           <BCol lg="8" class="text-start">
-            <div class="card modern-card p-4 border border-light border-opacity-10 shadow-sm mb-4" style="background-color: #131520 !important; border-radius: 16px !important;">
+            <div class="card modern-card p-4 border border-light border-opacity-10 shadow-sm mb-4 artist-story-card" style="background-color: #131520 !important; border-radius: 16px !important;">
               <div class="section-kicker font-monospace text-uppercase mb-2">Conheça a atração</div>
               <h4 class="text-white fw-bold font-monospace text-uppercase fs-18 mb-3" style="letter-spacing: 0.5px;">
                 <i class="ri-user-voice-line text-primary me-2"></i> Nossa História
@@ -74,7 +74,7 @@
             </div>
 
             <!-- 📸 PORTFÓLIO DE PALCO: Galeria de Fotos e Player de Vídeo Real do MariaDB -->
-            <div class="card modern-card p-4 border border-light border-opacity-10 shadow-sm mb-4" style="background-color: #131520 !important; border-radius: 16px !important;">
+            <div class="card modern-card p-4 border border-light border-opacity-10 shadow-sm mb-4 artist-portfolio-card" style="background-color: #131520 !important; border-radius: 16px !important;">
               <div class="section-kicker font-monospace text-uppercase mb-2">Portfólio de palco</div>
               <h4 class="text-white fw-bold font-monospace text-uppercase fs-18 mb-2" style="letter-spacing: 0.5px;">
                 <i class="ri-image-gallery-line text-primary me-2"></i> Veja a banda no palco
@@ -84,9 +84,10 @@
                 <div class="ratio ratio-16x9 rounded-3 overflow-hidden border border-light border-opacity-10 bg-dark shadow-sm">
                   
                 <iframe 
-                    :src="'https://youtube.com/embed/' + videosPortfolio[videoAtivoIndex].youtubeId" 
+                    :src="'https://www.youtube.com/embed/' + videosPortfolio[videoAtivoIndex].youtubeId + '?playsinline=1&rel=0'" 
                     title="Vídeo Principal do Artista" 
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    referrerpolicy="strict-origin-when-cross-origin"
                     allowfullscreen
                     class="w-100 h-100 border-0"
                   ></iframe>
@@ -104,18 +105,18 @@
                     <i class="ri-video-line text-primary me-1"></i> Voltar para o Vídeo
                   </button>
                 </div>
-                  <div class="ratio ratio-16x9 rounded-3 overflow-hidden border border-light border-opacity-10 bg-dark shadow-sm" style="background-color: #0d0f18 !important;">
-                    <img :src="fotoAtivaGrande" alt="Foto Ampliada" class="w-100 h-100 object-fit-contain p-2" />
+                  <div class="ratio ratio-16x9 rounded-3 overflow-hidden border border-light border-opacity-10 bg-dark shadow-sm artist-photo-viewer" style="background-color: #0d0f18 !important;">
+                    <img :src="fotoAtivaGrande" alt="Foto Ampliada" class="w-100 h-100 object-fit-contain p-2 artist-photo-featured" />
                   </div>
                 </div>
 
               <!-- 🖼️ 2. ESTEIRA HORIZONTAL DE THUMBNAILS -->
-              <div v-if="videosPortfolio && videosPortfolio.length > 1  && !fotoAtivaGrande" class="d-flex flex-wrap gap-2 mb-4 font-monospace">
+              <div v-if="videosPortfolio && videosPortfolio.length > 1  && !fotoAtivaGrande" class="d-flex flex-wrap gap-2 mb-4 font-monospace artist-video-thumbs">
                 <div 
                   v-for="(video, index) in videosPortfolio" 
                   :key="video.id"
                   @click="videoAtivoIndex = index"
-                  class="rounded-2 overflow-hidden border border-light border-opacity-10 position-relative p-0"
+                  class="rounded-2 overflow-hidden border border-light border-opacity-10 position-relative p-0 artist-video-thumb"
                   :class="{'thumb-active': videoAtivoIndex === index}"
                   style="width: 100px; height: 60px; cursor: pointer; transition: all 0.2s ease; opacity: 0.6; background-color: #0a0b10;"
                 >
@@ -136,14 +137,14 @@
               </div>
 
               <!-- 🖼️ 4. GRID DE IMAGENS SECUNDÁRIAS (Gatilho de clique adicionado) -->
-              <div class="row g-3" v-if="fotosPortfolio && fotosPortfolio.length > 0">
+              <div class="row g-3 artist-photo-grid" v-if="fotosPortfolio && fotosPortfolio.length > 0">
                 <div 
-                  class="col-sm-4 col-6" 
+                  class="col-sm-4 col-6 artist-photo-col" 
                   v-for="midia in fotosPortfolio" 
                   :key="midia.id || midia.Id"
                   @click="fotoAtivaGrande = obterUrlImagem(midia.mediaUrl || midia.MediaUrl)"
                 >
-                  <div class="rounded-3 overflow-hidden border border-light border-opacity-10 position-relative bg-dark-subtle shadow-sm" style="height: 140px; cursor: zoom-in;">
+                  <div class="rounded-3 overflow-hidden border border-light border-opacity-10 position-relative bg-dark-subtle shadow-sm artist-photo-tile" style="height: 140px; cursor: zoom-in;">
                     <img 
                       :src="obterUrlImagem(midia.mediaUrl || midia.MediaUrl)" 
                       alt="Foto do Show" 
@@ -166,7 +167,7 @@
           <BCol lg="4" class="text-start" id="formatos-show">
             <div class="position-sticky" style="top: 100px;">
               
-              <div class="card modern-card p-3 border border-light border-opacity-10 shadow-sm mb-4 text-center" style="background-color: #131520 !important; border-radius: 16px !important;">
+              <div class="card modern-card p-3 border border-light border-opacity-10 shadow-sm mb-4 text-center artist-region-card" style="background-color: #131520 !important; border-radius: 16px !important;">
                 <!-- 🛠️ CORREÇÃO DE CHAVE: Puxa a cidade atendida e UF reais -->
                 <p class="text-light small mb-0 font-monospace fs-13">
                   <i class="ri-map-pin-line text-primary fs-16 me-1 align-middle"></i> 
@@ -263,39 +264,58 @@ export default {
   methods: {
     obterUrlImagem(urlRelativa) {
       if (!urlRelativa) return "";
-      if (urlRelativa.startsWith("http://") || urlRelativa.startsWith("https://")) return urlRelativa;
+
+      const ajustarHostLocal = (url) => {
+        if (typeof window === "undefined") return url;
+        try {
+          const parsed = new URL(url, window.location.origin);
+          if (["localhost", "127.0.0.1", "::1"].includes(parsed.hostname)) {
+            parsed.hostname = window.location.hostname;
+          }
+          return parsed.toString();
+        } catch (e) {
+          return url;
+        }
+      };
+
+      if (urlRelativa.startsWith("http://") || urlRelativa.startsWith("https://")) {
+        return ajustarHostLocal(urlRelativa);
+      }
+
       let base = process.env.VUE_APP_API_BASE_URL || "";
+      base = ajustarHostLocal(base);
       if (base.endsWith("/api")) base = base.substring(0, base.length - 4);
       else if (base.endsWith("/api/")) base = base.substring(0, base.length - 5);
+
       const urlLimpa = urlRelativa.startsWith("/") ? urlRelativa : "/" + urlRelativa;
       return base + urlLimpa;
     },
     converterLinkYoutube(urlOriginal) {
       if (!urlOriginal) return "";
       try {
-        const url = urlOriginal.trim();
+        const valor = urlOriginal.trim();
+
+        // Aceita também um ID puro já normalizado.
+        if (/^[a-zA-Z0-9_-]{11}$/.test(valor)) return valor;
+
+        const url = new URL(valor);
+        const host = url.hostname.replace(/^www\./, "");
         let id = "";
 
-        // 🚀 RESOLUÇÃO DO LINK CURTO (Ex: https://youtu.be)
-        if (url.includes("youtu.be/")) {
-          const indexAlvo = url.indexOf("youtu.be/");
-          const textoCortado = url.substring(indexAlvo + 9);
-          id = textoCortado.split("?").shift();
-        } 
-        // 🚀 RESOLUÇÃO DO LINK LONGO (Ex: https://youtube.com)
-        else if (url.includes("v=")) {
-          const indexAlvo = url.indexOf("v=");
-          const textoCortado = url.substring(indexAlvo + 2);
-          id = textoCortado.split("&").shift();
-        } 
-        // 🚀 RESOLUÇÃO DO LINK EMBED CASO EXISTA
-        else if (url.includes("embed/")) {
-          const indexAlvo = url.indexOf("embed/");
-          const textoCortado = url.substring(indexAlvo + 6);
-          id = textoCortado.split("?").shift();
+        if (host === "youtu.be") {
+          id = url.pathname.split("/").filter(Boolean)[0] || "";
+        } else if (host === "youtube.com" || host === "m.youtube.com") {
+          if (url.pathname === "/watch") {
+            id = url.searchParams.get("v") || "";
+          } else {
+            const partes = url.pathname.split("/").filter(Boolean);
+            if (["embed", "shorts", "live"].includes(partes[0])) {
+              id = partes[1] || "";
+            }
+          }
         }
 
-        return id ? id.trim() : "";
+        return /^[a-zA-Z0-9_-]{11}$/.test(id) ? id : "";
       } catch (e) {
         console.error("Falha ao isolar ID do YouTube:", e);
         return "";
@@ -420,6 +440,105 @@ html { scroll-behavior: smooth; }
   .hero-cta { width: 100%; max-width: 330px; }
   #formatos-show { scroll-margin-top: 90px; }
 }
+
+/* Vitrine pública — refinamento exclusivo para mobile */
+@media (max-width: 767.98px) {
+  /* Mantém a jornada Conhecer -> Ver -> Contratar, mas usa melhor os 390px. */
+  .seven-portal > .container {
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+    padding-top: 28px !important;
+    padding-bottom: 34px !important;
+  }
+
+  .artist-story-card {
+    padding: 18px !important;
+    margin-bottom: 18px !important;
+  }
+
+  .artist-portfolio-card {
+    padding: 14px 10px 12px !important;
+    margin-bottom: 22px !important;
+  }
+  .artist-portfolio-card > .section-kicker,
+  .artist-portfolio-card > h4,
+  .artist-portfolio-card > .portfolio-intro {
+    margin-left: 6px;
+    margin-right: 6px;
+  }
+  .artist-portfolio-card .ratio {
+    border-radius: 12px !important;
+  }
+
+  /* Foto selecionada vira a mídia principal: largura total e altura proporcional. */
+  .artist-photo-viewer.ratio {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: auto !important;
+    aspect-ratio: auto !important;
+  }
+  .artist-photo-viewer.ratio::before {
+    display: none !important;
+  }
+  .artist-photo-viewer.ratio > .artist-photo-featured {
+    position: static !important;
+    display: block;
+    width: 100% !important;
+    height: auto !important;
+    max-height: 72vh;
+    padding: 0 !important;
+    object-fit: contain !important;
+  }
+
+  /* Vídeos viram uma esteira real: thumbnails maiores e swipe horizontal. */
+  .artist-video-thumbs {
+    flex-wrap: nowrap !important;
+    overflow-x: auto;
+    overflow-y: hidden;
+    gap: 10px !important;
+    padding: 2px 2px 8px;
+    margin-bottom: 16px !important;
+    scroll-snap-type: x proximity;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .artist-video-thumbs::-webkit-scrollbar { display: none; }
+  .artist-video-thumb {
+    width: 142px !important;
+    height: 80px !important;
+    min-width: 142px;
+    flex: 0 0 142px;
+    scroll-snap-align: start;
+    opacity: .78 !important;
+    border-radius: 10px !important;
+  }
+  .artist-video-thumb.thumb-active { opacity: 1 !important; }
+
+  /* Fotos ocupam quase toda a largura e ganham presença de portfólio. */
+  .artist-photo-grid {
+    --bs-gutter-x: 10px;
+    --bs-gutter-y: 10px;
+    margin-left: -2px !important;
+    margin-right: -2px !important;
+  }
+  .artist-photo-col { padding-left: 5px !important; padding-right: 5px !important; }
+  .artist-photo-tile {
+    height: 154px !important;
+    border-radius: 10px !important;
+  }
+
+  .artist-region-card {
+    margin-top: 2px;
+    margin-bottom: 18px !important;
+  }
+  .formats-heading { margin-bottom: 14px !important; }
+
+  .package-card { padding: 18px !important; }
+  .package-card .btn-primary { min-width: 0; }
+}
+
 </style>
 
 

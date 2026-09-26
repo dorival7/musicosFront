@@ -23,7 +23,7 @@
       </div>
 
       <div v-if="partners.length" class="partners-block">
-        <div class="partners-scroll">
+        <div ref="partnersScroll" class="partners-scroll">
           <div v-for="ad in partners" :key="ad.id" class="partner-wrap">
             <button v-if="hasImage(ad)" class="partner-ad" type="button" @click="openAd(ad)">
               <img :src="img(ad.desktopImageUrl || ad.mobileImageUrl)" alt="Publicidade">
@@ -42,7 +42,7 @@
 import axios from 'axios';
 export default {
   name: 'PaidAdvertising',
-  data() { return { ads: [], seen: new Set() }; },
+  data() { return { ads: [], seen: new Set(), partnerAutoplayTimer: null, partnerAutoplayIndex: 0 }; },
   computed: {
     premium() { return this.ads.filter(x => x.position === 'HOME_PREMIUM'); },
     partners() { return this.ads.filter(x => x.position === 'HOME_PARTNERS'); }
@@ -52,9 +52,31 @@ export default {
       const r = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/advertising/public/home`);
       this.ads = r.data || [];
       this.ads.forEach(a => this.impression(a));
+      this.$nextTick(() => this.startPartnerAutoplay());
     } catch (e) { console.warn('Publicidade indisponível.', e); }
   },
+  beforeUnmount() {
+    this.stopPartnerAutoplay();
+  },
   methods: {
+    startPartnerAutoplay() {
+      this.stopPartnerAutoplay();
+      if (typeof window === 'undefined' || !window.matchMedia('(max-width: 767px)').matches || this.partners.length <= 1) return;
+      this.partnerAutoplayIndex = 0;
+      this.partnerAutoplayTimer = window.setInterval(() => {
+        const scroller = this.$refs.partnersScroll;
+        if (!scroller || !scroller.children.length) return;
+        this.partnerAutoplayIndex = (this.partnerAutoplayIndex + 1) % scroller.children.length;
+        const target = scroller.children[this.partnerAutoplayIndex];
+        scroller.scrollTo({ left: target.offsetLeft, behavior: 'smooth' });
+      }, 4000);
+    },
+    stopPartnerAutoplay() {
+      if (this.partnerAutoplayTimer) {
+        window.clearInterval(this.partnerAutoplayTimer);
+        this.partnerAutoplayTimer = null;
+      }
+    },
     hasImage(ad) { return Boolean(ad.desktopImageUrl || ad.mobileImageUrl); },
     img(u) {
       if (!u) return '';
@@ -121,5 +143,57 @@ export default {
 .banner-wrap{margin-bottom:28px;text-align:center}.banner-ad{display:block;width:100%;padding:0;border:0;background:transparent;border-radius:18px;overflow:hidden;cursor:pointer;box-shadow:0 18px 50px rgba(0,0,0,.25)}.banner-media,.banner-media img{display:block;width:100%}.banner-media img{height:auto;aspect-ratio:16/5;object-fit:cover}.destination-cta{margin-top:14px;border:1px solid #303642;background:#151923;color:#fff;border-radius:999px;padding:10px 18px;font-weight:800;font-size:13px;display:inline-flex;align-items:center;gap:8px;transition:.2s}.destination-cta:hover{border-color:#ff6c22;transform:translateY(-1px)}.destination-cta i{font-size:19px}
 .partners-block{margin-top:28px}.partners-scroll{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}.partner-wrap{text-align:center;min-width:0}.partner-ad{display:block;width:100%;padding:0;border:0;background:transparent;border-radius:14px;overflow:hidden;cursor:pointer;box-shadow:0 10px 28px rgba(0,0,0,.22);transition:.2s}.partner-ad:hover{transform:translateY(-2px)}.partner-ad img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover}.partner-cta{margin-top:10px}
 @media(max-width:991px){.partners-scroll{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:767px){.seven-ads{padding:48px 0}.section-heading{align-items:flex-start;gap:12px}.section-heading h2{font-size:24px}.section-heading p{font-size:13px}.ad-label{flex-shrink:0}.banner-ad{border-radius:14px}.banner-media img{aspect-ratio:4/5}.destination-cta{width:100%;justify-content:center}.partners-scroll{display:flex;overflow-x:auto;padding-bottom:8px;scroll-snap-type:x mandatory}.partner-wrap{min-width:260px;scroll-snap-align:start}.partner-ad{min-width:0}}
+@media(max-width:767px){
+  .seven-ads{padding:0;background:transparent;border-top:0;overflow:hidden}
+  .seven-ads :deep(.container){
+    width:calc(100% - 8px);
+    max-width:none;
+    margin:0 4px;
+    padding:14px 5px 14px;
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:18px;
+    background:linear-gradient(180deg,rgba(17,21,30,.96),rgba(8,10,16,.98));
+    box-shadow:0 18px 46px rgba(0,0,0,.28);
+    overflow:visible;
+  }
+  .section-heading{align-items:flex-start;gap:10px;margin-bottom:18px;padding:0 4px}
+  .section-heading h2{font-size:22px;line-height:1.12}
+  .section-heading p{font-size:13px;line-height:1.45;margin-top:6px}
+  .ad-label{flex-shrink:0;margin-top:1px}
+  .banner-wrap{margin:0 0 18px;padding:5px;border:1px solid rgba(255,255,255,.08);border-radius:16px;background:rgba(255,255,255,.025)}
+  .banner-ad{border-radius:12px;box-shadow:none}
+  .banner-media img{aspect-ratio:4/5;object-fit:cover}
+  .destination-cta{width:100%;justify-content:center;margin-top:9px;padding:11px 12px;background:#111620;border-color:rgba(255,255,255,.12)}
+  .partners-block{margin-top:18px;padding-top:18px;border-top:1px solid rgba(255,255,255,.07);overflow:hidden}
+  .partners-scroll{
+    display:flex;
+    gap:8px;
+    overflow-x:auto;
+    width:100%;
+    margin:0;
+    padding:0 0 6px;
+    scroll-padding:0;
+    scroll-snap-type:x mandatory;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+  }
+  .partners-scroll::-webkit-scrollbar{display:none}
+  .partner-wrap{
+    flex:0 0 100%;
+    width:100%;
+    min-width:100%;
+    box-sizing:border-box;
+    scroll-snap-align:start;
+    scroll-snap-stop:always;
+    padding:5px;
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:16px;
+    background:rgba(255,255,255,.025);
+    display:flex;
+    flex-direction:column;
+  }
+  .partner-ad{width:100%;min-width:0;border-radius:12px;box-shadow:none;flex:0 0 auto}
+  .partner-ad img{width:100%;aspect-ratio:16/9;object-fit:cover}
+  .partner-cta{flex:0 0 auto;margin-top:9px}
+}
 </style>

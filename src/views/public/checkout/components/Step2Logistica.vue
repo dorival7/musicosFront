@@ -1,16 +1,16 @@
 <!-- eslint-disable vue/no-parsing-error -->
 <template>
-  <div style="background-color: #131520; border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; padding: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); font-family: monospace;">
+  <div class="logistica-step" style="background-color: #131520; border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; padding: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); font-family: monospace;">
     
     <!-- 🏁 MARCADOR DE PROGRESSO (STEPPER ATIVO NO PASSO 2) -->
-    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 40px; padding: 0 10px;">
-      <div style="display: flex; align-items: center; gap: 10px; opacity: 0.5;"><div style="width: 36px; height: 36px; border-radius: 50%; background-color: #2a2d3d; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px;">1</div><span style="color: #fff; font-size: 13px; font-weight: bold; text-transform: uppercase;">Agenda</span></div>
-      <div style="flex: 1; height: 2px; background-color: #ff6c22; margin: 0 15px;"></div>
-      <div style="display: flex; align-items: center; gap: 10px;"><div style="width: 36px; height: 36px; border-radius: 50%; background-color: #ff6c22; color: #ffffff; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px; box-shadow: 0 0 15px rgba(255,108,34,0.4);">2</div><span style="color: #ffffff; font-size: 13px; font-weight: bold; text-transform: uppercase;">Logística</span></div>
-      <div style="flex: 1; height: 2px; background-color: rgba(255,255,255,0.05); margin: 0 15px;"></div>
-      <div style="display: flex; align-items: center; gap: 10px; opacity: 0.4;"><div style="width: 36px; height: 36px; border-radius: 50%; background-color: #2a2d3d; color: #adb5bd; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px;">3</div><span style="color: #adb5bd; font-size: 13px; text-transform: uppercase;">Confirmar</span></div>
-      <div style="flex: 1; height: 2px; background-color: rgba(255,255,255,0.05); margin: 0 15px;"></div>
-      <div style="display: flex; align-items: center; gap: 10px; opacity: 0.4;"><div style="width: 36px; height: 36px; border-radius: 50%; background-color: #2a2d3d; color: #adb5bd; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px;">4</div><span style="color: #adb5bd; font-size: 13px; text-transform: uppercase;">Agendar</span></div>
+    <div class="checkout-stepper">
+      <div class="step-item"><div class="step-number">1</div><span>Agenda</span></div>
+      <div class="step-line completed"></div>
+      <div class="step-item active"><div class="step-number">2</div><span>Logística</span></div>
+      <div class="step-line"></div>
+      <div class="step-item"><div class="step-number">3</div><span>Confirmar</span></div>
+      <div class="step-line"></div>
+      <div class="step-item"><div class="step-number">4</div><span>Agendar</span></div>
     </div>
 
     <!-- TÍTULO ORIENTADOR DO PASSO -->
@@ -619,5 +619,15 @@ export default {
   }
 };
 </script>
-
-
+<style scoped>
+.checkout-stepper{display:flex;align-items:center;margin-bottom:40px;padding:0 10px}.step-item{display:flex;align-items:center;gap:10px;color:#adb5bd;font-size:13px;text-transform:uppercase;opacity:.4}.step-item.active{color:#fff;opacity:1;font-weight:bold}.step-number{width:36px;height:36px;flex:0 0 36px;border-radius:50%;background:#2a2d3d;color:#adb5bd;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:14px}.step-item.active .step-number{background:#ff6c22;color:#fff;box-shadow:0 0 15px rgba(255,108,34,.4)}.step-line{flex:1;height:2px;background:rgba(255,255,255,.05);margin:0 15px}.step-line.completed{background:#ff6c22}
+@media(max-width:760px){
+.logistica-step{box-sizing:border-box;padding:24px 16px !important;width:100%;max-width:100%}
+.logistica-step *{box-sizing:border-box;min-width:0;max-width:100%}
+.logistica-step [style*="display: grid"]{grid-template-columns:minmax(0,1fr) !important}
+.logistica-step [style*="grid-column: span 2"]{grid-column:1 / -1 !important}
+.logistica-step input,.logistica-step button{min-width:0 !important;max-width:100% !important}
+.checkout-stepper{width:100%;max-width:100%;margin-bottom:38px;padding:0 8px}
+.step-item span{display:none}.step-item{gap:0;min-width:36px}.step-line{height:1px;margin:0 8px;min-width:0}.step-number{width:36px;height:36px;flex-basis:36px}
+}
+</style>

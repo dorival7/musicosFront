@@ -2,6 +2,7 @@
 import axios from 'axios';
 import Cropper from 'cropperjs';
 import 'cropperjs/dist/cropper.css';
+import Swal from 'sweetalert2';
 
 export default {
   name: "PortfolioMediaKit",
@@ -23,8 +24,22 @@ export default {
       cropper: null,
       cropType: null,
       imageSrcToCrop: null,
-      showCropModal: false
+      showCropModal: false,
+      videosExpanded: false,
+      videoFormExpanded: false
     };
+  },
+  watch: {
+    successMessage(value) {
+      if (!value) return;
+      Swal.fire({ icon: 'success', title: 'Pronto', text: String(value), timer: 2200, showConfirmButton: false });
+      this.successMessage = null;
+    },
+    errorMessage(value) {
+      if (!value) return;
+      Swal.fire({ icon: 'error', title: 'Atenção', text: typeof value === 'string' ? value : 'Não foi possível concluir a operação.', confirmButtonText: 'OK' });
+      this.errorMessage = null;
+    }
   },
   methods: {
     async loadMediaInventory() {
@@ -182,7 +197,16 @@ export default {
       }
     },
     async handleDeleteMedia(id) {
-      if (!confirm("Tem certeza que deseja remover esta mídia do seu portfólio?")) return;
+      const result = await Swal.fire({
+        icon: "warning",
+        title: "Remover mídia?",
+        text: "Esta ação removerá o item do seu portfólio.",
+        showCancelButton: true,
+        confirmButtonText: "Sim, remover",
+        cancelButtonText: "Cancelar",
+        reverseButtons: true
+      });
+      if (!result.isConfirmed) return;
       this.successMessage = null;
       this.errorMessage = null;
       try {
@@ -226,19 +250,6 @@ export default {
       </div>
     </div>
 
-    <!-- SINALIZAÇÕES E ALERTAS FEEDBACK -->
-    <div v-if="successMessage" class="alert alert-success alert-dismissible fade show border-0 shadow-sm" role="alert">
-      <i class="ri-checkbox-circle-line me-2 align-middle fs-16"></i>
-      {{ successMessage }}
-      <button type="button" class="btn-close" @click="successMessage = null" aria-label="Close"></button>
-    </div>
-
-    <div v-if="errorMessage" class="alert alert-danger alert-dismissible fade show border-0 shadow-sm" role="alert">
-      <i class="ri-error-warning-line me-2 align-middle fs-16"></i>
-      {{ errorMessage }}
-      <button type="button" class="btn-close" @click="errorMessage = null" aria-label="Close"></button>
-    </div>
-
     <!-- ANIMAÇÃO DE CARREGAMENTO (LOADING) -->
     <div v-if="loading" class="text-center py-5">
       <div class="spinner-border text-primary avatar-sm" role="status"></div>
@@ -246,11 +257,11 @@ export default {
     </div>
 
     <!-- CONTEÚDO OPERACIONAL INTEGRADO -->
-    <div v-else class="row">
+    <div v-else class="row portfolio-mobile-content">
       
       <!-- SEÇÃO 1: FOTO DE CAPA DO PORTFÓLIO (100% HORIZONTAL) -->
-      <div class="col-12 mb-4">
-        <div class="card overflow-hidden profile-project-card shadow-sm border-0">
+      <div class="col-12 mb-3 cover-section">
+        <div class="card overflow-hidden profile-project-card shadow-sm border-0 portfolio-cover-card">
           <div class="card-header bg-light border-0 d-flex justify-content-between align-items-center p-3">
             <div>
               <h5 class="card-title mb-1 text-dark fw-bold"><i class="ri-image-line me-1 text-primary"></i> Imagem de Capa do Media Kit</h5>
@@ -276,8 +287,8 @@ export default {
         </div>
       </div>
       <!-- SEÇÃO 2: GALERIA DE FOTOS DA EQUIPE OU SHOW (COLUNA ESQUERDA) -->
-      <div class="col-xl-7 col-lg-6 mb-4">
-        <div class="card h-100">
+      <div class="col-xl-7 col-lg-6 mb-3 gallery-section">
+        <div class="card h-100 portfolio-section-card">
           <div class="card-header bg-transparent border-0 d-flex justify-content-between align-items-center p-3">
             <div>
               <h5 class="card-title mb-1 text-dark fw-bold">
@@ -301,7 +312,7 @@ export default {
           <div class="card-body">
             
             <!-- GRADE (GRID) DE FOTOS EM CARTÕES SEPARADOS -->
-            <div class="row row-cols-xxl-3 row-cols-md-2 row-cols-1 g-3" v-if="photosList.length > 0">
+            <div class="row row-cols-xxl-3 row-cols-md-2 row-cols-2 g-2 gallery-grid" v-if="photosList.length > 0">
               <div class="col" v-for="item in photosList" :key="item.id">
                 <div class="card border shadow-none mb-0 overflow-hidden h-100 project-card">
                   <div class="bg-light d-flex align-items-center justify-content-center border-bottom" style="height: 160px; overflow: hidden; position: relative;">
@@ -343,10 +354,10 @@ export default {
       </div>
 
       <!-- SEÇÃO 3: CATÁLOGO DE LINKS DO YOUTUBE (COLUNA DIREITA) -->
-      <div class="col-xl-5 col-lg-6 mb-4">
-        <div class="card h-100">
-          <div class="card-header bg-transparent border-0 p-3">
-            <h5 class="card-title mb-1 text-dark fw-bold">
+      <div class="col-xl-5 col-lg-6 mb-3 videos-section">
+        <div class="card h-100 portfolio-section-card">
+          <button type="button" class="card-header bg-transparent border-0 p-3 w-100 text-start video-accordion-toggle" @click="videosExpanded = !videosExpanded">
+            <h5 class="card-title mb-1 text-dark fw-bold d-flex align-items-center">
               <i class="ri-youtube-line me-1 text-danger"></i> Vídeos de Divulgação
               <!-- BADGE REATIVA DO LIMITE DE VÍDEOS -->
               <span :class="videosList.length >= 3 ? 'badge bg-danger-subtle text-danger ms-2 fs-12' : 'badge bg-info-subtle text-info ms-2 fs-12'">
@@ -354,11 +365,13 @@ export default {
               </span>
             </h5>
             <small class="text-muted d-block">Fixe até 3 links de apresentações ou clipes musicais no seu perfil.</small>
-          </div>
-          <div class="card-body">
+            <i class="ms-auto fs-20" :class="videosExpanded ? 'ri-arrow-up-s-line' : 'ri-arrow-down-s-line'"></i>
+          </button>
+          <div v-show="videosExpanded" class="card-body">
             
             <!-- FORMULÁRIO TEXTUAL DE INSERÇÃO -->
-            <form v-if="videosList.length < 3" @submit.prevent="handleAddVideo" class="row g-2 mb-4 p-3 bg-light border rounded">
+            <button v-if="videosList.length < 3 && !videoFormExpanded" type="button" class="btn btn-soft-danger w-100 mb-3 fw-semibold" @click="videoFormExpanded = true"><i class="ri-add-circle-line me-1"></i> Adicionar vídeo</button>
+            <form v-if="videosList.length < 3 && videoFormExpanded" @submit.prevent="handleAddVideo" class="row g-2 mb-4 p-3 bg-light border rounded">
               <div class="col-12">
                 <label class="form-label small fw-semibold text-muted mb-1">Link Completo do Vídeo</label>
                 <input type="url" class="form-control form-control-sm" v-model="videoForm.videoUrl" placeholder="Ex: https://youtube.com..." required />
@@ -437,3 +450,25 @@ export default {
 
   </div>
 </template>
+
+<style scoped>
+@media (max-width: 767.98px) {
+  .portfolio-mobile-content { margin-left: -6px; margin-right: -6px; }
+  .portfolio-mobile-content > [class*="col-"] { padding-left: 6px; padding-right: 6px; }
+  .portfolio-section-card, .portfolio-cover-card { border-radius: 10px; margin-bottom: 0; }
+  .portfolio-section-card > .card-header, .portfolio-cover-card > .card-header { padding: 12px !important; }
+  .portfolio-section-card > .card-body { padding: 12px; }
+  .portfolio-cover-card .card-header { gap: 10px; align-items: flex-start !important; }
+  .portfolio-cover-card .card-title, .portfolio-section-card .card-title { font-size: 15px; line-height: 1.2; }
+  .portfolio-cover-card .card-header small, .portfolio-section-card .card-header small { font-size: 11px; line-height: 1.35; }
+  .portfolio-cover-card .card-body { min-height: 120px !important; max-height: 150px !important; }
+  .portfolio-cover-card label.btn { min-height: 40px; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; }
+  .gallery-grid .project-card .bg-light { height: 135px !important; }
+  .gallery-grid .card-body { min-width: 0; }
+  .gallery-grid .text-truncate { font-size: 11px; }
+  .video-accordion-toggle { color: inherit; border-radius: 10px 10px 0 0; }
+  .video-accordion-toggle:focus { outline: none; box-shadow: none; }
+  .videos-section .form-control { min-height: 44px; font-size: 14px; }
+  .videos-section .btn { min-height: 42px; }
+}
+</style>

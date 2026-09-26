@@ -926,6 +926,24 @@ linear-gradient(125deg,#0d0f17 0%,#0a1118 52%,#071318 100%);box-shadow:inset 0 1
   }
 }
 
+
+/* v16 corrigida — otimização de conteúdo EXCLUSIVA do mobile.
+   Nenhuma copy foi alterada, resumida ou ocultada dentro das seções mantidas.
+   Apenas seções inteiras redundantes deixam de aparecer no mobile. */
+@media (max-width: 767.98px) {
+  /* O fluxo Encontre → Combine → Contrate repete a jornada detalhada em
+     “Contratar uma Banda nunca foi tão Simples”. */
+  .contractor-journey {
+    display: none !important;
+  }
+
+  /* A grade “Menos tempo organizando. Mais tempo tocando.” antecipa benefícios
+     que são demonstrados nas seções seguintes: painel, recursos e vitrine. */
+  .artist-benefits-session {
+    display: none !important;
+  }
+}
+
 </style>
 
 <style scoped>
