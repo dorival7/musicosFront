@@ -20,6 +20,7 @@ export default {
       maxPhotosCount: 5, 
       videoForm: { videoUrl: "", caption: "" },
       editingItem: null,
+      editingMediaItem: null,
       editCaptionText: "",
       cropper: null,
       cropType: null,
@@ -42,6 +43,47 @@ export default {
     }
   },
   methods: {
+    resolveMediaUrl(mediaPath) {
+      if (!mediaPath) return "";
+
+      const configuredBase = process.env.VUE_APP_API_BASE_URL || "";
+      const currentHost = window.location.hostname;
+
+      const normalizeStaticMediaUrl = (rawUrl) => {
+        try {
+          const parsed = new URL(rawUrl, window.location.origin);
+
+          // Em desenvolvimento, o celular acessa o front pelo IP da máquina.
+          // Mantemos protocolo/porta da API e trocamos apenas localhost pelo host atual.
+          if ((parsed.hostname === "localhost" || parsed.hostname === "127.0.0.1") && currentHost !== "localhost" && currentHost !== "127.0.0.1") {
+            parsed.hostname = currentHost;
+          }
+
+          // Arquivos de wwwroot/uploads são estáticos e não passam pelo prefixo /api.
+          parsed.pathname = parsed.pathname.replace(/^\/api(?=\/uploads(?:\/|$))/i, "");
+          return parsed.toString();
+        } catch (_) {
+          return rawUrl;
+        }
+      };
+
+      if (/^https?:\/\//i.test(mediaPath)) {
+        return normalizeStaticMediaUrl(mediaPath);
+      }
+
+      const path = String(mediaPath).startsWith("/") ? String(mediaPath) : `/${mediaPath}`;
+      const baseUrl = normalizeStaticMediaUrl(configuredBase || window.location.origin);
+
+      try {
+        const base = new URL(baseUrl, window.location.origin);
+        if (/^\/uploads(?:\/|$)/i.test(path)) {
+          base.pathname = base.pathname.replace(/\/api\/?$/i, "");
+        }
+        return new URL(`${base.pathname.replace(/\/$/, "")}${path}`, `${base.protocol}//${base.host}`).toString();
+      } catch (_) {
+        return `${String(baseUrl).replace(/\/api\/?$/i, "").replace(/\/$/, "")}${path}`;
+      }
+    },
     async loadMediaInventory() {
       this.loading = true;
       this.successMessage = null;
@@ -176,7 +218,13 @@ export default {
     },
     startEditCaption(item) {
       this.editingItem = item.id;
+      this.editingMediaItem = item;
       this.editCaptionText = item.caption || "";
+    },
+    cancelEditCaption() {
+      this.editingItem = null;
+      this.editingMediaItem = null;
+      this.editCaptionText = "";
     },
     async handleSaveEdit(item, type) {
       this.successMessage = null;
@@ -190,7 +238,7 @@ export default {
           await axios.put(`${process.env.VUE_APP_API_BASE_URL}/tenants/videos/${item.id}`, { videoUrl: item.mediaUrl, caption: this.editCaptionText }, config);
         }
         this.successMessage = "Informações atualizadas com sucesso!";
-        this.editingItem = null;
+        this.cancelEditCaption();
         await this.loadMediaInventory();
       } catch (error) {
         this.errorMessage = "Erro ao tentar atualizar os dados.";
@@ -276,9 +324,8 @@ export default {
               </label>
             </div>
           </div>
-          <!-- A tag <img> concatena a URL base da porta 5297 com o path do MySQL de forma estável -->
           <div class="card-body p-0 position-relative bg-dark d-flex align-items-center justify-content-center" style="min-height: 240px; max-height: 300px; overflow: hidden;">
-            <img v-if="coverUrl" :src="`http://localhost:5297${coverUrl}`" class="img-fluid w-100 object-fit-cover h-100" style="position: absolute; top:0; left:0;" alt="Capa do Artista" />
+            <img v-if="coverUrl" :src="resolveMediaUrl(coverUrl)" class="img-fluid w-100 object-fit-cover h-100" style="position: absolute; top:0; left:0;" alt="Capa do Artista" />
             <div v-else class="text-center p-5 text-white-50">
               <i class="ri-image-add-line fs-36 d-block mb-2"></i>
               <p class="mb-0 fs-13">Nenhuma imagem de capa cadastrada para este painel.</p>
@@ -316,7 +363,7 @@ export default {
               <div class="col" v-for="item in photosList" :key="item.id">
                 <div class="card border shadow-none mb-0 overflow-hidden h-100 project-card">
                   <div class="bg-light d-flex align-items-center justify-content-center border-bottom" style="height: 160px; overflow: hidden; position: relative;">
-                    <img :src="`http://localhost:5297${item.mediaUrl}`" class="w-100 h-100 object-fit-cover" alt="Galeria" />
+                    <img :src="resolveMediaUrl(item.mediaUrl)" class="w-100 h-100 object-fit-cover" alt="Galeria" />
                     <!-- Botão Flutuante de Exclusão Humanizado -->
                     <button type="button" class="btn btn-danger btn-sm rounded-circle position-absolute top-0 end-0 m-2 p-0 d-flex align-items-center justify-content-center shadow" style="width: 26px; height: 26px;" @click="handleDeleteMedia(item.id)" title="Deletar da Galeria">
                       <i class="ri-delete-bin-line fs-12"></i>
@@ -324,14 +371,7 @@ export default {
                   </div>
                   <div class="p-2 card-body d-flex flex-column justify-content-between">
                     
-                    <!-- EDIÇÃO INLINE COMPACTA DE LEGENDA -->
-                    <div v-if="editingItem === item.id" class="input-group input-group-sm">
-                      <input type="text" class="form-control" v-model="editCaptionText" placeholder="Digite a legenda..." @keyup.enter="handleSaveEdit(item, 'Photo')" />
-                      <button class="btn btn-success" type="button" @click="handleSaveEdit(item, 'Photo')"><i class="ri-check-line"></i></button>
-                      <button class="btn btn-light" type="button" @click="editingItem = null"><i class="ri-close-line"></i></button>
-                    </div>
-                    
-                    <div v-else class="d-flex justify-content-between align-items-center">
+                    <div class="d-flex justify-content-between align-items-center">
                       <p class="text-muted small mb-0 text-truncate fw-medium pe-2">{{ item.caption || "Sem legenda ativa..." }}</p>
                       <button type="button" class="btn btn-link btn-sm text-info p-0 shadow-none" @click="startEditCaption(item)" title="Editar Legenda">
                         <i class="ri-pencil-line"></i>
@@ -421,6 +461,28 @@ export default {
 
     </div>
 
+    <!-- MODAL DE EDIÇÃO DE LEGENDA -->
+    <div class="modal fade show d-block caption-edit-modal" tabindex="-1" role="dialog" v-if="editingItem && editingMediaItem" @click.self="cancelEditCaption">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content border-0 shadow-lg">
+          <div class="modal-header">
+            <h5 class="modal-title fw-bold"><i class="ri-pencil-line text-info me-1"></i> Editar legenda da foto</h5>
+            <button type="button" class="btn-close" @click="cancelEditCaption" aria-label="Fechar"></button>
+          </div>
+          <div class="modal-body">
+            <label class="form-label fw-semibold">Legenda</label>
+            <input type="text" class="form-control" v-model="editCaptionText" placeholder="Digite a legenda da foto..." maxlength="180" @keyup.enter="handleSaveEdit(editingMediaItem, 'Photo')" />
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-light" @click="cancelEditCaption">Cancelar</button>
+            <button type="button" class="btn btn-success" @click="handleSaveEdit(editingMediaItem, 'Photo')">
+              <i class="ri-save-line me-1"></i> Salvar legenda
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- ============================================================== -->
     <!-- JANELA MODAL DO BOOTSTRAP PARA CORTE VISUAL EM TEMPO REAL      -->
     <!-- ============================================================== -->
@@ -452,23 +514,45 @@ export default {
 </template>
 
 <style scoped>
+.caption-edit-modal { background: rgba(0, 0, 0, 0.55); z-index: 1060; }
+.caption-edit-modal .modal-dialog { max-width: 520px; padding: 12px; }
 @media (max-width: 767.98px) {
+  .caption-edit-modal .modal-dialog { margin: 0 auto; padding: 16px; }
+  .caption-edit-modal .modal-footer { gap: 8px; }
+  .caption-edit-modal .modal-footer .btn { flex: 1 1 0; min-height: 44px; }
+  .caption-edit-modal .form-control { min-height: 46px; font-size: 16px; }
   .portfolio-mobile-content { margin-left: -6px; margin-right: -6px; }
   .portfolio-mobile-content > [class*="col-"] { padding-left: 6px; padding-right: 6px; }
   .portfolio-section-card, .portfolio-cover-card { border-radius: 10px; margin-bottom: 0; }
   .portfolio-section-card > .card-header, .portfolio-cover-card > .card-header { padding: 12px !important; }
   .portfolio-section-card > .card-body { padding: 12px; }
-  .portfolio-cover-card .card-header { gap: 10px; align-items: flex-start !important; }
-  .portfolio-cover-card .card-title, .portfolio-section-card .card-title { font-size: 15px; line-height: 1.2; }
-  .portfolio-cover-card .card-header small, .portfolio-section-card .card-header small { font-size: 11px; line-height: 1.35; }
+  .portfolio-cover-card .card-header, .gallery-section .card-header { gap: 10px; align-items: stretch !important; flex-direction: column; }
+  .portfolio-cover-card .card-header > div, .gallery-section .card-header > div { width: 100%; min-width: 0; }
+  .portfolio-cover-card .card-title, .portfolio-section-card .card-title { font-size: 15px; line-height: 1.25; }
+  .portfolio-cover-card .card-header small, .portfolio-section-card .card-header small { font-size: 11px; line-height: 1.4; white-space: normal; }
   .portfolio-cover-card .card-body { min-height: 120px !important; max-height: 150px !important; }
-  .portfolio-cover-card label.btn { min-height: 40px; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; }
+  .portfolio-cover-card label.btn, .gallery-section label.btn { min-height: 40px; width: 100%; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; }
+  .gallery-section .card-title { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+  .gallery-section .card-title .badge { margin-left: 0 !important; }
+  .gallery-section .card-body { padding: 10px !important; }
+  .gallery-grid { --vz-gutter-x: 10px; --vz-gutter-y: 10px; }
   .gallery-grid .project-card .bg-light { height: 135px !important; }
-  .gallery-grid .card-body { min-width: 0; }
-  .gallery-grid .text-truncate { font-size: 11px; }
-  .video-accordion-toggle { color: inherit; border-radius: 10px 10px 0 0; }
+  .gallery-grid .card-body { min-width: 0; min-height: 42px; padding: 8px !important; }
+  .gallery-grid .text-truncate { font-size: 11px; min-width: 0; }
+  .video-accordion-toggle { color: inherit; border-radius: 10px 10px 0 0; position: relative; padding-right: 42px !important; }
+  .video-accordion-toggle .card-title { flex-wrap: wrap; gap: 6px; padding-right: 0; }
+  .video-accordion-toggle .card-title .badge { margin-left: 0 !important; }
+  .video-accordion-toggle > i:last-child { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); }
   .video-accordion-toggle:focus { outline: none; box-shadow: none; }
   .videos-section .form-control { min-height: 44px; font-size: 14px; }
   .videos-section .btn { min-height: 42px; }
+}
+@media (max-width: 359.98px) {
+  .portfolio-mobile-content { margin-left: -6px; margin-right: -6px; }
+  .portfolio-section-card > .card-header, .portfolio-cover-card > .card-header { padding: 10px !important; }
+  .portfolio-section-card > .card-body { padding: 8px !important; }
+  .gallery-grid { --vz-gutter-x: 8px; --vz-gutter-y: 8px; }
+  .gallery-grid .project-card .bg-light { height: 122px !important; }
+  .gallery-grid .text-truncate { font-size: 10px; }
 }
 </style>

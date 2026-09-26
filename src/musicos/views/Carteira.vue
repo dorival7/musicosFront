@@ -259,8 +259,8 @@ methods: {
 };
 </script>
 <template>
-  <div class="container-fluid text-start">
-    <div class="row mb-4">
+  <div class="container-fluid text-start wallet-page">
+    <div class="row mb-4 wallet-heading">
       <div class="col-12 d-flex justify-content-between align-items-center">
         <h4 class="text-primary fw-bold mb-0">Minha Carteira Digital</h4>
         <span v-if="accountStatus === 'APPROVED'" class="badge bg-success-subtle text-success px-3 py-2 fs-12">
@@ -508,8 +508,8 @@ methods: {
         </div>
       </div>
 
-      <div v-else-if="accountStatus === 'APPROVED'" class="row">
-        <div class="col-xl-6 col-md-6 mb-3">
+      <div v-else-if="accountStatus === 'APPROVED'" class="row wallet-approved">
+        <div class="col-xl-6 col-md-6 mb-3 wallet-balance-col">
           <div class="card bg-success bg-gradient border-0 shadow-sm text-white">
             <div class="card-body p-4">
               <h6 class="text-white-50 text-uppercase fs-11 font-monospace fw-bold mb-1">Saldo Disponível</h6>
@@ -522,7 +522,7 @@ methods: {
           </div>
         </div>
 
-        <div class="col-xl-6 col-md-6 mb-3">
+        <div class="col-xl-6 col-md-6 mb-3 wallet-balance-col">
           <div class="card bg-dark bg-gradient border-0 shadow-sm text-white">
             <div class="card-body p-4">
               <h6 class="text-muted text-uppercase fs-11 font-monospace fw-bold mb-1">Cachês a Receber</h6>
@@ -531,11 +531,11 @@ methods: {
             </div>
           </div>
         </div>
-        <div class="col-12 mt-3">
+        <div class="col-12 mt-3 wallet-history-col">
           <div class="card border-0 shadow-sm">
             <div class="card-header bg-light border-0 p-3 d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-2">
               <h6 class="fw-bold text-dark mb-0"><i class="ri-history-line me-1 text-primary"></i> Histórico de Extrato Financeiro</h6>
-              <div class="d-flex gap-2">
+              <div class="d-flex gap-2 wallet-filters">
                 <select class="form-select form-select-sm fs-12" v-model="filters.type" style="width:130px;">
                   <option value="ALL">Todos os Tipos</option>
                   <option value="Receivable">Entradas</option>
@@ -554,8 +554,8 @@ methods: {
               </div>
             </div>
             <div class="card-body p-0">
-              <div v-if="transacoesFiltradas.length > 0" class="table-responsive">
-                <table class="table table-hover align-middle mb-0 fs-13 text-muted">
+              <div v-if="transacoesFiltradas.length > 0" class="wallet-transactions">
+                <table class="table table-hover align-middle mb-0 fs-13 text-muted wallet-table">
                   <thead class="table-light text-dark font-monospace fs-11">
                     <tr>
                       <th scope="col" class="p-3">Data / Hora</th>
@@ -581,6 +581,30 @@ methods: {
                     </tr>
                   </tbody>
                 </table>
+
+                <div class="wallet-mobile-list">
+                  <div v-for="tx in transacoesFiltradas" :key="'mobile-' + tx.id" class="wallet-transaction-card">
+                    <div class="wallet-transaction-top">
+                      <div class="wallet-transaction-date font-monospace">
+                        {{ new Date(tx.createdAt).toLocaleString('pt-BR') }}
+                      </div>
+                      <div :class="tx.type === 'Receivable' ? 'text-success' : 'text-danger'" class="wallet-transaction-value font-monospace fw-bold">
+                        {{ tx.type === 'Receivable' ? '+' : '-' }} {{ formatCurrency(tx.value) }}
+                      </div>
+                    </div>
+                    <div class="wallet-transaction-main">
+                      <span :class="tx.type === 'Receivable' ? 'badge bg-success-subtle text-success' : 'badge bg-danger-subtle text-danger'" class="fw-bold">
+                        {{ tx.type === 'Receivable' ? 'ENTRADA' : 'SAQUE' }}
+                      </span>
+                      <span :class="tx.isReleased ? 'badge bg-success' : 'badge bg-warning'">
+                        {{ tx.isReleased ? 'Liberado' : 'Retido' }}
+                      </span>
+                    </div>
+                    <div class="wallet-transaction-description">
+                      {{ tx.type === 'Receivable' ? 'Cachê de Show Custodiado' : 'Transferência para conta real' }}
+                    </div>
+                  </div>
+                </div>
               </div>
               <div v-else class="text-center py-5 m-3 text-muted border rounded border-dashed fs-12">
                 Nenhum lançamento financeiro corresponde aos filtros selecionados.
@@ -613,4 +637,192 @@ methods: {
   border-color: #0ab39c;
   background-color: rgba(25, 135, 84, 0.06);
 }
+
+.wallet-mobile-list { display: none; }
+
+@media (max-width: 767.98px) {
+  /* Padrão lateral consolidado no painel mobile. */
+  .wallet-page {
+    width: calc(100% + 24px);
+    max-width: none;
+    margin-left: -12px;
+    margin-right: -12px;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    box-sizing: border-box;
+  }
+
+  .wallet-page > .row,
+  .wallet-approved {
+    --vz-gutter-x: 0;
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  .wallet-page > .row > [class*="col-"],
+  .wallet-approved > [class*="col-"] {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .wallet-heading {
+    margin: 0 0 10px !important;
+  }
+
+
+  .wallet-approved,
+  .wallet-approved > [class*="col-"],
+  .wallet-history-col > .card,
+  .wallet-filters,
+  .wallet-mobile-list,
+  .wallet-transaction-card {
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .wallet-heading h4 {
+    font-size: 17px;
+    line-height: 1.15;
+  }
+
+  .wallet-heading .badge {
+    padding: 7px 10px !important;
+    font-size: 10px !important;
+    white-space: nowrap;
+  }
+
+  .wallet-page > .alert {
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  .wallet-balance-col {
+    margin-bottom: 8px !important;
+  }
+
+  .wallet-balance-col {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  .wallet-balance-col .card {
+    width: 100%;
+    margin: 0;
+    border-radius: 7px;
+    box-sizing: border-box;
+  }
+
+  .wallet-balance-col .card-body {
+    padding: 14px !important;
+  }
+
+  .wallet-balance-col h2 {
+    margin-bottom: 8px !important;
+    font-size: 22px;
+  }
+
+  .wallet-balance-col .small {
+    font-size: 10px;
+  }
+
+  .wallet-balance-col .btn {
+    min-height: 34px;
+    padding: 5px 10px;
+    font-size: 11px;
+  }
+
+  .wallet-history-col {
+    margin-top: 4px !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    box-sizing: border-box;
+  }
+
+  .wallet-history-col > .card {
+    border-radius: 7px;
+  }
+
+  .wallet-history-col .card-header {
+    padding: 12px !important;
+    gap: 10px !important;
+  }
+
+  .wallet-history-col .card-header h6 {
+    font-size: 13px;
+  }
+
+  .wallet-filters {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+    gap: 6px !important;
+  }
+
+  .wallet-filters .form-select {
+    width: 100% !important;
+    min-width: 0;
+    height: 38px;
+    font-size: 11px !important;
+  }
+
+  .wallet-filters .form-select:last-child {
+    grid-column: 1 / -1;
+  }
+
+  .wallet-table {
+    display: none;
+  }
+
+  .wallet-mobile-list {
+    display: block;
+    padding: 8px;
+  }
+
+  .wallet-transaction-card {
+    padding: 11px;
+    margin-bottom: 7px;
+    border: 1px solid var(--vz-border-color);
+    border-radius: 7px;
+    background: var(--vz-card-bg, #fff);
+  }
+
+  .wallet-transaction-card:last-child {
+    margin-bottom: 0;
+  }
+
+  .wallet-transaction-top,
+  .wallet-transaction-main {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .wallet-transaction-date {
+    color: var(--vz-secondary-color);
+    font-size: 10px;
+  }
+
+  .wallet-transaction-value {
+    font-size: 13px;
+    white-space: nowrap;
+  }
+
+  .wallet-transaction-main {
+    margin-top: 8px;
+    justify-content: flex-start;
+  }
+
+  .wallet-transaction-main .badge {
+    font-size: 9px;
+  }
+
+  .wallet-transaction-description {
+    margin-top: 8px;
+    color: var(--vz-body-color);
+    font-size: 12px;
+    font-weight: 600;
+  }
+}
+
 </style>

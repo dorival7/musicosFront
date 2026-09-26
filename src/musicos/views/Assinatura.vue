@@ -100,9 +100,9 @@ export default {
 </script>
 
 <template>
-  <div>
+  <div class="assinatura-page">
     <!-- CABEÇALHO DA TELA NATIVO DO VELZON -->
-    <div class="row">
+    <div class="row assinatura-heading-row">
       <div class="col-12">
         <div class="page-title-box d-sm-flex align-items-center justify-content-between">
           <h4 class="mb-sm-0 text-primary">Gestão de Assinatura e Faturamento</h4>
@@ -134,9 +134,9 @@ export default {
       <p class="text-muted mt-2 fs-13">Buscando histórico financeiro e limites no MariaDB...</p>
     </div>
 
-    <div v-else class="row animate__animated animate__fadeIn">
+    <div v-else class="row animate__animated animate__fadeIn assinatura-content">
       <!-- COLUNA DA ESQUERDA: RESUMO DO PLANO ATIVO E LIMITES DE CAPACIDADE -->
-      <div class="col-xl-4">
+      <div class="col-xl-4 assinatura-plan-col">
         <div class="card card-animate border-0 shadow-sm">
           <div class="card-body p-4">
             <div class="d-flex align-items-center mb-3">
@@ -209,13 +209,13 @@ export default {
       </div>
 
       <!-- COLUNA DA DIREITA: HISTÓRICO DE MENSALIDADES DO BANCO DE DADOS -->
-      <div class="col-xl-8">
+      <div class="col-xl-8 assinatura-history-col">
         <div class="card border-0 shadow-sm">
           <div class="card-header border-0 bg-white p-3 pt-4">
             <h5 class="card-title mb-0 fw-bold text-dark">Histórico de Cobranças</h5>
           </div>
           <div class="card-body p-0">
-            <div class="table-responsive">
+            <div class="assinatura-history">
               <table class="table table-hover table-nowrap align-middle mb-0">
                 <thead class="table-light text-muted uppercase fs-11 tracking-wider border-bottom">
                   <tr>
@@ -272,6 +272,34 @@ export default {
                   </tr>
                 </tbody>
               </table>
+
+              <div class="assinatura-mobile-list">
+                <div v-if="invoices.length === 0" class="text-center text-muted py-4 fs-12">
+                  Nenhuma mensalidade localizada no histórico de faturamento.
+                </div>
+                <div v-for="invoice in invoices" :key="'mobile-' + invoice.id" class="invoice-mobile-card">
+                  <div class="d-flex justify-content-between align-items-start gap-2">
+                    <div class="invoice-code font-monospace text-primary fw-medium">#{{ invoice.id }}</div>
+                    <span v-if="invoice.status === 'PAYMENT_RECEIVED'" class="badge bg-success-subtle text-success">Paga</span>
+                    <span v-else-if="invoice.status === 'PAYMENT_OVERDUE'" class="badge bg-danger-subtle text-danger">Vencida</span>
+                    <span v-else class="badge bg-warning-subtle text-warning">Aguardando</span>
+                  </div>
+                  <div class="invoice-mobile-info">
+                    <span><small>Vencimento</small>{{ new Date(invoice.dueDate).toLocaleDateString('pt-BR') }}</span>
+                    <span class="text-end"><small>Valor</small><strong>R$ {{ invoice.value.toFixed(2).replace('.', ',') }}</strong></span>
+                  </div>
+                  <div class="invoice-mobile-footer">
+                    <span class="text-muted">
+                      <i :class="invoice.method === 'PIX' ? 'ri-qr-code-line' : 'ri-credit-card-line'" class="me-1"></i>
+                      {{ invoice.method === 'PIX' ? 'Pix' : 'Cartão de Crédito' }}
+                    </span>
+                    <button v-if="invoice.method === 'PIX' && invoice.status !== 'PAYMENT_RECEIVED' && invoice.pixCopyPaste"
+                      type="button" class="btn btn-sm btn-soft-primary fw-bold" @click="copyPixKey(invoice.pixCopyPaste)">
+                      <i class="ri-file-copy-line me-1"></i> Copiar PIX
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -291,4 +319,126 @@ export default {
 .tracking-wider {
   letter-spacing: 0.05em;
 }
+
+.assinatura-mobile-list { display: none; }
+
+@media (max-width: 767.98px) {
+  /* PRIMEIRO: margem externa padrão do painel mobile. */
+  .assinatura-page {
+    width: calc(100% + 24px);
+    max-width: none;
+    margin-left: -12px;
+    margin-right: -12px;
+    box-sizing: border-box;
+  }
+
+  .assinatura-page > .row,
+  .assinatura-content {
+    --vz-gutter-x: 0;
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  .assinatura-page > .row > [class*="col-"],
+  .assinatura-content > [class*="col-"] {
+    padding-left: 0;
+    padding-right: 0;
+    box-sizing: border-box;
+  }
+
+  .assinatura-heading-row > .col-12 {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  .assinatura-heading-row .page-title-box {
+    min-height: auto;
+    padding: 10px 0 !important;
+    margin-bottom: 8px;
+  }
+
+  .assinatura-heading-row h4 {
+    width: 100%;
+    margin: 0 !important;
+    text-align: center;
+    font-size: 15px;
+    line-height: 1.25;
+  }
+
+  .assinatura-heading-row .page-title-right { display: none; }
+
+  .assinatura-page > .alert {
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  .assinatura-plan-col .card,
+  .assinatura-history-col .card {
+    margin-bottom: 10px;
+    border-radius: 7px;
+  }
+
+  .assinatura-plan-col .card-body { padding: 14px !important; }
+
+  .assinatura-plan-col .avatar-sm {
+    width: 38px;
+    height: 38px;
+  }
+
+  .assinatura-plan-col .avatar-title { font-size: 15px !important; }
+  .assinatura-plan-col h5 { font-size: 16px; }
+  .assinatura-plan-col h2 { font-size: 23px; }
+  .assinatura-plan-col .mb-4 { margin-bottom: 14px !important; }
+  .assinatura-plan-col .mb-3 { margin-bottom: 11px !important; }
+  .assinatura-plan-col .btn { min-height: 42px; font-size: 12px !important; }
+
+  .assinatura-history-col .card-header {
+    padding: 12px !important;
+  }
+  .assinatura-history-col .card-title { font-size: 14px; }
+
+  .assinatura-history table { display: none; }
+  .assinatura-mobile-list { display: block; padding: 8px; }
+
+  .invoice-mobile-card {
+    padding: 11px;
+    margin-bottom: 7px;
+    border: 1px solid var(--vz-border-color);
+    border-radius: 7px;
+    background: var(--vz-card-bg, #fff);
+  }
+  .invoice-mobile-card:last-child { margin-bottom: 0; }
+  .invoice-code {
+    max-width: 72%;
+    overflow-wrap: anywhere;
+    font-size: 11px;
+  }
+  .invoice-mobile-card .badge { font-size: 9px; }
+  .invoice-mobile-info {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 10px;
+    font-size: 12px;
+  }
+  .invoice-mobile-info span { display: flex; flex-direction: column; }
+  .invoice-mobile-info small {
+    margin-bottom: 2px;
+    color: var(--vz-secondary-color);
+    font-size: 9px;
+    text-transform: uppercase;
+  }
+  .invoice-mobile-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding-top: 9px;
+    margin-top: 9px;
+    border-top: 1px solid var(--vz-border-color);
+    font-size: 10px;
+  }
+  .invoice-mobile-footer .btn { font-size: 10px; }
+}
+
 </style>

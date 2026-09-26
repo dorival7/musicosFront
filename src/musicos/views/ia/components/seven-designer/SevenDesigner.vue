@@ -14,17 +14,19 @@
           <strong class="small">Story 1080 × 1920</strong>
           <button type="button" class="btn btn-dark btn-sm fw-bold designer-download-btn"
             :disabled="operacaoImagemAtiva" @click="baixarCartaz">
-            ⬇ Baixar o Cartaz
+            ⬇ Baixar PNG
           </button>
         </div>
       </div>
     </div>
 
     <div class="row g-3">
-      <div class="col-xl-3 col-lg-4">
+      <div class="col-xl-3 col-lg-4 designer-sidebar-column"
+        :class="{ 'mobile-panel-open': menuAdicionarTexto || menuAdicionarForma || !!painelLateralAberto }">
         <div class="card border-0 shadow-sm designer-sidebar-sticky">
           <div class="card-body p-3">
-            <div class="designer-sidebar-section designer-tools-section">
+            <div class="designer-sidebar-section designer-tools-section"
+              :class="{ 'mobile-section-open': menuAdicionarTexto || menuAdicionarForma }">
               <strong class="d-block mb-2">Ferramentas</strong>
               <button class="btn btn-dark w-100 fw-bold mb-2" type="button"
                 @click.stop="menuAdicionarTexto = !menuAdicionarTexto">
@@ -47,7 +49,8 @@
               </div>
             </div>
 
-            <div class="designer-sidebar-section posters-section">
+            <div class="designer-sidebar-section posters-section"
+              :class="{ 'mobile-section-open': painelLateralAberto === 'cartazes' }">
               <button type="button" class="designer-accordion-header"
                 @click="painelLateralAberto = painelLateralAberto === 'cartazes' ? null : 'cartazes'">
                 <span class="designer-accordion-title"><span class="designer-accordion-icon">🗂️</span> Meus
@@ -111,7 +114,8 @@
               </div>
             </div>
 
-            <div class="designer-sidebar-section uploads-section">
+            <div class="designer-sidebar-section uploads-section"
+              :class="{ 'mobile-section-open': painelLateralAberto === 'uploads' }">
               <button type="button" class="designer-accordion-header"
                 @click="painelLateralAberto = painelLateralAberto === 'uploads' ? null : 'uploads'">
                 <span class="designer-accordion-title"><span class="designer-accordion-icon">🖼️</span> Minhas imagens</span>
@@ -163,7 +167,7 @@
             </div>
 
             <div class="designer-sidebar-section designer-background-section"
-              :class="{ aberto: painelLateralAberto === 'fundos' }">
+              :class="{ aberto: painelLateralAberto === 'fundos', 'mobile-section-open': painelLateralAberto === 'fundos' }">
               <button type="button" class="designer-accordion-header"
                 @click="painelLateralAberto = painelLateralAberto === 'fundos' ? null : 'fundos'">
                 <span class="designer-accordion-title"><span class="designer-accordion-icon">🎨</span> Fundos do
@@ -174,7 +178,7 @@
               <div v-show="painelLateralAberto === 'fundos'" class="sidebar-backgrounds-scroll">
                 <div class="sidebar-backgrounds">
                   <button v-for="bg in backgrounds" :key="bg.id" type="button" class="sidebar-bg-choice"
-                    :class="{ active: backgroundId === bg.id }" @click="backgroundId = bg.id">
+                    :class="{ active: backgroundId === bg.id }" @click="backgroundId = bg.id; painelLateralAberto = null">
                     <span v-if="bg.tipo === 'procedural'" class="sidebar-procedural-thumb"></span>
                     <img v-else :src="bg.src" :alt="bg.nome" />
                     <small :title="bg.nome">{{ bg.nome }}</small>
@@ -186,7 +190,7 @@
         </div>
       </div>
 
-      <div class="col-xl-9 col-lg-8">
+      <div class="col-xl-9 col-lg-8 designer-editor-column">
         <div class="card border-0 shadow-sm">
           <div class="card-body p-3 p-md-4">
             <div class="d-flex justify-content-between align-items-center mb-3">
@@ -203,6 +207,7 @@
 
             <div v-if="selecionado" class="designer-floating-toolbar" @click.stop>
               <template v-if="selecionado.tipo === 'texto'">
+<div class="text-toolbar-desktop">
                 <input v-model="selecionado.texto" class="form-control floating-text-input" title="Texto selecionado"
                   @input="sincronizarTexto" />
 
@@ -228,6 +233,10 @@
                   <span class="floating-color-letter">A</span>
                   <input v-model="selecionado.corTexto" type="color" @input="sincronizarTexto" />
                 </label>
+
+                <details class="mobile-more-tools">
+                  <summary>••• Mais</summary>
+                  <div class="mobile-more-tools-body">
 
                 <button type="button" class="toolbar-action" :class="{ active: selecionado.temFundo }"
                   title="Ativar ou remover fundo do texto" @click="alternarFundoTexto">▰ Fundo</button>
@@ -267,9 +276,90 @@
                 <button class="toolbar-action toolbar-danger" @click="excluirSelecionado">
                   🗑 Excluir
                 </button>
-              </template>
+                  </div>
+                </details>
+              </div>
+
+                <div class="text-toolbar-mobile text-toolbar-mobile-v36">
+                  <div class="text-mobile-row text-mobile-row-main">
+                    <div class="font-picker text-mobile-font">
+                      <button type="button" class="font-picker-button"
+                        :style="{ fontFamily: fonteSelecionada?.family || 'Arial' }"
+                        @click.stop="fontMenuAberto = !fontMenuAberto; posicaoMenuAberto = false">
+                        <span>{{ fonteSelecionada?.nome || "Fonte" }}</span><span class="font-picker-arrow">⌄</span>
+                      </button>
+                      <div v-if="fontMenuAberto" class="font-picker-menu">
+                        <button v-for="fonte in fontes" :key="fonte.id" type="button" class="font-option"
+                          :class="{ active: selecionado.fontId === fonte.id }" :style="{ fontFamily: fonte.family }"
+                          @click.stop="selecionarFonte(fonte)">
+                          <span class="font-option-preview">Aa</span><span>{{ fonte.nome }}</span>
+                        </button>
+                      </div>
+                    </div>
+
+                    <div class="mobile-color-picker text-mobile-color">
+                      <button type="button" class="floating-color mobile-color-trigger" title="Cor do texto"
+                        @click.stop="abrirPaletaMobile('texto')">
+                        <span class="floating-color-letter">A</span>
+                        <span class="mobile-color-swatch" :style="{ backgroundColor: selecionado.corTexto || '#000000' }"></span>
+                      </button>
+                      <div v-if="paletaMobileAberta === 'texto'" class="mobile-color-popover" @click.stop>
+                        <button v-for="cor in coresRapidasMobile" :key="'txt-'+cor" type="button"
+                          class="mobile-color-option" :style="{ background: cor }"
+                          @click="selecionarCorMobile('texto', cor)" :aria-label="'Cor ' + cor"></button>
+                      </div>
+                    </div>
+
+                    <div class="text-bg-control text-mobile-bg">
+                      <button type="button" class="toolbar-action" :class="{ active: selecionado.temFundo }"
+                        @click="alternarFundoTexto">▰ Fundo</button>
+                      <div v-if="selecionado.temFundo" class="mobile-color-picker text-bg-picker">
+                        <button type="button" class="floating-color text-bg-color mobile-color-trigger" title="Cor do fundo"
+                          :aria-label="'Cor do fundo atual: ' + (selecionado.corFundo || '#000000')"
+                          @click.stop="abrirPaletaMobile('fundo')">
+                          <span class="mobile-color-swatch mobile-bg-current"
+                            :style="{ backgroundColor: selecionado.corFundo || '#000000' }"></span>
+                        </button>
+                        <div v-if="paletaMobileAberta === 'fundo'" class="mobile-color-popover mobile-color-popover-right" @click.stop>
+                          <button v-for="cor in coresRapidasMobile" :key="'bg-'+cor" type="button"
+                            class="mobile-color-option" :style="{ background: cor }"
+                            @click="selecionarCorMobile('fundo', cor)" :aria-label="'Cor ' + cor"></button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="text-mobile-row text-mobile-row-actions">
+                    <button class="toolbar-action" @click="duplicarTexto">⧉ Duplicar</button>
+
+                    <div class="position-picker">
+                      <button type="button" class="toolbar-action" @click.stop="alternarMenuPosicao">
+                        <span class="toolbar-icon">▱</span> Posição
+                      </button>
+                      <div v-if="posicaoMenuAberto" class="position-menu">
+                        <div class="position-title">Camadas</div>
+                        <button @click="executarPosicao('top')"><span>▣</span> Trazer para frente</button>
+                        <button @click="executarPosicao('up')"><span>↑</span> Avançar uma camada</button>
+                        <button @click="executarPosicao('down')"><span>↓</span> Recuar uma camada</button>
+                        <button @click="executarPosicao('bottom')"><span>▤</span> Enviar para trás</button>
+                        <div class="position-separator"></div>
+                        <div class="position-title">Alinhar no cartaz</div>
+                        <div class="align-grid">
+                          <button title="Esquerda" @click="alinharSelecionado('left')">⇤</button>
+                          <button title="Centro horizontal" @click="alinharSelecionado('center')">↔</button>
+                          <button title="Direita" @click="alinharSelecionado('right')">⇥</button>
+                          <button title="Topo" @click="alinharSelecionado('top')">⇡</button>
+                          <button title="Centro vertical" @click="alinharSelecionado('middle')">↕</button>
+                          <button title="Base" @click="alinharSelecionado('bottom')">⇣</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+</template>
 
               <template v-else-if="selecionado.tipo === 'forma'">
+<div class="shape-toolbar-desktop">
                 <strong class="shape-name">{{ nomeForma(selecionado.forma) }}</strong>
                 <label class="floating-color" title="Cor da forma"><span>■</span>
                   <input v-model="selecionado.cor" type="color" @input="sincronizarForma" />
@@ -277,6 +367,9 @@
                 <label class="floating-color" title="Cor da borda"><span>□</span>
                   <input v-model="selecionado.corBorda" type="color" @input="sincronizarForma" />
                 </label>
+                <details class="mobile-more-tools">
+                  <summary>••• Mais</summary>
+                  <div class="mobile-more-tools-body">
                 <label class="shape-number" title="Espessura da borda"><span>Borda</span>
                   <input v-model.number="selecionado.espessuraBorda" type="number" min="0" max="30"
                     @input="sincronizarForma" />
@@ -317,66 +410,202 @@
                   </div>
                 </div>
                 <button class="toolbar-action toolbar-danger" @click="excluirSelecionado">🗑 Excluir</button>
-              </template>
+                  </div>
+                </details>
+              </div>
 
-              <template v-else-if="selecionado.tipo === 'imagem'">
-                <span class="selected-image-name">{{ selecionado.nome }}</span>
+                <div class="shape-toolbar-mobile">
+                  <div class="shape-mobile-row shape-mobile-row-main">
+                    <div class="mobile-color-picker">
+                      <button type="button" class="shape-color-button" title="Cor da forma"
+                        @click.stop="abrirPaletaFormaMobile('forma')">
+                        <span class="shape-color-icon">■</span>
+                        <span class="mobile-color-swatch" :style="{ backgroundColor: selecionado.cor || '#ffffff' }"></span>
+                      </button>
+                      <div v-if="paletaFormaMobileAberta === 'forma'" class="mobile-color-popover" @click.stop>
+                        <button v-for="cor in coresRapidasMobile" :key="'shape-'+cor" type="button"
+                          class="mobile-color-option" :style="{ background: cor }"
+                          @click="selecionarCorFormaMobile('forma', cor)"></button>
+                      </div>
+                    </div>
 
-                <button v-if="!selecionado.backgroundRemovedSrc" class="toolbar-action toolbar-dark"
-                  :disabled="removendoBackground" @click="removerFundoSelecionada">
-                  {{ removendoBackground ? "Processando..." : "✨ Remover fundo" }}
-                </button>
-                <template v-else>
-                  <button class="toolbar-action version-action"
-                    :class="{ active: !selecionado.usarSemFundo }"
-                    :disabled="operacaoImagemAtiva" @click="usarOriginal">
-                    <span v-if="!selecionado.usarSemFundo">✓ </span>Original
-                  </button>
-                  <button class="toolbar-action version-action"
-                    :class="{ active: selecionado.usarSemFundo }"
-                    :disabled="operacaoImagemAtiva" @click="usarSemFundo">
-                    <span v-if="selecionado.usarSemFundo">✓ </span>Sem fundo
-                  </button>
-                </template>
+                    <div class="mobile-color-picker">
+                      <button type="button" class="shape-color-button" title="Cor da borda"
+                        @click.stop="abrirPaletaFormaMobile('borda')">
+                        <span class="shape-color-icon">□</span>
+                        <span class="mobile-color-swatch" :style="{ backgroundColor: selecionado.corBorda || '#000000' }"></span>
+                      </button>
+                      <div v-if="paletaFormaMobileAberta === 'borda'" class="mobile-color-popover mobile-color-popover-right" @click.stop>
+                        <button v-for="cor in coresRapidasMobile" :key="'border-'+cor" type="button"
+                          class="mobile-color-option" :style="{ background: cor }"
+                          @click="selecionarCorFormaMobile('borda', cor)"></button>
+                      </div>
+                    </div>
 
-                <select v-model="intensidadeRecorte" class="form-select recorte-select" title="Preservação do recorte">
-                  <option value="objeto">Preservar instrumento</option>
-                  <option value="suave">Recorte suave</option>
-                  <option value="normal">Recorte normal</option>
-                  <option value="forte">Recorte forte</option>
-                </select>
+                    <div class="shape-stepper" title="Espessura da borda">
+                      <span>Borda</span>
+                      <button type="button" @click="ajustarFormaNumero('espessuraBorda', -1, 0, 30, 1)">−</button>
+                      <b>{{ Math.round(Number(selecionado.espessuraBorda || 0)) }}</b>
+                      <button type="button" @click="ajustarFormaNumero('espessuraBorda', 1, 0, 30, 1)">+</button>
+                    </div>
 
-                <button class="toolbar-action" @click="duplicarImagem">⧉ Duplicar</button>
+                    <div class="shape-stepper shape-opacity" title="Opacidade">
+                      <span>Opac.</span>
+                      <button type="button" @click="ajustarFormaNumero('opacidade', -0.05, 0.05, 1, 0.05)">−</button>
+                      <b>{{ Math.round(Number(selecionado.opacidade || 1) * 100) }}%</b>
+                      <button type="button" @click="ajustarFormaNumero('opacidade', 0.05, 0.05, 1, 0.05)">+</button>
+                    </div>
+                  </div>
 
-                <div class="position-picker">
-                  <button type="button" class="toolbar-action" @click.stop="alternarMenuPosicao">
-                    <span class="toolbar-icon">▱</span>
-                    Posição
-                  </button>
+                  <div class="shape-mobile-row shape-mobile-row-actions">
+                    <button type="button" class="toolbar-action" :class="{ active: selecionado.sombra }"
+                      @click="selecionado.sombra = !selecionado.sombra; sincronizarForma()">◐ Sombra</button>
 
-                  <div v-if="posicaoMenuAberto" class="position-menu">
-                    <div class="position-title">Camadas</div>
-                    <button @click="executarPosicao('top')"><span>▣</span> Trazer para frente</button>
-                    <button @click="executarPosicao('up')"><span>↑</span> Avançar uma camada</button>
-                    <button @click="executarPosicao('down')"><span>↓</span> Recuar uma camada</button>
-                    <button @click="executarPosicao('bottom')"><span>▤</span> Enviar para trás</button>
+                    <div v-if="selecionado.sombra" class="mobile-color-picker shape-shadow-color">
+                      <button type="button" class="shape-color-button" title="Cor da sombra"
+                        @click.stop="abrirPaletaFormaMobile('sombra')">
+                        <span class="shape-color-icon">◐</span>
+                        <span class="mobile-color-swatch" :style="{ backgroundColor: selecionado.corSombra || '#000000' }"></span>
+                      </button>
+                      <div v-if="paletaFormaMobileAberta === 'sombra'" class="mobile-color-popover" @click.stop>
+                        <button v-for="cor in coresRapidasMobile" :key="'shadow-'+cor" type="button"
+                          class="mobile-color-option" :style="{ background: cor }"
+                          @click="selecionarCorFormaMobile('sombra', cor)"></button>
+                      </div>
+                    </div>
 
-                    <div class="position-separator"></div>
-                    <div class="position-title">Alinhar no cartaz</div>
-                    <div class="align-grid">
-                      <button title="Esquerda" @click="alinharSelecionado('left')">⇤</button>
-                      <button title="Centro horizontal" @click="alinharSelecionado('center')">↔</button>
-                      <button title="Direita" @click="alinharSelecionado('right')">⇥</button>
-                      <button title="Topo" @click="alinharSelecionado('top')">⇡</button>
-                      <button title="Centro vertical" @click="alinharSelecionado('middle')">↕</button>
-                      <button title="Base" @click="alinharSelecionado('bottom')">⇣</button>
+                    <div v-if="selecionado.sombra" class="shape-stepper shape-blur" title="Desfoque da sombra">
+                      <span>Blur</span>
+                      <button type="button" @click="ajustarFormaNumero('blurSombra', -5, 0, 80, 5)">−</button>
+                      <b>{{ Math.round(Number(selecionado.blurSombra || 0)) }}</b>
+                      <button type="button" @click="ajustarFormaNumero('blurSombra', 5, 0, 80, 5)">+</button>
+                    </div>
+
+                    <button class="toolbar-action" @click="duplicarForma">⧉ Duplicar</button>
+
+                    <div class="position-picker">
+                      <button type="button" class="toolbar-action" @click.stop="alternarMenuPosicao">
+                        <span class="toolbar-icon">▱</span> Posição
+                      </button>
+                      <div v-if="posicaoMenuAberto" class="position-menu">
+                        <div class="position-title">Camadas</div>
+                        <button @click="executarPosicao('top')"><span>▣</span> Trazer para frente</button>
+                        <button @click="executarPosicao('up')"><span>↑</span> Avançar uma camada</button>
+                        <button @click="executarPosicao('down')"><span>↓</span> Recuar uma camada</button>
+                        <button @click="executarPosicao('bottom')"><span>▤</span> Enviar para trás</button>
+                        <div class="position-separator"></div>
+                        <div class="position-title">Alinhar no cartaz</div>
+                        <div class="align-grid">
+                          <button title="Esquerda" @click="alinharSelecionado('left')">⇤</button>
+                          <button title="Centro horizontal" @click="alinharSelecionado('center')">↔</button>
+                          <button title="Direita" @click="alinharSelecionado('right')">⇥</button>
+                          <button title="Topo" @click="alinharSelecionado('top')">⇡</button>
+                          <button title="Centro vertical" @click="alinharSelecionado('middle')">↕</button>
+                          <button title="Base" @click="alinharSelecionado('bottom')">⇣</button>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
+</template>
 
-                <button class="toolbar-action toolbar-danger" @click="removerImagemCartaz">
-                  🗑 Excluir
-                </button>
+              <template v-else-if="selecionado.tipo === 'imagem'">
+                <!-- Desktop original -->
+                <div class="image-toolbar-desktop">
+                  <span class="selected-image-name">{{ selecionado.nome }}</span>
+
+                  <button v-if="!selecionado.backgroundRemovedSrc" class="toolbar-action toolbar-dark"
+                    :disabled="removendoBackground" @click="removerFundoSelecionada">
+                    {{ removendoBackground ? "Processando..." : "✨ Remover fundo" }}
+                  </button>
+                  <template v-else>
+                    <button class="toolbar-action version-action"
+                      :class="{ active: !selecionado.usarSemFundo }"
+                      :disabled="operacaoImagemAtiva" @click="usarOriginal">
+                      <span v-if="!selecionado.usarSemFundo">✓ </span>Original
+                    </button>
+                    <button class="toolbar-action version-action"
+                      :class="{ active: selecionado.usarSemFundo }"
+                      :disabled="operacaoImagemAtiva" @click="usarSemFundo">
+                      <span v-if="selecionado.usarSemFundo">✓ </span>Sem fundo
+                    </button>
+                  </template>
+
+                  <select v-model="intensidadeRecorte" class="form-select recorte-select" title="Preservação do recorte">
+                    <option value="objeto">Preservar instrumento</option>
+                    <option value="suave">Recorte suave</option>
+                    <option value="normal">Recorte normal</option>
+                    <option value="forte">Recorte forte</option>
+                  </select>
+
+                  <button class="toolbar-action" @click="duplicarImagem">⧉ Duplicar</button>
+
+                  <div class="position-picker">
+                    <button type="button" class="toolbar-action" @click.stop="alternarMenuPosicao">
+                      <span class="toolbar-icon">▱</span> Posição
+                    </button>
+                    <div v-if="posicaoMenuAberto" class="position-menu">
+                      <div class="position-title">Camadas</div>
+                      <button @click="executarPosicao('top')"><span>▣</span> Trazer para frente</button>
+                      <button @click="executarPosicao('up')"><span>↑</span> Avançar uma camada</button>
+                      <button @click="executarPosicao('down')"><span>↓</span> Recuar uma camada</button>
+                      <button @click="executarPosicao('bottom')"><span>▤</span> Enviar para trás</button>
+                      <div class="position-separator"></div>
+                      <div class="position-title">Alinhar no cartaz</div>
+                      <div class="align-grid">
+                        <button title="Esquerda" @click="alinharSelecionado('left')">⇤</button>
+                        <button title="Centro horizontal" @click="alinharSelecionado('center')">↔</button>
+                        <button title="Direita" @click="alinharSelecionado('right')">⇥</button>
+                        <button title="Topo" @click="alinharSelecionado('top')">⇡</button>
+                        <button title="Centro vertical" @click="alinharSelecionado('middle')">↕</button>
+                        <button title="Base" @click="alinharSelecionado('bottom')">⇣</button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <button class="toolbar-action toolbar-danger" @click="removerImagemCartaz">🗑 Excluir</button>
+                </div>
+
+                <!-- Mobile: somente ações essenciais, todas visíveis -->
+                <div class="image-toolbar-mobile">
+                  <button v-if="!selecionado.backgroundRemovedSrc" class="toolbar-action toolbar-dark"
+                    :disabled="removendoBackground" @click="removerFundoSelecionada">
+                    {{ removendoBackground ? "Processando..." : "✨ Remover fundo" }}
+                  </button>
+                  <template v-else>
+                    <button class="toolbar-action version-action"
+                      :class="{ active: !selecionado.usarSemFundo }"
+                      :disabled="operacaoImagemAtiva" @click="usarOriginal">Original</button>
+                    <button class="toolbar-action version-action"
+                      :class="{ active: selecionado.usarSemFundo }"
+                      :disabled="operacaoImagemAtiva" @click="usarSemFundo">Sem fundo</button>
+                  </template>
+
+                  <button class="toolbar-action" @click="duplicarImagem">⧉ Duplicar</button>
+
+                  <div class="position-picker">
+                    <button type="button" class="toolbar-action" @click.stop="alternarMenuPosicao">
+                      <span class="toolbar-icon">▱</span> Posição
+                    </button>
+                    <div v-if="posicaoMenuAberto" class="position-menu">
+                      <div class="position-title">Camadas</div>
+                      <button @click="executarPosicao('top')"><span>▣</span> Trazer para frente</button>
+                      <button @click="executarPosicao('up')"><span>↑</span> Avançar uma camada</button>
+                      <button @click="executarPosicao('down')"><span>↓</span> Recuar uma camada</button>
+                      <button @click="executarPosicao('bottom')"><span>▤</span> Enviar para trás</button>
+                      <div class="position-separator"></div>
+                      <div class="position-title">Alinhar no cartaz</div>
+                      <div class="align-grid">
+                        <button title="Esquerda" @click="alinharSelecionado('left')">⇤</button>
+                        <button title="Centro horizontal" @click="alinharSelecionado('center')">↔</button>
+                        <button title="Direita" @click="alinharSelecionado('right')">⇥</button>
+                        <button title="Topo" @click="alinharSelecionado('top')">⇡</button>
+                        <button title="Centro vertical" @click="alinharSelecionado('middle')">↕</button>
+                        <button title="Base" @click="alinharSelecionado('bottom')">⇣</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
 
                 <div v-if="removendoBackground" class="remove-bg-progress" title="Removendo fundo">
                   <div class="remove-bg-progress-bar" :style="{ width: progressoBackground + '%' }"></div>
@@ -389,10 +618,10 @@
 
             <div :class="{ 'designer-processing': removendoBackground }">
               <DesignerCanvas ref="canvas" :dados="cartaz" :imagens="imagensCartaz" :formas="formasCartaz"
-                :estilos="estilosTexto" :textos-livres="textosLivres" :background-id="backgroundId"
+                :estilos="estilosTexto" :textos-livres="textosLivres" :background-id="backgroundId" :mobile-mode="true"
                 @selecionar="selecionar" @atualizar-imagem="atualizarImagem" @atualizar-forma="atualizarForma"
                 @atualizar-texto-layout="atualizarTextoLayout" @editar-texto="editarTextoDireto"
-                @remover-imagem="removerImagemPorId" @remover-forma="removerFormaPorId"
+                @remover-imagem="removerImagemPorId" @remover-forma="removerFormaPorId" @remover-texto="excluirSelecionado"
                 @pedir-upload="pedirUploadFotoArtista" @imagem-carregada="onImagemCarregada" />
             </div>
           </div>
@@ -460,6 +689,36 @@
         </div>
       </div>
     </div>
+
+    <!-- MOBILE ONLY: acesso rápido às funcionalidades já existentes. -->
+    <nav class="designer-mobile-dock" aria-label="Ferramentas do Seven Designer">
+      <button type="button"
+        :class="{ active: menuAdicionarTexto }"
+        @click.stop="menuAdicionarTexto = !menuAdicionarTexto; menuAdicionarForma = false; painelLateralAberto = null">
+        <span class="mobile-dock-icon">T＋</span><span>Texto</span>
+      </button>
+      <button type="button"
+        :class="{ active: menuAdicionarForma }"
+        @click.stop="menuAdicionarForma = !menuAdicionarForma; menuAdicionarTexto = false; painelLateralAberto = null">
+        <span class="mobile-dock-icon">▢</span><span>Formas</span>
+      </button>
+      <button type="button"
+        :class="{ active: painelLateralAberto === 'cartazes' }"
+        @click.stop="painelLateralAberto = painelLateralAberto === 'cartazes' ? null : 'cartazes'; menuAdicionarTexto = false; menuAdicionarForma = false">
+        <span class="mobile-dock-icon">🗂️</span><span>Cartazes</span>
+      </button>
+      <button type="button"
+        :class="{ active: painelLateralAberto === 'uploads' }"
+        @click.stop="painelLateralAberto = painelLateralAberto === 'uploads' ? null : 'uploads'; menuAdicionarTexto = false; menuAdicionarForma = false">
+        <span class="mobile-dock-icon">🖼️</span><span>Imagens</span>
+      </button>
+      <button type="button"
+        :class="{ active: painelLateralAberto === 'fundos' }"
+        @click.stop="painelLateralAberto = painelLateralAberto === 'fundos' ? null : 'fundos'; menuAdicionarTexto = false; menuAdicionarForma = false">
+        <span class="mobile-dock-icon">🎨</span><span>Fundos</span>
+      </button>
+    </nav>
+
   </div>
 </template>
 
@@ -481,7 +740,6 @@ import {
   autosalvarDesignerPoster,
   salvarDesignerPoster,
   criarNovoDesignerPoster,
-  criarDesignerPosterDaAgenda,
   abrirDesignerPoster,
   duplicarDesignerPoster,
   excluirDesignerPoster
@@ -520,6 +778,9 @@ export default {
       selecionado: null,
       fontMenuAberto: false,
       posicaoMenuAberto: false,
+      paletaMobileAberta: null,
+      paletaFormaMobileAberta: null,
+      coresRapidasMobile: ["#ffffff","#000000","#ef4444","#f97316","#facc15","#22c55e","#06b6d4","#3b82f6","#8b5cf6","#ec4899","#78350f","#64748b"],
       removendoBackground: false,
       progressoBackground: 0,
       erroBackground: null,
@@ -588,7 +849,6 @@ export default {
       this.carregarUploads(),
       this.inicializarCartazes()
     ]);
-    await this.aplicarContextoAgendaSeExistir();
   },
 
   beforeUnmount() {
@@ -603,114 +863,6 @@ export default {
 
   methods: {
     urlAsset(url) { return urlDesignerAsset(url); },
-
-    async aplicarContextoAgendaSeExistir() {
-      const raw = sessionStorage.getItem("sevenDesignerEventContext");
-      if (!raw) return;
-
-      let contexto;
-      try { contexto = JSON.parse(raw); } catch {
-        sessionStorage.removeItem("sevenDesignerEventContext");
-        return;
-      }
-      if (!contexto || contexto.origem !== "agenda") return;
-      sessionStorage.removeItem("sevenDesignerEventContext");
-
-      const dataHora = contexto.eventDate ? new Date(contexto.eventDate) : null;
-      const dataValida = dataHora && !Number.isNaN(dataHora.getTime());
-      const data = dataValida ? `${dataHora.getFullYear()}-${String(dataHora.getMonth() + 1).padStart(2, "0")}-${String(dataHora.getDate()).padStart(2, "0")}` : "";
-      const horario = dataValida ? `${String(dataHora.getHours()).padStart(2, "0")}:${String(dataHora.getMinutes()).padStart(2, "0")}` : "";
-      const dataNome = dataValida ? `${String(dataHora.getDate()).padStart(2, "0")}-${String(dataHora.getMonth() + 1).padStart(2, "0")}` : "Show";
-      const localNome = contexto.venueName || contexto.city || "Evento";
-      const nomeDraft = `Show ${dataNome} - ${localNome}`.slice(0, 120);
-
-      this.trocandoPoster = true;
-      this.autosaveSuspenso = true;
-      try {
-        const resultado = await criarDesignerPosterDaAgenda(contexto.eventId, nomeDraft);
-        const poster = resultado?.poster || resultado;
-        this.aplicarEstadoPoster(poster);
-        // Mantém um índice local do vínculo evento -> cartaz. O backend continua
-        // sendo a fonte principal; isto garante o rótulo correto ao voltar à Agenda.
-        if (contexto.eventId) {
-          const posterId = poster?.id || poster?.Id || "linked";
-          localStorage.setItem(`sevenDesignerPosterEvent:${String(contexto.eventId).toLowerCase()}`, String(posterId));
-        }
-        await this.carregarCartazes();
-
-        // Cartaz já vinculado ao evento: preserva as edições do músico.
-        // Apenas corrige os rótulos legados do layout da Agenda, sem reinjetar
-        // data, local, artista, imagens ou qualquer outro conteúdo.
-        if (resultado?.created === false) {
-          const chamadaAtual = String(this.cartaz?.chamada || this.estilosTexto?.chamada?.textoOverride || "").trim().toLowerCase();
-          const showAtual = String(this.estilosTexto?.showLabel?.textoOverride || "").trim().toLowerCase();
-
-          if (["", "show", "show ao vivo", "noite de música"].includes(chamadaAtual)) {
-            this.cartaz.chamada = "IMPERDÍVEL!!!";
-            this.estilosTexto.chamada.oculto = false;
-            this.estilosTexto.chamada.textoOverride = "IMPERDÍVEL!!!";
-            this.estilosTexto.chamada.layout = { x: 300, y: 205, w: 460, h: 82, size: 42, align: "center", zIndex: 209 };
-          }
-
-          if (["", "show ao", "show ao vivo"].includes(showAtual)) {
-            this.estilosTexto.showLabel.textoOverride = "SHOW AO VIVO";
-            this.estilosTexto.showLabel.layout = { x: 115, y: 1040, w: 520, h: 90, size: 46, align: "center", zIndex: 210 };
-          }
-
-          this.autosaveSuspenso = false;
-          this.agendarAutosave();
-          return;
-        }
-      } catch (e) {
-        this.erroPosters = this.mensagemErroApi(e, "Erro ao criar um novo cartaz para este show.");
-        this.autosaveSuspenso = false;
-        return;
-      } finally {
-        this.trocandoPoster = false;
-      }
-
-      // Sem fallback para dados do cartaz anterior.
-      this.cartaz = {
-        ...this.cartaz,
-        data,
-        horario,
-        local: contexto.venueName || "",
-        cidade: [contexto.city, contexto.state].filter(Boolean).join(" - "),
-        chamada: contexto.eventType || "Show ao vivo",
-        extra: "NOME DO EVENTO"
-      };
-      this.imagensCartaz = [];
-      this.formasCartaz = [];
-      this.textosLivres = [];
-
-      // Layout exclusivo do cartaz criado pela Agenda: preserva a área central
-      // para a foto do artista e mantém todo o rodapé dentro da safe area.
-      this.estilosTexto = JSON.parse(JSON.stringify(DEFAULTS));
-      this.cartaz.chamada = "IMPERDÍVEL!!!";
-      this.estilosTexto.chamada.oculto = false;
-      this.estilosTexto.chamada.textoOverride = "IMPERDÍVEL!!!";
-      this.estilosTexto.chamada.layout = { x: 300, y: 205, w: 460, h: 82, size: 42, align: "center", zIndex: 209 };
-      this.estilosTexto.showLabel.textoOverride = "SHOW AO VIVO";
-      this.estilosTexto.showLabel.layout = { x: 115, y: 1040, w: 520, h: 90, size: 46, align: "center", zIndex: 210 };
-      this.estilosTexto.artista.layout = { x: 95, y: 1145, w: 890, h: 180, size: 118, align: "center", zIndex: 211 };
-      this.estilosTexto.estabelecimento.layout = { x: 135, y: 1365, w: 810, h: 140, size: 66, align: "center", zIndex: 212 };
-      this.estilosTexto.cidadeHorario.layout = { x: 140, y: 1530, w: 800, h: 85, size: 43, align: "center", zIndex: 213 };
-      this.estilosTexto.extra.layout = { x: 170, y: 1650, w: 740, h: 105, size: 48, align: "center", zIndex: 214 };
-
-      if (contexto.contractorLogoUrl) {
-        const id = `logo-agenda-${Date.now()}`;
-        this.imagensCartaz.push({
-          elementId: id, tipo: "imagem", assetId: null, nome: "Logo do contratante",
-          originalSrc: contexto.contractorLogoUrl, backgroundRemovedSrc: null,
-          src: contexto.contractorLogoUrl, usarSemFundo: false, origemAgendaLogo: true,
-          x: 820, y: 55, width: 190, height: 135, rotation: 0, zIndex: 120
-        });
-      }
-
-      this.autosaveSuspenso = false;
-      this.statusAutosave = "alterado";
-      this.$nextTick(() => this.agendarAutosave());
-    },
 
     async baixarCartaz() {
       if (this.operacaoImagemAtiva) return;
@@ -1099,6 +1251,7 @@ export default {
 
     async adicionarImagemGaleria(asset) {
       await this.adicionarImagemComLoading(asset);
+      this.painelLateralAberto = null;
     },
 
     async adicionarImagemComLoading(asset, options = {}) {
@@ -1340,6 +1493,45 @@ export default {
       this.$forceUpdate();
     },
 
+    abrirPaletaFormaMobile(tipo) {
+      this.paletaFormaMobileAberta = this.paletaFormaMobileAberta === tipo ? null : tipo;
+      this.paletaMobileAberta = null;
+      this.fontMenuAberto = false;
+      this.posicaoMenuAberto = false;
+    },
+
+    selecionarCorFormaMobile(tipo, cor) {
+      if (!this.selecionado || this.selecionado.tipo !== "forma") return;
+      if (tipo === "forma") this.selecionado.cor = cor;
+      else if (tipo === "borda") this.selecionado.corBorda = cor;
+      else if (tipo === "sombra") this.selecionado.corSombra = cor;
+      this.sincronizarForma();
+      this.paletaFormaMobileAberta = null;
+    },
+
+    ajustarFormaNumero(campo, delta, minimo, maximo, passo) {
+      if (!this.selecionado || this.selecionado.tipo !== "forma") return;
+      const atual = Number(this.selecionado[campo] ?? minimo);
+      const casas = passo < 1 ? 2 : 0;
+      const valor = Math.min(maximo, Math.max(minimo, atual + delta));
+      this.selecionado[campo] = Number(valor.toFixed(casas));
+      this.sincronizarForma();
+    },
+
+    abrirPaletaMobile(tipo) {
+      this.paletaMobileAberta = this.paletaMobileAberta === tipo ? null : tipo;
+      this.fontMenuAberto = false;
+      this.posicaoMenuAberto = false;
+    },
+
+    selecionarCorMobile(tipo, cor) {
+      if (!this.selecionado || this.selecionado.tipo !== "texto") return;
+      if (tipo === "texto") this.selecionado.corTexto = cor;
+      else this.selecionado.corFundo = cor;
+      this.sincronizarTexto();
+      this.paletaMobileAberta = null;
+    },
+
     alternarFundoTexto() {
       if (!this.selecionado || this.selecionado.tipo !== "texto") return;
       this.selecionado.temFundo = !this.selecionado.temFundo;
@@ -1382,13 +1574,43 @@ export default {
       this.menuAdicionarForma = false;
       const id = `forma-${Date.now()}-${Math.random().toString(16).slice(2)}`;
       const proporcional = tipo === "quadrado" || tipo === "circulo";
+
+      // Toda forma nova nasce em primeiro plano.
+      // Considera as camadas reais já existentes no cartaz, sem alterar a
+      // ordem das demais e mantendo os comandos de Camadas funcionando.
+      const zIndices = [];
+
+      this.formasCartaz.forEach((item, index) => {
+        const z = Number(item.zIndex);
+        zIndices.push(Number.isFinite(z) ? z : 10 + index);
+      });
+
+      this.imagensCartaz.forEach((item, index) => {
+        const z = Number(item.zIndex);
+        zIndices.push(Number.isFinite(z) ? z : 100 + index);
+      });
+
+      ["data", "weekday", "chamada", "showLabel", "artista", "estabelecimento", "cidadeHorario", "extra"]
+        .forEach((key, index) => {
+          const z = Number(this.estilosTexto[key]?.layout?.zIndex);
+          zIndices.push(Number.isFinite(z) ? z : 200 + index);
+        });
+
+      this.textosLivres.forEach((item, index) => {
+        const z = Number(this.estilosTexto[item.id]?.layout?.zIndex);
+        zIndices.push(Number.isFinite(z) ? z : 300 + index);
+      });
+
+      const zIndexPrimeiroPlano = (zIndices.length ? Math.max(...zIndices) : 0) + 1;
+
       const forma = {
         elementId: id, tipo: "forma", forma: tipo,
         x: proporcional ? 390 : 240, y: 760,
         width: proporcional ? 300 : 600, height: proporcional ? 300 : 220,
         rotation: 0, cor: "#ffffff", corBorda: "#111111", espessuraBorda: 0,
         opacidade: .85, sombra: false, corSombra: "#000000", blurSombra: 20,
-        offsetSombraX: 10, offsetSombraY: 10
+        offsetSombraX: 10, offsetSombraY: 10,
+        zIndex: zIndexPrimeiroPlano
       };
       this.formasCartaz.push(forma);
       this.selecionado = forma;
@@ -1613,22 +1835,22 @@ export default {
 
       this.formasCartaz.forEach((ref, index) => {
         const z = Number(ref.zIndex);
-        elementos.push({ id: ref.elementId, tipo: "forma", ref, ordem: Number.isFinite(z) ? z : 10 + index });
+        elementos.push({ id: ref.elementId, tipo: "forma", ordem: Number.isFinite(z) ? z : 10 + index });
       });
       this.imagensCartaz.forEach((ref, index) => {
         const z = Number(ref.zIndex);
-        elementos.push({ id: ref.elementId, tipo: "imagem", ref, ordem: Number.isFinite(z) ? z : 100 + index });
+        elementos.push({ id: ref.elementId, tipo: "imagem", ordem: Number.isFinite(z) ? z : 100 + index });
       });
       fixos.forEach((id, index) => {
         const z = Number(this.estilosTexto[id]?.layout?.zIndex);
         elementos.push({ id, tipo: "texto", ordem: Number.isFinite(z) ? z : 200 + index });
       });
-      this.textosLivres.forEach((t, index) => {
-        const z = Number(this.estilosTexto[t.id]?.layout?.zIndex);
-        elementos.push({ id: t.id, tipo: "texto", ordem: Number.isFinite(z) ? z : 300 + index });
+      this.textosLivres.forEach((ref, index) => {
+        const z = Number(this.estilosTexto[ref.id]?.layout?.zIndex);
+        elementos.push({ id: ref.id, tipo: "texto", ordem: Number.isFinite(z) ? z : 300 + index });
       });
 
-      elementos.sort((a, b) => a.ordem - b.ordem);
+      elementos.sort((x, y) => x.ordem - y.ordem);
 
       const idSelecionado = this.selecionado.tipo === "texto"
         ? this.selecionado.id
@@ -1638,36 +1860,65 @@ export default {
 
       const [movido] = elementos.splice(indiceAtual, 1);
       let destino = indiceAtual;
-
       if (direcao === "top") destino = elementos.length;
       else if (direcao === "bottom") destino = 0;
       else if (direcao === "up") destino = Math.min(indiceAtual + 1, elementos.length);
       else if (direcao === "down") destino = Math.max(indiceAtual - 1, 0);
-
       elementos.splice(destino, 0, movido);
 
-      // A ordem 0..N-1 passa a ser o estado oficial do cartaz.
-      elementos.forEach((e, ordem) => {
-        if (e.tipo === "texto") {
-          const estilo = this.estilosTexto[e.id] || {};
-          this.estilosTexto[e.id] = {
-            ...estilo,
-            layout: { ...(estilo.layout || {}), zIndex: ordem }
-          };
-        } else if (e.tipo === "imagem") {
-          const idx = this.imagensCartaz.findIndex(x => x.elementId === e.id);
-          if (idx >= 0) this.imagensCartaz[idx] = { ...this.imagensCartaz[idx], zIndex: ordem };
-        } else if (e.tipo === "forma") {
-          const idx = this.formasCartaz.findIndex(x => x.elementId === e.id);
-          if (idx >= 0) this.formasCartaz[idx] = { ...this.formasCartaz[idx], zIndex: ordem };
-        }
+      // Cria NOVAS referências. Isso é importante para o Vue atualizar o Canvas
+      // de forma determinística, sem depender de mutações profundas + $forceUpdate.
+      const zPorId = new Map(elementos.map((e, ordem) => [e.id, ordem]));
+
+      this.formasCartaz = this.formasCartaz.map(item => ({
+        ...item,
+        zIndex: zPorId.get(item.elementId) ?? item.zIndex
+      }));
+
+      this.imagensCartaz = this.imagensCartaz.map(item => ({
+        ...item,
+        zIndex: zPorId.get(item.elementId) ?? item.zIndex
+      }));
+
+      const novosEstilos = { ...this.estilosTexto };
+      elementos.filter(e => e.tipo === "texto").forEach(e => {
+        const estilo = novosEstilos[e.id] || {};
+        novosEstilos[e.id] = {
+          ...estilo,
+          layout: {
+            ...(estilo.layout || {}),
+            zIndex: zPorId.get(e.id)
+          }
+        };
       });
+      this.estilosTexto = novosEstilos;
+
+      // Mantém a seleção apontando para a NOVA referência.
+      if (this.selecionado.tipo === "imagem") {
+        this.selecionado = this.imagensCartaz.find(x => x.elementId === idSelecionado) || null;
+      } else if (this.selecionado.tipo === "forma") {
+        this.selecionado = this.formasCartaz.find(x => x.elementId === idSelecionado) || null;
+      } else {
+        const estilo = this.estilosTexto[idSelecionado] || {};
+        this.selecionado = {
+          ...this.selecionado,
+          id: idSelecionado,
+          tipo: "texto",
+          fontId: estilo.fontId,
+          corTexto: estilo.corTexto,
+          corFundo: estilo.corFundo,
+          temFundo: estilo.temFundo
+        };
+      }
 
       this.posicaoMenuAberto = false;
-      this.$forceUpdate();
 
       this.$nextTick(() => {
-        this.$refs.canvas?.selecionarExterno?.(idSelecionado, this.selecionado.tipo);
+        // Primeiro aplica a pilha no Konva; depois restaura transformer/seleção.
+        this.$refs.canvas?.aplicarOrdemCamadasAgora?.();
+        this.$nextTick(() => {
+          this.$refs.canvas?.selecionarExterno?.(idSelecionado, this.selecionado?.tipo);
+        });
         this.agendarAutosave();
       });
     },
@@ -2815,5 +3066,995 @@ export default {
 }
 
 @keyframes sevenDesignerSpin { to { transform: rotate(360deg); } }
+
+
+/* ============================================================
+   SEVEN DESIGNER MOBILE UX
+   Somente apresentação responsiva. Desktop permanece original.
+   ============================================================ */
+@media (max-width: 767.98px) {
+  .seven-designer {
+    padding-bottom: 72px;
+  }
+
+  /* Canvas/editor primeiro. Sidebar vira painel sob demanda. */
+  .seven-designer > .row {
+    --bs-gutter-x: 0;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+
+  .designer-editor-column {
+    order: 1;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  .designer-sidebar-column {
+    order: 2;
+    padding: 0 !important;
+  }
+
+  /* Cabeçalho do Designer mais compacto para chegar logo ao cartaz. */
+  .seven-designer > .card:first-child {
+    margin-bottom: 8px !important;
+  }
+
+  .seven-designer > .card:first-child > .card-body {
+    padding: 10px 12px !important;
+    gap: 7px !important;
+  }
+
+  .seven-designer > .card:first-child .fs-4 {
+    font-size: 18px !important;
+  }
+
+  .seven-designer > .card:first-child h5 {
+    font-size: 15px;
+  }
+
+  .seven-designer > .card:first-child small {
+    font-size: 11px;
+  }
+
+  /* Editor visual: reduz somente espaços, preservando canvas e toolbar contextual. */
+  .designer-editor-column > .card > .card-body {
+    padding: 10px !important;
+  }
+
+  .designer-editor-column > .card > .card-body > .d-flex:first-child {
+    margin-bottom: 8px !important;
+  }
+
+  /* Toolbar contextual: todas as ferramentas continuam presentes.
+     Uma única linha compacta, rolável horizontalmente e sem clipping. */
+  .designer-editor-column .designer-floating-toolbar {
+    position: sticky !important;
+    top: 6px !important;
+    z-index: 1050;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: 50px;
+    margin: 0 0 8px !important;
+    padding: 6px !important;
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    justify-content: flex-start !important;
+    gap: 6px !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    border-radius: 10px !important;
+    box-shadow: 0 4px 14px rgba(16, 24, 40, .14) !important;
+  }
+
+  .designer-editor-column .designer-floating-toolbar > * {
+    flex: 0 0 auto !important;
+  }
+
+  .designer-editor-column .floating-text-input {
+    width: 132px !important;
+    min-width: 132px !important;
+    height: 34px !important;
+    font-size: 12px !important;
+  }
+
+  .designer-editor-column .font-picker-button {
+    min-width: 118px !important;
+    height: 34px !important;
+    padding: 0 8px !important;
+    font-size: 13px !important;
+  }
+
+  .designer-editor-column .toolbar-action {
+    height: 34px !important;
+    padding: 0 9px !important;
+    font-size: 11px !important;
+  }
+
+  .designer-editor-column .floating-color {
+    min-width: 34px !important;
+    height: 34px !important;
+  }
+
+  .designer-editor-column .shape-number {
+    min-width: 74px !important;
+  }
+
+  /* Menus abertos ficam acima do canvas, não presos pelo scroll da toolbar. */
+  .designer-editor-column .font-picker-menu,
+  .designer-editor-column .position-menu {
+    z-index: 1200 !important;
+  }
+
+  /* Sidebar original vira bottom-sheet; o conteúdo continua sendo o MESMO DOM. */
+  .designer-sidebar-column {
+    position: fixed;
+    left: 6px;
+    right: 6px;
+    bottom: 64px;
+    z-index: 1055;
+    pointer-events: none;
+  }
+
+  .designer-sidebar-sticky {
+    position: static !important;
+    max-height: min(58vh, 500px);
+    overflow-y: auto;
+    border-radius: 14px !important;
+    box-shadow: 0 -8px 30px rgba(15, 23, 42, .18) !important;
+    pointer-events: auto;
+    display: none;
+  }
+
+  /* Estado mobile controlado diretamente pelo Vue; sem depender de :has(). */
+  .designer-sidebar-column.mobile-panel-open {
+    pointer-events: auto;
+  }
+
+  .designer-sidebar-column.mobile-panel-open .designer-sidebar-sticky {
+    display: block;
+  }
+
+  .designer-sidebar-sticky > .card-body {
+    padding: 10px !important;
+  }
+
+  /* No bottom-sheet aparece somente a seção solicitada. */
+  .designer-sidebar-section {
+    display: none;
+  }
+
+  .designer-sidebar-section.mobile-section-open {
+    display: block;
+  }
+
+  /* Os cabeçalhos de accordion deixam de ser necessários no sheet mobile. */
+  .posters-section > .designer-accordion-header,
+  .uploads-section > .designer-accordion-header,
+  .designer-background-section > .designer-accordion-header,
+  .designer-tools-section > strong,
+  .designer-tools-section > .btn {
+    display: none !important;
+  }
+
+  .designer-accordion-body,
+  .sidebar-backgrounds-scroll {
+    border-top: 0 !important;
+    padding-top: 2px !important;
+  }
+
+  /* Dock inferior inspirado em editor mobile, sem criar funcionalidade nova. */
+  .designer-mobile-dock {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1060;
+    height: 62px;
+    padding: 5px 6px calc(5px + env(safe-area-inset-bottom));
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 2px;
+    background: #fff;
+    border-top: 1px solid #e3e7ec;
+    box-shadow: 0 -4px 18px rgba(15, 23, 42, .10);
+  }
+
+  .designer-mobile-dock button {
+    border: 0;
+    background: transparent;
+    min-width: 0;
+    padding: 3px 1px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    color: #596273;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1.05;
+  }
+
+  .designer-mobile-dock button.active {
+    color: #ff6b25;
+  }
+
+  .mobile-dock-icon {
+    min-height: 20px;
+    display: flex;
+    align-items: center;
+    font-size: 17px;
+    font-weight: 800;
+    line-height: 1;
+  }
+}
+
+@media (min-width: 768px) {
+  .designer-mobile-dock {
+    display: none !important;
+  }
+}
+
+
+@media (max-width: 767.98px) {
+  .designer-sidebar-section.mobile-section-open::before {
+    display: block;
+    margin: 0 2px 8px;
+    font-size: 13px;
+    font-weight: 800;
+    color: #20242b;
+  }
+
+  .designer-tools-section.mobile-section-open::before { content: "Ferramentas"; }
+  .posters-section.mobile-section-open::before { content: "Meus cartazes"; }
+  .uploads-section.mobile-section-open::before { content: "Minhas imagens"; }
+  .designer-background-section.mobile-section-open::before { content: "Fundos do cartaz"; }
+}
+
+
+/* ============================================================
+   MOBILE v18 — refinamento dos painéis do dock.
+   Desktop permanece integralmente original.
+   ============================================================ */
+@media (max-width: 767.98px) {
+  /* TEXTO / FORMAS
+     No desktop o submenu é absoluto. No bottom-sheet mobile ele precisa
+     participar do fluxo; caso contrário fica vazio/recortado. */
+  .designer-tools-section .sidebar-text-menu {
+    position: static !important;
+    inset: auto !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 2px 0 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    background: transparent !important;
+  }
+
+  .designer-tools-section .sidebar-text-menu button {
+    min-height: 46px;
+    padding: 8px 10px !important;
+    margin-bottom: 6px;
+    border: 1px solid #e4e7ec !important;
+    border-radius: 10px !important;
+    background: #fff !important;
+  }
+
+  .designer-tools-section .sidebar-text-menu button:last-child {
+    margin-bottom: 0;
+  }
+
+  .designer-tools-section .sidebar-text-menu b {
+    font-size: 13px;
+  }
+
+  .designer-tools-section .sidebar-text-menu small {
+    margin-top: 2px;
+    font-size: 10px;
+  }
+
+  /* CARTAZES — lista mais limpa e compacta para toque. */
+  .designer-posters-body .poster-quota {
+    margin-bottom: 8px !important;
+  }
+
+  .designer-posters-body > .btn {
+    min-height: 38px;
+    margin-bottom: 9px !important;
+    border-radius: 9px;
+    font-size: 12px;
+  }
+
+  .designer-posters-body .posters-list {
+    gap: 7px !important;
+  }
+
+  .designer-posters-body .poster-list-item {
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    align-items: center;
+    gap: 6px !important;
+    padding: 8px !important;
+    border-radius: 10px !important;
+  }
+
+  .designer-posters-body .poster-open {
+    grid-template-columns: 32px minmax(0, 1fr) !important;
+    gap: 7px !important;
+  }
+
+  .designer-posters-body .poster-icon {
+    width: 32px;
+    height: 32px;
+  }
+
+  .designer-posters-body .poster-actions {
+    padding-top: 0 !important;
+    border-top: 0 !important;
+    gap: 4px !important;
+  }
+
+  .designer-posters-body .poster-actions button {
+    min-width: 30px;
+    width: 30px;
+    height: 30px;
+    padding: 0 !important;
+  }
+
+  /* IMAGENS — galeria de assets, não cards gigantes.
+     Três colunas no celular, semelhante ao padrão de editores mobile. */
+  .designer-uploads-body .uploads-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 7px !important;
+    max-height: min(43vh, 390px) !important;
+    padding: 3px 3px 8px !important;
+  }
+
+  .designer-uploads-body .upload-thumb {
+    aspect-ratio: 4 / 5 !important;
+    border-radius: 8px !important;
+  }
+
+  .designer-uploads-body .upload-thumb img {
+    object-fit: cover !important;
+  }
+
+  .designer-uploads-body .upload-delete {
+    right: -3px !important;
+    top: -3px !important;
+    width: 20px !important;
+    height: 20px !important;
+    border-width: 2px !important;
+    font-size: 12px !important;
+    line-height: 15px !important;
+  }
+
+  .designer-uploads-body > .btn {
+    min-height: 38px;
+    border-radius: 9px;
+    font-size: 12px;
+  }
+
+  /* FUNDOS — são fundos de Story/cartaz, portanto thumbnail vertical 9:16. */
+  .designer-background-section .sidebar-backgrounds-scroll {
+    max-height: min(48vh, 430px) !important;
+    padding-right: 2px !important;
+  }
+
+  .designer-background-section .sidebar-backgrounds {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 8px 6px !important;
+  }
+
+  .designer-background-section .sidebar-bg-choice {
+    gap: 4px !important;
+    padding: 3px !important;
+    border-radius: 9px !important;
+  }
+
+  .designer-background-section .sidebar-bg-choice img,
+  .designer-background-section .sidebar-procedural-thumb {
+    width: 100% !important;
+    height: auto !important;
+    aspect-ratio: 9 / 16 !important;
+    object-fit: cover !important;
+    border-radius: 7px !important;
+  }
+
+  .designer-background-section .sidebar-bg-choice small {
+    font-size: 10px !important;
+    line-height: 1.15 !important;
+  }
+
+  /* Bottom sheet mais consistente entre os cinco módulos. */
+  .designer-sidebar-sticky {
+    max-height: min(62vh, 540px) !important;
+  }
+
+  .designer-sidebar-section.mobile-section-open::before {
+    margin-bottom: 10px !important;
+  }
+}
+
+
+/* MOBILE v21 — dock acompanha o fim real do editor.
+   Remove o vazio criado pelo posicionamento fixed sem alterar o desktop. */
+@media (max-width: 767.98px) {
+  .seven-designer {
+    padding-bottom: 0 !important;
+  }
+
+  .designer-mobile-dock {
+    position: sticky !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: 0 !important;
+    width: 100% !important;
+    margin-top: 0 !important;
+  }
+}
+
+
+/* MOBILE v22 — editor compacto e toolbar sem ferramentas escondidas por scroll. */
+@media (max-width: 767.98px) {
+  /* Cabeçalho do cartaz: uma faixa compacta. */
+  .designer-editor-column > .card > .card-body > .d-flex:first-child {
+    min-height: 30px !important;
+    margin-bottom: 5px !important;
+    gap: 6px !important;
+    align-items: center !important;
+  }
+
+  .designer-editor-column > .card > .card-body > .d-flex:first-child > div {
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 2px 5px;
+  }
+
+  .designer-editor-column > .card > .card-body > .d-flex:first-child small.text-muted {
+    font-size: 9px !important;
+    line-height: 1 !important;
+  }
+
+  .designer-editor-column > .card > .card-body > .d-flex:first-child h6 {
+    max-width: 205px;
+    margin: 0 !important;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: 11px !important;
+    line-height: 1.15 !important;
+  }
+
+  .designer-editor-column > .card > .card-body > .d-flex:first-child .editor-autosave-status {
+    font-size: 9px !important;
+    line-height: 1 !important;
+  }
+
+  .designer-editor-column > .card > .card-body > .d-flex:first-child > .badge {
+    flex: 0 0 auto;
+    max-width: 82px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: 8px !important;
+    padding: 4px 5px !important;
+  }
+
+  /* Sem scroll horizontal: ações principais sempre visíveis. */
+  .designer-editor-column .designer-floating-toolbar {
+    position: relative !important;
+    top: auto !important;
+    min-height: 44px !important;
+    margin-bottom: 5px !important;
+    padding: 5px !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr) auto auto;
+    align-items: center;
+    gap: 5px !important;
+    overflow: visible !important;
+  }
+
+  .designer-editor-column .designer-floating-toolbar > * {
+    min-width: 0 !important;
+  }
+
+  .designer-editor-column .floating-text-input {
+    width: 100% !important;
+    min-width: 0 !important;
+    height: 34px !important;
+  }
+
+  .designer-editor-column .font-picker,
+  .designer-editor-column .font-picker-button {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  .designer-editor-column .font-picker-button {
+    height: 34px !important;
+  }
+
+  .designer-editor-column .floating-color {
+    min-width: 34px !important;
+  }
+
+  /* No desktop details é transparente; no mobile vira o acesso explícito "Mais". */
+  .designer-floating-toolbar .mobile-more-tools {
+    position: relative;
+    min-width: 0;
+  }
+
+  .designer-floating-toolbar .mobile-more-tools > summary {
+    list-style: none;
+    height: 34px;
+    min-width: 54px;
+    padding: 0 7px;
+    border: 1px solid #d8dee8;
+    border-radius: 8px;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 10px;
+    font-weight: 800;
+    white-space: nowrap;
+  }
+
+  .designer-floating-toolbar .mobile-more-tools > summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .designer-floating-toolbar .mobile-more-tools-body {
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    z-index: 1250;
+    width: min(300px, calc(100vw - 36px));
+    max-height: 48vh;
+    padding: 8px;
+    overflow-y: auto;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 7px;
+    background: #fff;
+    border: 1px solid #e2e7ee;
+    border-radius: 11px;
+    box-shadow: 0 10px 28px rgba(15, 23, 42, .20);
+  }
+
+  .designer-floating-toolbar .mobile-more-tools-body .toolbar-action,
+  .designer-floating-toolbar .mobile-more-tools-body .shape-number,
+  .designer-floating-toolbar .mobile-more-tools-body .recorte-select,
+  .designer-floating-toolbar .mobile-more-tools-body .position-picker {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  .designer-floating-toolbar .mobile-more-tools-body .position-picker,
+  .designer-floating-toolbar .mobile-more-tools-body .remove-bg-progress {
+    grid-column: 1 / -1;
+  }
+
+  .designer-floating-toolbar .mobile-more-tools-body .position-menu {
+    left: auto !important;
+    right: 0 !important;
+    width: min(280px, calc(100vw - 48px)) !important;
+  }
+
+  /* Forma: nome + duas cores + Mais. */
+  .designer-floating-toolbar .shape-name {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: 11px;
+  }
+
+  /* Imagem: nome não rouba a largura dos comandos. */
+  .designer-floating-toolbar .selected-image-name {
+    max-width: 88px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: 10px;
+  }
+}
+
+/* Desktop: o wrapper novo não muda layout nem aparência. */
+@media (min-width: 768px) {
+  .designer-floating-toolbar .mobile-more-tools,
+  .designer-floating-toolbar .mobile-more-tools-body {
+    display: contents;
+  }
+
+  .designer-floating-toolbar .mobile-more-tools > summary {
+    display: none;
+  }
+}
+
+
+/* MOBILE v23 — imagem: comandos essenciais em uma única linha. */
+@media (max-width: 767.98px) {
+  .designer-floating-toolbar:has(.selected-image-name) {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    gap: 5px !important;
+    overflow: visible !important;
+  }
+  .designer-floating-toolbar:has(.selected-image-name) .selected-image-name,
+  .designer-floating-toolbar:has(.selected-image-name) .recorte-select,
+  .designer-floating-toolbar:has(.selected-image-name) .toolbar-danger,
+  .designer-floating-toolbar:has(.selected-image-name) .mobile-more-tools > summary {
+    display: none !important;
+  }
+  .designer-floating-toolbar:has(.selected-image-name) .mobile-more-tools,
+  .designer-floating-toolbar:has(.selected-image-name) .mobile-more-tools-body {
+    display: contents !important;
+  }
+  .designer-floating-toolbar:has(.selected-image-name) .toolbar-action,
+  .designer-floating-toolbar:has(.selected-image-name) .position-picker {
+    flex: 1 1 0 !important;
+    width: auto !important;
+    min-width: 0 !important;
+  }
+  .designer-floating-toolbar:has(.selected-image-name) .toolbar-action {
+    height: 34px !important;
+    padding: 0 5px !important;
+    font-size: 9px !important;
+    white-space: nowrap !important;
+  }
+  .designer-floating-toolbar:has(.selected-image-name) .position-picker > .toolbar-action {
+    width: 100% !important;
+  }
+  .designer-floating-toolbar:has(.selected-image-name) .remove-bg-progress {
+    position: absolute;
+    left: 5px;
+    right: 5px;
+    top: calc(100% + 2px);
+  }
+}
+
+
+/* v24 — toolbar de imagem com estruturas separadas desktop/mobile. */
+.image-toolbar-mobile {
+  display: none;
+}
+
+.image-toolbar-desktop {
+  display: contents;
+}
+
+@media (max-width: 767.98px) {
+  .designer-floating-toolbar:has(.image-toolbar-mobile) {
+    display: block !important;
+    padding: 5px !important;
+    overflow: visible !important;
+  }
+
+  .image-toolbar-desktop {
+    display: none !important;
+  }
+
+  .image-toolbar-mobile {
+    width: 100%;
+    display: flex !important;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .image-toolbar-mobile > .toolbar-action,
+  .image-toolbar-mobile > .position-picker {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
+  .image-toolbar-mobile .toolbar-action {
+    width: 100%;
+    height: 34px !important;
+    padding: 0 5px !important;
+    font-size: 9px !important;
+    white-space: nowrap;
+  }
+
+  .image-toolbar-mobile .position-picker {
+    position: relative;
+  }
+
+  .image-toolbar-mobile .position-menu {
+    right: 0 !important;
+    left: auto !important;
+    width: min(285px, calc(100vw - 46px)) !important;
+  }
+
+  .designer-floating-toolbar:has(.image-toolbar-mobile) > .remove-bg-progress {
+    margin-top: 4px;
+    width: 100%;
+  }
+}
+
+
+.text-toolbar-mobile { display:none; }
+.text-toolbar-desktop { display:contents; }
+
+@media (max-width:767.98px) {
+  .designer-floating-toolbar:has(.text-toolbar-mobile) {
+    display:block !important;
+    padding:5px !important;
+    overflow:visible !important;
+  }
+  .text-toolbar-desktop { display:none !important; }
+  .text-toolbar-mobile {
+    width:100%;
+    display:grid !important;
+    grid-template-columns:minmax(0,1.45fr) 42px minmax(0,.9fr) minmax(0,1fr) minmax(0,.9fr);
+    gap:5px;
+    align-items:center;
+  }
+  .text-toolbar-mobile > * { min-width:0; }
+  .text-toolbar-mobile .font-picker-button,
+  .text-toolbar-mobile .toolbar-action {
+    width:100% !important;
+    height:34px !important;
+    min-width:0 !important;
+    padding:0 5px !important;
+    font-size:9px !important;
+    white-space:nowrap;
+  }
+  .text-toolbar-mobile .floating-color {
+    width:42px !important;
+    min-width:42px !important;
+    height:34px !important;
+  }
+  .text-toolbar-mobile .position-picker { position:relative; min-width:0; }
+  .text-toolbar-mobile .position-menu {
+    right:0 !important; left:auto !important;
+    width:min(285px,calc(100vw - 46px)) !important;
+  }
+}
+
+
+@media (max-width:767.98px) {
+  .text-toolbar-mobile .text-bg-control {
+    display:flex;
+    align-items:center;
+    min-width:0;
+    gap:3px;
+  }
+  .text-toolbar-mobile .text-bg-control > .toolbar-action {
+    flex:1 1 auto;
+    min-width:0 !important;
+  }
+  .text-toolbar-mobile .text-bg-color {
+    flex:0 0 30px;
+    width:30px !important;
+    min-width:30px !important;
+    height:34px !important;
+    padding:2px !important;
+  }
+}
+
+
+@media (max-width:767.98px) {
+  .mobile-color-picker { position:relative; min-width:0; }
+  .mobile-color-trigger { width:100% !important; justify-content:center; cursor:pointer; }
+  .mobile-color-swatch { width:20px; height:20px; border-radius:5px; border:1px solid rgba(0,0,0,.22); flex:0 0 20px; }
+  .mobile-color-popover {
+    position:absolute; top:calc(100% + 7px); left:0; z-index:1400;
+    width:174px; padding:8px; display:grid; grid-template-columns:repeat(4,1fr); gap:7px;
+    background:#fff; border:1px solid #dfe4eb; border-radius:10px; box-shadow:0 10px 28px rgba(15,23,42,.22);
+  }
+  .mobile-color-popover-right { left:auto; right:0; }
+  .mobile-color-option { width:32px; height:32px; padding:0; border:2px solid #fff; outline:1px solid #cbd5e1; border-radius:7px; }
+}
+
+
+@media (max-width:767.98px) {
+  /* v33: a cor atual do fundo permanece visível mesmo com a paleta fechada. */
+  .text-toolbar-mobile .text-bg-picker {
+    flex:0 0 30px;
+    width:30px;
+    min-width:30px;
+  }
+  .text-toolbar-mobile .text-bg-picker .text-bg-color {
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    width:30px !important;
+    min-width:30px !important;
+    padding:3px !important;
+    overflow:visible !important;
+  }
+  .text-toolbar-mobile .mobile-bg-current {
+    display:block !important;
+    width:22px !important;
+    height:22px !important;
+    min-width:22px !important;
+    flex:0 0 22px !important;
+    border:1px solid rgba(15,23,42,.35) !important;
+    border-radius:5px !important;
+    box-sizing:border-box !important;
+  }
+}
+
+
+@media (max-width:767.98px) {
+  .text-toolbar-mobile .text-bg-color > .mobile-color-swatch.mobile-bg-current {
+    display:block !important;
+    visibility:visible !important;
+    opacity:1 !important;
+  }
+}
+
+
+.shape-toolbar-mobile { display:none; }
+.shape-toolbar-desktop { display:contents; }
+
+@media (max-width:767.98px) {
+  .designer-floating-toolbar:has(.shape-toolbar-mobile) {
+    display:block !important;
+    padding:5px !important;
+    overflow:visible !important;
+  }
+  .shape-toolbar-desktop { display:none !important; }
+  .shape-toolbar-mobile { display:flex !important; flex-direction:column; gap:5px; width:100%; }
+  .shape-mobile-row { display:flex; align-items:center; gap:4px; width:100%; }
+  .shape-mobile-type {
+    flex:0 0 48px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+    font-size:9px; text-align:center;
+  }
+  .shape-color-button {
+    height:32px; min-width:38px; padding:3px 5px; display:flex; align-items:center;
+    justify-content:center; gap:3px; border:1px solid #d7dde6; background:#fff; border-radius:7px;
+  }
+  .shape-color-icon { font-size:9px; }
+  .shape-toolbar-mobile .mobile-color-swatch { width:18px; height:18px; flex:0 0 18px; display:block !important; }
+  .shape-stepper {
+    height:32px; min-width:0; flex:1 1 auto; display:flex; align-items:center; justify-content:center;
+    gap:2px; border:1px solid #d7dde6; border-radius:7px; background:#fff; padding:2px 3px;
+  }
+  .shape-stepper > span { font-size:8px; }
+  .shape-stepper > b { min-width:22px; font-size:9px; text-align:center; }
+  .shape-stepper > button {
+    width:20px; height:24px; padding:0; border:0; background:#f1f5f9; border-radius:5px;
+    font-size:14px; line-height:1;
+  }
+  .shape-opacity > b { min-width:31px; }
+  .shape-mobile-row-actions > .toolbar-action,
+  .shape-mobile-row-actions > .position-picker {
+    flex:1 1 0; min-width:0;
+  }
+  .shape-mobile-row-actions .toolbar-action {
+    width:100%; height:32px !important; padding:0 5px !important; font-size:9px !important; white-space:nowrap;
+  }
+  .shape-shadow-color { flex:0 0 38px; }
+  .shape-blur { flex:1 1 92px; }
+  .shape-mobile-row-actions .position-picker { position:relative; }
+  .shape-mobile-row-actions .position-menu {
+    right:0 !important; left:auto !important; width:min(285px,calc(100vw - 46px)) !important;
+  }
+}
+
+
+@media (max-width:767.98px) {
+  /* v36 — texto segue o mesmo padrão confortável de duas linhas das formas. */
+  .text-toolbar-mobile-v36 {
+    display:flex !important;
+    flex-direction:column !important;
+    gap:5px !important;
+    width:100% !important;
+  }
+  .text-toolbar-mobile-v36 .text-mobile-row {
+    display:flex;
+    align-items:center;
+    gap:5px;
+    width:100%;
+  }
+  .text-toolbar-mobile-v36 .text-mobile-row-main > * { min-width:0; }
+
+  .text-toolbar-mobile-v36 .text-mobile-font {
+    flex:1 1 auto;
+    min-width:0;
+  }
+  .text-toolbar-mobile-v36 .text-mobile-font .font-picker-button {
+    width:100% !important;
+    height:34px !important;
+    padding:0 9px !important;
+    font-size:10px !important;
+  }
+
+  .text-toolbar-mobile-v36 .text-mobile-color {
+    flex:0 0 48px;
+    width:48px;
+  }
+  .text-toolbar-mobile-v36 .text-mobile-color .mobile-color-trigger {
+    width:48px !important;
+    min-width:48px !important;
+    height:34px !important;
+    padding:3px 5px !important;
+  }
+
+  .text-toolbar-mobile-v36 .text-mobile-bg {
+    flex:0 0 auto;
+    display:flex;
+    align-items:center;
+    gap:4px;
+  }
+  .text-toolbar-mobile-v36 .text-mobile-bg > .toolbar-action {
+    width:auto !important;
+    min-width:58px !important;
+    height:34px !important;
+    padding:0 7px !important;
+    font-size:9px !important;
+  }
+
+  .text-toolbar-mobile-v36 .text-mobile-row-actions > .toolbar-action,
+  .text-toolbar-mobile-v36 .text-mobile-row-actions > .position-picker {
+    flex:1 1 0;
+    min-width:0;
+  }
+  .text-toolbar-mobile-v36 .text-mobile-row-actions .toolbar-action {
+    width:100% !important;
+    height:32px !important;
+    padding:0 8px !important;
+    font-size:10px !important;
+  }
+  .text-toolbar-mobile-v36 .text-mobile-row-actions .position-picker {
+    position:relative;
+  }
+  .text-toolbar-mobile-v36 .text-mobile-row-actions .position-menu {
+    right:0 !important;
+    left:auto !important;
+    width:min(285px,calc(100vw - 46px)) !important;
+  }
+}
+
+
+@media (max-width:767.98px) {
+  /* v37 — toolbar de formas: sem nome redundante e tipografia maior. */
+  .shape-toolbar-mobile .shape-mobile-row-main {
+    gap:5px !important;
+  }
+
+  .shape-toolbar-mobile .shape-color-button {
+    min-width:46px !important;
+    height:34px !important;
+    padding:3px 6px !important;
+    font-size:11px !important;
+  }
+  .shape-toolbar-mobile .shape-color-icon {
+    font-size:11px !important;
+  }
+
+  .shape-toolbar-mobile .shape-stepper {
+    height:34px !important;
+    gap:3px !important;
+    padding:2px 4px !important;
+  }
+  .shape-toolbar-mobile .shape-stepper > span {
+    font-size:10px !important;
+  }
+  .shape-toolbar-mobile .shape-stepper > b {
+    font-size:11px !important;
+  }
+  .shape-toolbar-mobile .shape-stepper > button {
+    width:22px !important;
+    height:26px !important;
+    font-size:15px !important;
+  }
+
+  .shape-toolbar-mobile .shape-mobile-row-actions .toolbar-action {
+    height:34px !important;
+    padding:0 7px !important;
+    font-size:11px !important;
+    font-weight:700 !important;
+  }
+}
 
 </style>

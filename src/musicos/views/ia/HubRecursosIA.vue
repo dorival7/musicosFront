@@ -5,10 +5,9 @@
     style="
       background-color: #f3f3f9 !important;
       min-height: 100vh;
-      padding: 24px;
     "
   >
-    <div class="container-fluid">
+    <div class="container-fluid ia-page">
 
       <!-- CABEÇALHO -->
       <div class="row mb-4 text-start">
@@ -201,4 +200,249 @@ export default {
     min-width: 0;
   }
 }
+
+/* MOBILE: exatamente o padrão estrutural da Agenda aprovada.
+   O Velzon já fornece o padding externo; compensamos 12px como em .agenda-page. */
+@media (max-width: 767.98px) {
+  .page-content {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  .ia-page {
+    margin-left: -12px !important;
+    margin-right: -12px !important;
+    width: auto !important;
+    max-width: none !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  .ia-page > .row {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+
+  .ia-page > .row > [class*="col-"] {
+    min-width: 0;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  /* Cabeçalho mantém respiro próprio; cards/conteúdo usam toda a largura útil. */
+  .ia-page > .row:first-child > .col-12 {
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+  }
+}
+
+
+/* MOBILE ONLY — menu compacto em grade, sem slide e sem alterar funcionalidade. */
+@media (max-width: 767.98px) {
+  .ia-tool-tabs {
+    display: grid !important;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 6px !important;
+    padding: 6px !important;
+    overflow: visible !important;
+  }
+
+  .ia-tool-tabs > .nav-item {
+    width: auto !important;
+    min-width: 0;
+    margin: 0 !important;
+  }
+
+  /* Primeira linha: 2 opções */
+  .ia-tool-tabs > .nav-item:nth-child(1),
+  .ia-tool-tabs > .nav-item:nth-child(2) {
+    grid-column: span 3;
+  }
+
+  /* Segunda linha: 3 opções */
+  .ia-tool-tabs > .nav-item:nth-child(3),
+  .ia-tool-tabs > .nav-item:nth-child(4),
+  .ia-tool-tabs > .nav-item:nth-child(5) {
+    grid-column: span 2;
+  }
+
+  .ia-tool-tab {
+    width: 100% !important;
+    min-height: 58px;
+    height: 100%;
+    padding: 7px 5px !important;
+    display: flex !important;
+    flex-direction: column;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 4px !important;
+    text-align: center !important;
+    white-space: normal !important;
+    line-height: 1.15;
+    font-size: 9px !important;
+    border: 1px solid #e4e8ee !important;
+    border-radius: 8px !important;
+    background: #fff;
+  }
+
+  .ia-tool-tab.active {
+    border-color: #ff6b25 !important;
+    background: #ff6b25 !important;
+    color: #fff !important;
+    box-shadow: 0 4px 10px rgba(255, 107, 37, .18);
+  }
+
+  .ia-tool-tab span:first-child,
+  .ia-tool-tab i {
+    font-size: 15px;
+    line-height: 1;
+  }
+}
+
+
+/* MOBILE ONLY — cabeçalho compacto e copy específica para celular. */
+@media (max-width: 767.98px) {
+  .ia-page > .row:first-child {
+    margin-top: 0 !important;
+    margin-bottom: 8px !important;
+  }
+
+  .ia-page > .row:first-child > .col-12 {
+    padding-top: 0 !important;
+  }
+
+  .ia-page > .row:first-child h4 {
+    margin-top: 0 !important;
+    margin-bottom: 4px !important;
+    font-size: 0 !important;
+    line-height: 1.25;
+  }
+
+  .ia-page > .row:first-child h4::after {
+    content: "🧠 CENTRAL DE IA SEVENSHOWS";
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: .35px;
+  }
+
+  .ia-page > .row:first-child p {
+    margin: 0 !important;
+    font-size: 0 !important;
+    line-height: 1.35;
+  }
+
+  .ia-page > .row:first-child p::after {
+    content: "Ferramentas inteligentes para músicos.";
+    font-size: 10px;
+  }
+
+  .ia-page > .row:first-child .d-flex {
+    align-items: center !important;
+  }
+}
+
+
+/* MOBILE ONLY — remove o vazio vertical herdado do Velzon e normaliza a leitura. */
+@media (max-width: 767.98px) {
+  .page-content {
+    padding-top: 10px !important;
+  }
+
+  .ia-page {
+    padding-top: 0 !important;
+  }
+
+  .ia-page > .row:first-child {
+    padding-top: 0 !important;
+    margin-top: 0 !important;
+    margin-bottom: 10px !important;
+  }
+
+  .ia-page > .row:first-child > .col-12 {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+  }
+
+  .ia-page > .row:first-child h4 {
+    margin: 0 0 5px !important;
+  }
+
+  .ia-page > .row:first-child h4::after {
+    font-size: 14px !important;
+    line-height: 1.25;
+  }
+
+  .ia-page > .row:first-child p {
+    margin: 0 !important;
+  }
+
+  .ia-page > .row:first-child p::after {
+    font-size: 12px !important;
+    line-height: 1.4;
+  }
+}
+
+
+/* MOBILE ONLY — refinamento visual do header e menu. */
+@media (max-width: 767.98px) {
+  /* Header: conteúdo centralizado horizontal e verticalmente. */
+  .ia-page > .row:first-child > .col-12 {
+    display: flex !important;
+    flex-direction: column;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+  }
+
+  .ia-page > .row:first-child .d-flex {
+    width: 100%;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 8px !important;
+  }
+
+  .ia-page > .row:first-child h4,
+  .ia-page > .row:first-child p {
+    text-align: center !important;
+  }
+
+  /* Card do menu: mais respiro em cima e embaixo. */
+  .ia-tool-tabs {
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+  }
+
+  /* Títulos dos botões em negrito. */
+  .ia-tool-tab {
+    font-weight: 700 !important;
+  }
+}
+
+
+/* MOBILE ONLY — reduz somente o espaço superior do header. */
+@media (max-width: 767.98px) {
+  .page-content {
+    padding-top: 0 !important;
+  }
+
+  .ia-page > .row:first-child {
+    padding-top: 0 !important;
+    margin-top: -8px !important;
+  }
+
+  .ia-page > .row:first-child > .col-12 {
+    padding-top: 0 !important;
+  }
+}
+
+
+/* MOBILE ONLY — títulos dos botões com leitura confortável. */
+@media (max-width: 767.98px) {
+  .ia-tool-tab {
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    line-height: 1.2 !important;
+  }
+}
+
 </style>

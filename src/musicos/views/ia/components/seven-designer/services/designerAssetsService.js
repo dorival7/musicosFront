@@ -48,16 +48,31 @@ export async function excluirDesignerAsset(id) {
 
 export function urlDesignerAsset(relativeUrl) {
   if (!relativeUrl) return null;
+  if (/^(blob:|data:)/i.test(relativeUrl)) return relativeUrl;
 
-  if (/^(https?:|blob:|data:)/i.test(relativeUrl)) {
-    return relativeUrl;
+  const currentHost = window.location.hostname;
+  const normalize = (rawUrl) => {
+    try {
+      const parsed = new URL(rawUrl, window.location.origin);
+      if ((parsed.hostname === "localhost" || parsed.hostname === "127.0.0.1") &&
+          currentHost !== "localhost" && currentHost !== "127.0.0.1") {
+        parsed.hostname = currentHost;
+      }
+      parsed.pathname = parsed.pathname.replace(/^\/api(?=\/uploads(?:\/|$))/i, "");
+      return parsed.toString();
+    } catch (_) { return rawUrl; }
+  };
+
+  if (/^https?:\/\//i.test(relativeUrl)) return normalize(relativeUrl);
+  const path = String(relativeUrl).startsWith("/") ? String(relativeUrl) : `/${relativeUrl}`;
+  const configuredBase = normalize(API_BASE_URL || window.location.origin);
+  try {
+    const base = new URL(configuredBase, window.location.origin);
+    if (/^\/uploads(?:\/|$)/i.test(path)) base.pathname = base.pathname.replace(/\/api\/?$/i, "");
+    return new URL(`${base.pathname.replace(/\/$/, "")}${path}`, `${base.protocol}//${base.host}`).toString();
+  } catch (_) {
+    return `${String(configuredBase).replace(/\/api\/?$/i, "").replace(/\/$/, "")}${path}`;
   }
-
-  const baseSemApi = String(API_BASE_URL || "")
-    .replace(/\/+$/, "")
-    .replace(/\/api$/i, "");
-
-  return `${baseSemApi}${relativeUrl.startsWith("/") ? "" : "/"}${relativeUrl}`;
 }
 
 export async function enviarBackgroundRemovidoDesignerAsset(assetId, blob) {

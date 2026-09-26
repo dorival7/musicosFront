@@ -13,14 +13,15 @@
       </div>
 
       <!-- 👁️ BOTÃO DE PRÉ-VISUALIZAÇÃO PÚBLICA INTEGRADO AO PAINEL -->
-      <button 
-        @click="abrirPerfilPublico" 
+      <a
+        :href="`/artista/${artistSlug}`"
+        target="_blank"
+        rel="noopener noreferrer"
         class="btn btn-outline-primary fw-bold px-4 text-uppercase fs-13 d-flex align-items-center justify-content-center gap-2 rounded-3 shadow-sm"
         style="height: 40px; transition: all 0.3s ease;"
-        :disabled="!artistSlug"
       >
         <i class="ri-eye-line fs-16"></i> Ver Minha Página Pública
-      </button>
+      </a>
     </div>
 
     <!-- 🛠️ CORREÇÃO E INTUIÇÃO: Abas transformadas em botões pílula bem definidos acima do card -->
@@ -80,13 +81,6 @@ export default {
     };
   },
   methods: {
-    abrirPerfilPublico() {
-      if (!this.artistSlug) {
-        alert("Por favor, preencha e salve seus dados de divulgação para gerar sua URL.");
-        return;
-      }
-      window.open(`/artista/${this.artistSlug}`, "_blank");
-    },
     async carregarSlugUsuario() {
       try {
         const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/tenants/me`); 
@@ -126,17 +120,24 @@ export default {
 
 <style scoped>
 @media (max-width: 767.98px) {
-  .container-fluid { padding: 12px 6px 20px !important; }
+  .container-fluid {
+    padding: 12px 0 20px !important;
+    width: calc(100% + 12px);
+    max-width: none;
+    margin-left: -6px;
+    margin-right: -6px;
+  }
   .container-fluid > .d-flex:first-child { align-items: center !important; text-align: center; margin-bottom: 14px !important; gap: 10px !important; }
   .container-fluid > .d-flex:first-child .text-start { text-align: center !important; width: 100%; }
   .container-fluid > .d-flex:first-child h3 { font-size: 18px !important; line-height: 1.15; margin-bottom: 6px !important; }
   .container-fluid > .d-flex:first-child p { font-size: 12px !important; line-height: 1.45; max-width: 330px; margin-left: auto; margin-right: auto; }
   .container-fluid > .d-flex:first-child .badge { font-size: 10px !important; padding: 6px 10px !important; }
-  .container-fluid > .d-flex:first-child > button { width: 100%; min-height: 44px; }
-  .row.mb-4 { margin-bottom: 12px !important; }
+  .container-fluid > .d-flex:first-child > a, .container-fluid > .d-flex:first-child > span { width: 100%; min-height: 44px; }
+  .row.mb-4 { margin: 0 0 12px !important; }
+  .row.mb-4 > .col-12 { padding-left: 0 !important; padding-right: 0 !important; }
   .nav-pills-custom { display: grid; grid-template-columns: 1fr 1fr; width: 100%; gap: 8px !important; }
   .nav-pills-custom .nav-item { width: 100%; }
   .nav-pills-custom .nav-link { width: 100%; padding: 10px 6px !important; font-size: 11px !important; text-align: center; min-height: 44px; display: flex; align-items: center; justify-content: center; }
-  .card.shadow-sm.border-0.rounded-3 > .card-body { padding: 6px !important; }
+  .card.shadow-sm.border-0.rounded-3 > .card-body { padding: 0 !important; }
 }
 </style>
