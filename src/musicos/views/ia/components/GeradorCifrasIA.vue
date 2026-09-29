@@ -7,18 +7,17 @@
       <div>
         <h5 class="text-dark fw-bold font-monospace text-uppercase mb-1 fs-15" style="letter-spacing: 0.5px;">
           <span class="header-guitar">🎸</span>
-          Gerador & Transpositor de Cifras Inteligente
+          GERADOR & TRANSPOSITOR DE CIFRAS
         </h5>
 
         <p class="text-muted small mb-0 font-monospace fs-12">
-          Busque qualquer música e mude o tom de forma automática e
-          instantânea com a inteligência do Seven Shows
+          Busque qualquer música e mude o tom com a inteligência da Seven Shows
         </p>
       </div>
 
       <span
         class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-20 font-monospace px-3 py-1 fs-11 rounded-pill live-badge">
-        LIVE REQUERIMENTO / IA
+        TECNOLOGIA SEVEN SHOWS IA
       </span>
     </div>
 
@@ -256,7 +255,7 @@
           </div>
 
 
-          <div class="song-header-actions">
+          <div class="song-header-actions song-header-actions-desktop">
             <button
               type="button"
               class="export-pdf-button"
@@ -275,6 +274,52 @@
             </div>
           </div>
 
+          <!-- UX mobile recuperada da versão validada v38/v40 -->
+          <div class="song-mobile-tools">
+            <button
+              type="button"
+              class="export-pdf-button mobile-export-pdf"
+              title="Exportar cifra para PDF"
+              @click="exportarCifraPdf"
+            >
+              <i class="ri-file-pdf-2-line me-1"></i>
+              Exportar PDF
+            </button>
+
+            <div class="mobile-tone-row">
+              <div class="song-tone-badge mobile-current-tone">
+                <i class="ri-music-2-line me-1"></i>
+                TOM ATUAL: {{ form.tomDesejado || cifraResultado.tomOriginal }}
+              </div>
+
+              <button
+                type="button"
+                class="mobile-change-tone-button"
+                @click="mostrarTonsMobile = !mostrarTonsMobile"
+              >
+                <i class="ri-music-2-line me-1"></i>
+                Alterar tom
+              </button>
+            </div>
+
+            <div v-if="mostrarTonsMobile" class="mobile-tone-picker">
+              <button
+                type="button"
+                v-for="tom in listaTonsDisponiveis"
+                :key="'mobile-' + tom"
+                @click="transporCifraTomMobile(tom)"
+                class="tone-button"
+                :class="{
+                  'tone-button-active':
+                    normalizarTomParaBotao(form.tomDesejado) === tom
+                }"
+                :disabled="!podeTranspor || loadingCifra"
+              >
+                {{ tom }}
+              </button>
+            </div>
+          </div>
+
         </div>
 
 
@@ -283,7 +328,9 @@
         <!-- ===================================================== -->
         <div class="cifra-scroll">
 
-          <pre class="cifra-pre">{{ cifraResultado.cifraCompleta }}</pre>
+          <pre class="cifra-pre cifra-pre-desktop">{{ cifraResultado.cifraCompleta }}</pre>
+
+          <pre class="cifra-pre cifra-pre-mobile" v-html="cifraMobileHtml"></pre>
 
         </div>
 
@@ -307,9 +354,27 @@ export default {
 
       carregandoRelacionada: false,
 
+      // Estado exclusivamente visual do seletor de tom mobile.
+      mostrarTonsMobile: false,
+
       podeTranspor: false,
 
       cifraResultado: null,
+
+      // Fonte original imutável da música carregada.
+      cifraOriginalHtml: "",
+      tomOriginalReal: "",
+
+      // Entrada bruta corrente do único formatador mobile.
+      cifraAtualHtml: "",
+
+      // Única saída usada pelo renderer mobile.
+      cifraMobileRender: "",
+      cifraMobileOriginal: "",
+
+      mobileCifraColumns: 0,
+
+      cifraResizeObserver: null,
 
       listaTonsDisponiveis: [
         "C",
@@ -335,7 +400,701 @@ export default {
   },
 
 
+  computed: {
+    cifraMobileHtml() {
+      return this.colorirAcordesCifraMobile(this.cifraMobile);
+    },
+
+    cifraMobile() {
+      return this.cifraMobileRender;
+    }
+  },
+
+  mounted() {
+    this.atualizarLarguraCifraMobile();
+
+    window.addEventListener(
+      "resize",
+      this.atualizarLarguraCifraMobile
+    );
+
+    this.$nextTick(() => {
+      this.observarLarguraCifraMobile();
+    });
+  },
+
+  beforeUnmount() {
+    window.removeEventListener(
+      "resize",
+      this.atualizarLarguraCifraMobile
+    );
+
+    if (this.cifraResizeObserver) {
+      this.cifraResizeObserver.disconnect();
+      this.cifraResizeObserver = null;
+    }
+  },
+
   methods: {
+
+    // Wrapper exclusivamente de UX mobile.
+    // A transposição continua 100% no método funcional existente.
+    async transporCifraTomMobile(tom) {
+      await this.transporCifraTomIa(tom);
+      this.mostrarTonsMobile = false;
+    },
+
+    // ==============================================================
+    // SEVEN SHOWS v135 — ÚNICO FORMATADOR MOBILE
+    // Recebe HTML bruto (original OU transposto), formata e renderiza.
+    // ==============================================================
+    formatarCifraMobile(cifraRecebida) {
+      const htmlBruto = String(cifraRecebida || "");
+
+      console.log("[HTML formatarCifraMobile]", cifraRecebida);
+
+      const textoEstruturado =
+        this.extrairTextoDoHtmlEstruturado(htmlBruto);
+
+      const formatado =
+        textoEstruturado && this.mobileCifraColumns
+          ? this.reflowCifraMobile(
+              textoEstruturado,
+              this.mobileCifraColumns
+            )
+          : textoEstruturado;
+
+      this.cifraMobileRender = formatado;
+
+      // A matriz mobile original passa a ser a referência imutável
+      // para todas as transposições. Ela já contém quebras e colunas corretas.
+      if (
+        this.cifraAtualHtml === this.cifraOriginalHtml ||
+        !this.cifraMobileOriginal
+      ) {
+        this.cifraMobileOriginal = formatado;
+      }
+
+      
+
+      return formatado;
+    },
+
+    // ==============================================================
+    // SEVEN SHOWS — REFLOW RESPONSIVO DA CIFRA
+    //
+    // O desktop continua usando exatamente cifraCompleta.
+    // No mobile, acorde e letra são tratados como um par de linhas.
+    // Quando a letra precisa quebrar, a linha de acordes é recortada
+    // nas mesmas colunas. Assim o acorde continua sobre o mesmo trecho
+    // sem depender de uma música específica.
+    // ==============================================================
+
+    extrairTextoDoHtmlEstruturado(htmlEstruturado) {
+      const html = String(htmlEstruturado || "");
+
+      if (!html) {
+        return "";
+      }
+
+      const container = document.createElement("div");
+      container.innerHTML = html;
+
+      const blocos = Array.from(
+        container.querySelectorAll(":scope > div.kvMV")
+      ).filter(bloco => {
+        const possuiTexto =
+          String(bloco.textContent || "").trim().length > 0;
+
+        const possuiElemento =
+          bloco.children.length > 0;
+
+        return possuiTexto || possuiElemento;
+      });
+
+      if (!blocos.length) {
+        return container.textContent.replace(/\r\n?/g, "\n");
+      }
+
+      const saida = [];
+
+      blocos.forEach(bloco => {
+        let linha = "";
+        let colunaEstrutural = 0;
+
+        const finalizarLinha = () => {
+          saida.push(linha.replace(/\s+$/g, ""));
+          linha = "";
+          colunaEstrutural = 0;
+        };
+
+        const garantirColuna = coluna => {
+          if (linha.length < coluna) {
+            linha += " ".repeat(coluna - linha.length);
+          }
+        };
+
+        Array.from(bloco.childNodes).forEach(node => {
+          const ehAcorde =
+            node.nodeType === Node.ELEMENT_NODE &&
+            node instanceof HTMLElement &&
+            node.hasAttribute("data-chord-name");
+
+          if (ehAcorde) {
+            const acordeAtual = String(
+              node.getAttribute("data-chord-name") ||
+              node.textContent ||
+              ""
+            );
+
+            const acordeOriginal = String(
+              node.getAttribute("data-chord-original-text") ||
+              node.textContent ||
+              acordeAtual
+            );
+
+            garantirColuna(colunaEstrutural);
+
+            // Escreve o valor visual na âncora atual.
+            // A posição da PRÓXIMA âncora continua sendo calculada
+            // exclusivamente pela largura do acorde original.
+            const prefixo = linha.slice(0, colunaEstrutural);
+            const sufixoInicio =
+              colunaEstrutural + acordeAtual.length;
+
+            const sufixo =
+              linha.length > sufixoInicio
+                ? linha.slice(sufixoInicio)
+                : "";
+
+            linha =
+              prefixo +
+              acordeAtual +
+              sufixo;
+
+            colunaEstrutural += acordeOriginal.length;
+            return;
+          }
+
+          const valor = String(node.textContent || "")
+            .replace(/\r\n?/g, "\n");
+
+          const partes = valor.split("\n");
+
+          partes.forEach((parte, indice) => {
+            if (parte) {
+              garantirColuna(colunaEstrutural);
+
+              const prefixo = linha.slice(0, colunaEstrutural);
+              const sufixoInicio =
+                colunaEstrutural + parte.length;
+
+              const sufixo =
+                linha.length > sufixoInicio
+                  ? linha.slice(sufixoInicio)
+                  : "";
+
+              linha =
+                prefixo +
+                parte +
+                sufixo;
+
+              colunaEstrutural += parte.length;
+            }
+
+            if (indice < partes.length - 1) {
+              finalizarLinha();
+            }
+          });
+        });
+
+        finalizarLinha();
+      });
+
+      return saida.join("\n");
+    },
+
+    observarLarguraCifraMobile() {
+      if (typeof ResizeObserver === "undefined") {
+        return;
+      }
+
+      const scroll =
+        this.$el && this.$el.querySelector
+          ? this.$el.querySelector(".cifra-scroll")
+          : null;
+
+      if (!scroll) {
+        return;
+      }
+
+      if (this.cifraResizeObserver) {
+        this.cifraResizeObserver.disconnect();
+      }
+
+      this.cifraResizeObserver =
+        new ResizeObserver(() => {
+          this.atualizarLarguraCifraMobile();
+        });
+
+      this.cifraResizeObserver.observe(scroll);
+    },
+
+    atualizarLarguraCifraMobile() {
+      this.$nextTick(() => {
+        const pre =
+          this.$el && this.$el.querySelector
+            ? this.$el.querySelector(".cifra-pre-mobile")
+            : null;
+
+        if (!pre) {
+          return;
+        }
+
+        const estilo =
+          window.getComputedStyle(pre);
+
+        const scroll =
+          pre.parentElement;
+
+        if (!scroll) {
+          return;
+        }
+
+        // A largura que realmente importa é a viewport da cifra.
+        // Medir o próprio <pre> pode incorporar width/padding/box-model
+        // de maneiras diferentes entre navegadores e antecipar a quebra.
+        const larguraUtil =
+          scroll.clientWidth -
+          (parseFloat(estilo.paddingLeft) || 0) -
+          (parseFloat(estilo.paddingRight) || 0);
+
+        if (larguraUtil <= 0) {
+          return;
+        }
+
+        // Mede no DOM com a MESMA fonte renderizada pelo <pre>.
+        // Isso inclui a fonte efetiva, font-weight e letter-spacing reais,
+        // evitando aproximações do canvas.
+        const amostra =
+          "0000000000000000000000000000000000000000000000000000000000000000";
+
+        const medidor =
+          document.createElement("span");
+
+        medidor.textContent = amostra;
+        medidor.style.position = "fixed";
+        medidor.style.left = "-10000px";
+        medidor.style.top = "-10000px";
+        medidor.style.visibility = "hidden";
+        medidor.style.whiteSpace = "pre";
+        medidor.style.fontFamily = estilo.fontFamily;
+        medidor.style.fontSize = estilo.fontSize;
+        medidor.style.fontWeight = estilo.fontWeight;
+        medidor.style.fontStyle = estilo.fontStyle;
+        medidor.style.fontVariant = estilo.fontVariant;
+        medidor.style.letterSpacing = estilo.letterSpacing;
+
+        document.body.appendChild(medidor);
+
+        const larguraCaractere =
+          medidor.getBoundingClientRect().width / amostra.length;
+
+        medidor.remove();
+
+        if (larguraCaractere <= 0) {
+          return;
+        }
+
+        // Usa todas as colunas que cabem fisicamente na viewport.
+        // Não subtrai uma coluna artificial: a medição DOM já considera
+        // o espaçamento real e o Math.floor impede ultrapassar o limite.
+        const novasColunas = Math.max(
+            12,
+            Math.floor(larguraUtil / larguraCaractere)
+          );
+        const colunasMudaram =
+          novasColunas !== this.mobileCifraColumns;
+
+        this.mobileCifraColumns = novasColunas;
+
+        if (
+          this.cifraAtualHtml &&
+          (
+            colunasMudaram ||
+            !this.cifraMobileRender
+          )
+        ) {
+          // A matriz estrutural sempre nasce da cifra original.
+          this.cifraAtualHtml =
+            this.cifraOriginalHtml;
+          this.cifraMobileOriginal = "";
+          this.formatarCifraMobile(
+            this.cifraOriginalHtml
+          );
+        }
+      });
+    },
+
+    colorirAcordesCifraMobile(texto) {
+      const escapar = valor =>
+        String(valor ?? "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+
+      const regexAcorde = /^(?:\(?[A-G](?:#|b)?(?:m|maj|min|dim|aug|sus|add)?\d*(?:\([^)]*\))?(?:\/[A-G](?:#|b)?)?\)?|[-–—|:])+$/i;
+
+      return String(texto || "")
+        .split("\n")
+        .map(linha => {
+          const somenteAcordes = this.ehLinhaSomenteAcordes(linha);
+          const temMarcador = /^\s*\[[^\]]+\]/.test(linha);
+
+          if (!somenteAcordes && !temMarcador) {
+            return escapar(linha);
+          }
+
+          const partes = linha.split(/(\s+)/);
+          let marcadorEncerrado = !temMarcador;
+
+          return partes.map(parte => {
+            if (!parte || /^\s+$/.test(parte)) {
+              return parte;
+            }
+
+            if (!marcadorEncerrado) {
+              if (parte.includes("]")) {
+                marcadorEncerrado = true;
+              }
+              return escapar(parte);
+            }
+
+            if (regexAcorde.test(parte)) {
+              return `<span class="cifra-acorde">${escapar(parte)}</span>`;
+            }
+
+            return escapar(parte);
+          }).join("");
+        })
+        .join("\n");
+    },
+
+    ehLinhaSomenteAcordes(linha) {
+      const valor =
+        String(linha || "").trim();
+
+      if (!valor || valor.includes("[") || valor.includes("]")) {
+        return false;
+      }
+
+      const tokens =
+        valor.split(/\s+/).filter(Boolean);
+
+      if (!tokens.length) {
+        return false;
+      }
+
+      const acorde =
+        /^(?:\(?[A-G](?:#|b)?(?:m|maj|min|dim|aug|sus|add)?\d*(?:\([^)]*\))?(?:\/[A-G](?:#|b)?)?\)?|[-–—|:])+$/i;
+
+      return tokens.every(token => acorde.test(token));
+    },
+
+    calcularFaixasLetra(linha, limite) {
+      const faixas = [];
+      let inicio = 0;
+      const tamanho = linha.length;
+
+      if (!tamanho) {
+        return [[0, 0]];
+      }
+
+      while (inicio < tamanho) {
+        const fimMaximo = Math.min(inicio + limite, tamanho);
+        let fim = fimMaximo;
+
+        if (fimMaximo < tamanho) {
+          // A quebra mobile segue a letra: usa o último espaço que cabe
+          // fisicamente na linha. Só corta uma palavra quando ela própria
+          // é maior que toda a largura disponível.
+          const ultimoEspaco = linha.lastIndexOf(" ", fimMaximo);
+
+          if (ultimoEspaco >= inicio) {
+            fim = ultimoEspaco;
+          }
+        }
+
+        if (fim <= inicio) {
+          fim = fimMaximo;
+        }
+
+        faixas.push([inicio, fim]);
+        inicio = fim;
+
+        while (inicio < tamanho && linha[inicio] === " ") {
+          inicio++;
+        }
+      }
+
+      return faixas;
+    },
+
+    criarModeloLinhaCifra(linhaAcordes, linhaLetra) {
+      const texto = String(linhaLetra || "");
+      const linha = String(linhaAcordes || "");
+      const acordes = [];
+      const regex = /\S+/g;
+      const encontrados = [];
+      let match;
+
+      while ((match = regex.exec(linha)) !== null) {
+        encontrados.push({
+          valor: match[0],
+          coluna: match.index,
+          fim: match.index + match[0].length
+        });
+      }
+
+      // SEVEN SHOWS v115 — modelo de token baseado na estrutura que o
+      // Cifra Club mantém no DOM: cada acorde conserva identidade, posição
+      // original e, principalmente, o "trailing" original até o próximo
+      // acorde. O trailing pertence ao token atual; não é recalculado a
+      // partir do tamanho/nome do próximo acorde durante o reflow.
+      encontrados.forEach((item, indice) => {
+        const proximo = encontrados[indice + 1];
+        const fimTrailing = proximo ? proximo.coluna : linha.length;
+
+        acordes.push({
+          valor: item.valor,
+          indice,
+          scopeId: `inline-chord-${indice}`,
+          coluna: item.coluna,
+          fim: item.fim,
+          originalText: item.valor,
+          originalTrailing: linha.slice(item.fim, fimTrailing)
+        });
+      });
+
+      return {
+        texto,
+        acordes
+      };
+    },
+
+    calcularFragmentosModelo(texto, limite) {
+      const fragmentos = [];
+      let inicio = 0;
+
+      if (!texto.length) {
+        return [{ inicio: 0, fim: 0, texto: "" }];
+      }
+
+      while (inicio < texto.length) {
+        const fimMaximo = Math.min(inicio + limite, texto.length);
+        let fim = fimMaximo;
+
+        if (fimMaximo < texto.length) {
+          const ultimoEspaco = texto.lastIndexOf(" ", fimMaximo);
+
+          if (ultimoEspaco >= inicio) {
+            fim = ultimoEspaco;
+          }
+        }
+
+        if (fim <= inicio) {
+          fim = fimMaximo;
+        }
+
+        const proximoInicioBruto = fim;
+        let proximoInicio = proximoInicioBruto;
+
+        while (proximoInicio < texto.length && texto[proximoInicio] === " ") {
+          proximoInicio++;
+        }
+
+        fragmentos.push({
+          inicio,
+          fim,
+          proximoInicio,
+          texto: texto.slice(inicio, fim).replace(/\s+$/g, "")
+        });
+
+        inicio = proximoInicio;
+      }
+
+      return fragmentos;
+    },
+
+    localizarFragmentoDoAcorde(acorde, fragmentos) {
+      if (!fragmentos.length) {
+        return 0;
+      }
+
+      const coluna = acorde.coluna;
+
+      // A propriedade do bloco é decidida SOMENTE pela âncora do próprio
+      // acorde. O comprimento/nome do acorde e o próximo acorde não podem
+      // mudar o bloco ao qual ele pertence.
+      for (let i = 0; i < fragmentos.length; i++) {
+        const atual = fragmentos[i];
+        const proximo = fragmentos[i + 1];
+
+        if (coluna >= atual.inicio && coluna < atual.fim) {
+          const fimDoAcorde = coluna + acorde.valor.length;
+
+          // O token é indivisível. Se ele encostar na fronteira física,
+          // acompanha o fragmento seguinte por inteiro.
+          if (proximo && fimDoAcorde >= atual.fim) {
+            return i + 1;
+          }
+
+          return i;
+        }
+
+        // Espaços consumidos pela quebra pertencem ao próximo bloco visual.
+        if (
+          proximo &&
+          coluna >= atual.fim &&
+          coluna < proximo.inicio
+        ) {
+          return i + 1;
+        }
+      }
+
+      return fragmentos.length - 1;
+    },
+
+    montarLinhaAcordesDoModelo(modelo, fragmentos, indiceFragmento) {
+      const fragmento = fragmentos[indiceFragmento];
+      const acordes = modelo.acordes.filter(
+        acorde =>
+          this.localizarFragmentoDoAcorde(acorde, fragmentos) ===
+          indiceFragmento
+      );
+
+      if (!acordes.length) {
+        return "";
+      }
+
+      // SEVEN SHOWS v115 — geometria equivalente ao DOM responsivo
+      // observado no Cifra Club: a quebra pertence ao BLOCO e o primeiro
+      // acorde do novo bloco nasce na fronteira visual anterior. A partir
+      // dele, a distância para os acordes seguintes é o trailing ORIGINAL
+      // do token anterior. Isso é essencial em casos como F# / B / B7: se
+      // o primeiro acorde cruza a quebra e é trazido para x=0, todo o grupo
+      // acompanha sem ser comprimido. Não existe regra por música/acorde.
+      const origemVisual =
+        indiceFragmento > 0
+          ? fragmentos[indiceFragmento - 1].fim
+          : fragmento.inicio;
+
+      const primeiraColuna = Math.max(
+        0,
+        acordes[0].coluna - origemVisual
+      );
+
+      let linhaAcordes = " ".repeat(primeiraColuna);
+
+      acordes.forEach((acorde, indice) => {
+        linhaAcordes += acorde.originalText;
+
+        if (indice < acordes.length - 1) {
+          linhaAcordes += acorde.originalTrailing;
+        }
+      });
+
+      return linhaAcordes.replace(/\s+$/g, "");
+    },
+
+    reflowParAcordeLetra(linhaAcordes, linhaLetra, limite) {
+      const modelo = this.criarModeloLinhaCifra(
+        linhaAcordes,
+        linhaLetra
+      );
+
+      const fragmentos = this.calcularFragmentosModelo(
+        modelo.texto,
+        limite
+      );
+
+      const saida = [];
+
+      fragmentos.forEach((fragmento, indice) => {
+        const linhaAcordesFragmento =
+          this.montarLinhaAcordesDoModelo(
+            modelo,
+            fragmentos,
+            indice
+          );
+
+        if (linhaAcordesFragmento.trim()) {
+          saida.push(linhaAcordesFragmento);
+        }
+
+        saida.push(fragmento.texto);
+      });
+
+      return saida;
+    },
+
+    reflowLinhaIsolada(linha, limite) {
+      if (linha.length <= limite) {
+        return [linha];
+      }
+
+      return this.calcularFaixasLetra(
+        linha,
+        limite
+      ).map(([inicio, fim]) =>
+        linha.slice(inicio, fim).replace(/\s+$/g, "")
+      );
+    },
+
+    reflowCifraMobile(texto, limite) {
+      const linhas =
+        texto.split("\n");
+
+      const saida = [];
+
+      for (let i = 0; i < linhas.length; i++) {
+        const atual = linhas[i];
+        const proxima =
+          i + 1 < linhas.length
+            ? linhas[i + 1]
+            : null;
+
+        if (
+          proxima !== null &&
+          this.ehLinhaSomenteAcordes(atual) &&
+          proxima.trim() !== "" &&
+          !this.ehLinhaSomenteAcordes(proxima)
+        ) {
+          saida.push(
+            ...this.reflowParAcordeLetra(
+              atual,
+              proxima,
+              limite
+            )
+          );
+
+          i++;
+          continue;
+        }
+
+        saida.push(
+          ...this.reflowLinhaIsolada(
+            atual,
+            limite
+          )
+        );
+      }
+
+      return saida.join("\n");
+    },
+
 
     // ==============================================================
     // URL BASE DA API
@@ -387,24 +1146,45 @@ export default {
     // ==============================================================
 
     aplicarResultadoCifra(dados) {
-      this.cifraResultado =
-        dados;
+      this.cifraResultado = dados;
 
-      if (
-        dados &&
-        dados.tomOriginal
-      ) {
+      // Só é definido quando uma NOVA música chega do .NET/Cifra Club.
+      this.cifraOriginalHtml =
+        String(dados?.htmlEstruturado || "");
+
+      this.tomOriginalReal =
+        String(dados?.tomOriginal || "");
+
+      this.cifraAtualHtml =
+        this.cifraOriginalHtml;
+
+      // Nova música: elimina o render mobile anterior e reconstrói
+      // a matriz a partir do novo htmlEstruturado recebido.
+      this.cifraMobileRender = "";
+
+      this.cifraMobileOriginal =
+        this.formatarCifraMobile(
+          this.cifraOriginalHtml
+        );
+
+      this.cifraMobileRender =
+        this.cifraMobileOriginal;
+
+      
+
+      
+
+      this.$nextTick(() => {
+        this.atualizarLarguraCifraMobile();
+});
+
+      if (this.tomOriginalReal) {
         this.form.tomDesejado =
-          dados.tomOriginal;
-
-        this.podeTranspor =
-          true;
+          this.tomOriginalReal;
+        this.podeTranspor = true;
       } else {
-        this.form.tomDesejado =
-          "";
-
-        this.podeTranspor =
-          false;
+        this.form.tomDesejado = "";
+        this.podeTranspor = false;
       }
     },
 
@@ -472,11 +1252,6 @@ export default {
             this.form.nomeArtista
         };
 
-        console.log(
-          "🚀 [CIFRAS] Busca normal via Tavily:",
-          urlFinal
-        );
-
         const response =
           await axios.post(
             urlFinal,
@@ -484,10 +1259,12 @@ export default {
             config
           );
 
-        console.log(
-          "🎵 [CIFRAS] Resultado:",
-          response.data
-        );
+        
+
+        // Resposta exatamente como chegou do .NET, antes de qualquer tratamento no Vue.
+        
+
+        
 
         this.aplicarResultadoCifra(
           response.data
@@ -602,16 +1379,6 @@ export default {
             item.url
         };
 
-        console.log(
-          "⚡ [RELACIONADA] Acesso direto:",
-          item.url
-        );
-
-        console.log(
-          "⚡ [RELACIONADA] Endpoint:",
-          urlFinal
-        );
-
         const response =
           await axios.post(
             urlFinal,
@@ -619,10 +1386,10 @@ export default {
             config
           );
 
-        console.log(
-          "🎵 [RELACIONADA] Resultado:",
-          response.data
-        );
+        // Resposta exatamente como chegou do .NET, antes de qualquer tratamento no Vue.
+        
+
+        
 
         this.form.nomeMusica =
           response.data.musica ||
@@ -891,29 +1658,199 @@ export default {
     // TRANSPOSIÇÃO LOCAL
     // ==============================================================
 
-    async transporCifraTomIa(tomAlvo) {
+    extrairAcordesOriginaisParaTransposicao() {
+      const container = document.createElement("div");
+      container.innerHTML = String(this.cifraOriginalHtml || "");
+
+      return Array.from(
+        container.querySelectorAll("b[data-chord-name]")
+      ).map(el =>
+        String(
+          el.getAttribute("data-chord-name") ||
+          el.textContent ||
+          ""
+        ).trim()
+      );
+    },
+
+    substituirAcordesNaCifraMobileOriginal(
+      acordesOriginais,
+      acordesTranspostos
+    ) {
+      let resultado = String(
+        this.cifraMobileOriginal || ""
+      );
+
       if (
-        !this.cifraResultado ||
-        !this.cifraResultado.htmlEstruturado
+        !resultado ||
+        acordesOriginais.length !== acordesTranspostos.length
       ) {
-        alert(
-          "❌ O HTML estruturado da cifra não está disponível."
+        throw new Error(
+          "Não foi possível aplicar a transposição sobre a cifra mobile original."
+        );
+      }
+
+      // Substitui por ocorrência em ordem, preservando a coluna inicial.
+      // Quando cresce, consome somente whitespace posterior.
+      // Quando diminui, completa o slot com whitespace posterior.
+      let cursor = 0;
+
+      acordesOriginais.forEach((original, index) => {
+        const novo = String(
+          acordesTranspostos[index] || original
+        ).trim();
+
+        const escaped = String(original)
+          .replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+        const regex = new RegExp(
+          `(^|[\\s])(${escaped})(?=\\s|$)`,
+          "gm"
         );
 
+        regex.lastIndex = cursor;
+        const match = regex.exec(resultado);
+
+        if (!match) {
+          throw new Error(
+            `Acorde original não localizado na matriz mobile: ${original} (#${index}).`
+          );
+        }
+
+        const inicio =
+          match.index + match[1].length;
+        const fim =
+          inicio + original.length;
+        const diferenca =
+          novo.length - original.length;
+
+        let antes = resultado.slice(0, inicio);
+        let depois = resultado.slice(fim);
+
+        if (diferenca < 0) {
+          // Menor: devolve ao slot as colunas liberadas.
+          depois =
+            " ".repeat(Math.abs(diferenca)) +
+            depois;
+        } else if (diferenca > 0) {
+          // Maior: consome apenas espaços imediatamente posteriores,
+          // sem atravessar quebra de linha ou o próximo conteúdo.
+          let remover = diferenca;
+          let consumidos = 0;
+
+          while (
+            consumidos < depois.length &&
+            remover > 0 &&
+            depois[consumidos] === " "
+          ) {
+            consumidos += 1;
+            remover -= 1;
+          }
+
+          depois = depois.slice(consumidos);
+        }
+
+        resultado =
+          antes +
+          novo +
+          depois;
+
+        cursor =
+          inicio +
+          novo.length +
+          Math.max(0, -diferenca);
+      });
+
+      return resultado;
+    },
+
+    aplicarAcordesTranspostosNoHtmlOriginal(acordesTranspostos) {
+      const container = document.createElement("div");
+      container.innerHTML = String(this.cifraOriginalHtml || "");
+
+      const elementos = Array.from(
+        container.querySelectorAll("b[data-chord-name]")
+      );
+
+      if (elementos.length !== acordesTranspostos.length) {
+        throw new Error(
+          `Quantidade de acordes divergente: original=${elementos.length}, transposto=${acordesTranspostos.length}.`
+        );
+      }
+
+      elementos.forEach((el, index) => {
+        const acordeOriginal = String(
+          el.getAttribute("data-chord-name") ||
+          el.getAttribute("data-chord-original-text") ||
+          el.textContent ||
+          ""
+        ).trim();
+
+        const acordeNovo = String(
+          acordesTranspostos[index] || acordeOriginal
+        ).trim();
+
+        const diferenca = acordeNovo.length - acordeOriginal.length;
+
+        // data-chord-name guarda somente o acorde musical real.
+        el.setAttribute("data-chord-name", acordeNovo);
+
+        if (diferenca < 0) {
+          // Acorde menor: completa a largura perdida DENTRO do <b>.
+          // F# -> G  resulta em <b>G </b>
+          // G#m -> C resulta em <b>C  </b>
+          el.textContent =
+            acordeNovo + "X".repeat(Math.abs(diferenca));
+          return;
+        }
+
+        el.textContent = acordeNovo;
+
+        if (diferenca === 0) {
+          return;
+        }
+
+        // Acorde maior: consome a diferença do whitespace imediatamente
+        // posterior ao </b>. Ex.: B -> C#m (+2): 9 espaços viram 7.
+        let restante = diferenca;
+        let node = el.nextSibling;
+
+        while (node && restante > 0 && node.nodeType === Node.TEXT_NODE) {
+          const texto = node.nodeValue || "";
+          const match = texto.match(/^[ \t]+/);
+
+          if (!match) {
+            break;
+          }
+
+          const remover = Math.min(restante, match[0].length);
+          node.nodeValue = texto.slice(remover);
+          restante -= remover;
+          node = node.nextSibling;
+        }
+
+        // Se não houver whitespace suficiente, o excedente é crescimento
+        // real; o reflow mobile decide a quebra sem inventar espaço negativo.
+      });
+
+      return container.innerHTML;
+    },
+
+    async transporCifraTomIa(tomAlvo) {
+      if (!this.cifraOriginalHtml || !this.tomOriginalReal) {
+        alert(
+          "❌ A cifra original ou o tom original não estão disponíveis."
+        );
         return;
       }
 
-      if (
-        this.form.tomDesejado ===
-        tomAlvo
-      ) {
+      if (this.form.tomDesejado === tomAlvo) {
         return;
       }
 
-      this.loadingCifra =
-        true;
+      this.loadingCifra = true;
 
-      const tomOrigemAtual =
+      const tomAnteriorVisual =
         this.form.tomDesejado;
 
       try {
@@ -924,29 +1861,14 @@ export default {
           baseUrl +
           "/artists/ia/transpose-cifra";
 
-        // ============================================================
-        // NÃO COMPACTAR ESPAÇOS.
-        //
-        // Os espaços determinam a posição horizontal dos acordes.
-        // ============================================================
-
-        let htmlEstruturado =
-          this.cifraResultado
-            .htmlEstruturado;
-
-        htmlEstruturado =
-          htmlEstruturado.replace(
-            /\sdata-chord-(index|scope-id|original-text)="[^"]*"/g,
-            ""
-          );
+        // O HTML fica no Vue. O backend recebe somente os acordes.
+        const acordesOriginais =
+          this.extrairAcordesOriginaisParaTransposicao();
 
         const payload = {
-          htmlEstruturado:
-            htmlEstruturado,
-
+          acordes: acordesOriginais,
           tomOriginal:
-            tomOrigemAtual,
-
+            this.tomOriginalReal,
           tomDesejado:
             tomAlvo
         };
@@ -958,16 +1880,10 @@ export default {
           alert(
             "⚠️ Token de autenticação não localizado. Faça login novamente."
           );
-
           return;
         }
 
-        console.log(
-          "🎸 [TRANSPOSIÇÃO LOCAL] " +
-          tomOrigemAtual +
-          " → " +
-          tomAlvo
-        );
+        //console.log("[ENVIADO]", payload);
 
         const response =
           await axios.post(
@@ -976,64 +1892,60 @@ export default {
             config
           );
 
-        console.log(
-          "🎸 [TRANSPOSIÇÃO LOCAL] Resposta:",
-          response.data
-        );
+        //console.log("[RECEBIDO]", response.data);
 
-        // ============================================================
-        // TEXTO VISUAL
-        // ============================================================
+        
 
-        this.cifraResultado.cifraCompleta =
-          response.data.cifraTransposta;
+        
 
+        const acordesTranspostos =
+          Array.isArray(response.data?.acordes)
+            ? response.data.acordes
+            : [];
 
-        // ============================================================
-        // HTML TRANSPOSICIONADO
-        // ============================================================
-
-        if (
-          response.data.htmlEstruturado
-        ) {
-          this.cifraResultado
-            .htmlEstruturado =
-            response.data
-              .htmlEstruturado;
+        if (!acordesTranspostos.length) {
+          throw new Error(
+            "O backend não retornou o array de acordes transpostos."
+          );
         }
 
+        // Sempre reconstrói a partir de uma cópia NOVA do HTML original.
+        // A transposição agora é aplicada diretamente sobre a
+        // matriz mobile ORIGINAL já formatada.
+        const cifraMobileTransposta =
+          this.substituirAcordesNaCifraMobileOriginal(
+            acordesOriginais,
+            acordesTranspostos
+          );
 
-        // ============================================================
-        // TOM ATUAL
-        // ============================================================
+        // Não passa novamente pelo formatarCifraMobile().
+        this.cifraMobileRender =
+          cifraMobileTransposta;
 
+        // A transposição foi concluída: sincroniza o tom corrente
+        // exibido na badge e o estado ativo do seletor.
         this.form.tomDesejado =
-          tomAlvo;
-
-        this.cifraResultado.tomOriginal =
           tomAlvo;
 
       } catch (error) {
         console.error(
-          "🚨 [TRANSPOSIÇÃO LOCAL] Falha:",
+          "🚨 [TRANSPOSIÇÃO] Falha:",
           error
         );
 
         const mensagem =
           error.response?.data?.mensagem ||
           error.response?.data?.erro ||
+          error.message ||
           "Não foi possível transpor a música.";
 
-        alert(
-          "❌ " + mensagem
-        );
+        alert("❌ " + mensagem);
 
         this.form.tomDesejado =
-          tomOrigemAtual;
+          tomAnteriorVisual;
 
       } finally {
-        this.loadingCifra =
-          false;
+        this.loadingCifra = false;
       }
     },
     normalizarTomParaBotao(tom) {
@@ -2104,6 +3016,10 @@ export default {
   overflow: visible;
 }
 
+.cifra-pre-mobile {
+  display: none;
+}
+
 
 /* ================================================================ */
 /* TABLET */
@@ -2286,25 +3202,189 @@ export default {
   }
 
 
+  /*
+   * SEVEN SHOWS v106 — blocos atômicos acorde/letra + âncora individual.
+   *
+   * A cifra é uma área de leitura musical: no celular ela deve aproveitar
+   * toda a largura disponível do card. Removemos somente os recuos externos
+   * específicos de .cifra-area; os demais blocos da página mantêm o padrão
+   * visual já aprovado. O renderer continua medindo a largura real do
+   * .cifra-scroll, portanto o reflow acompanha automaticamente 360/390/400px
+   * (e demais larguras), sem qualquer constante específica de música.
+   */
   .cifra-area {
+    margin-left: 0;
+    margin-right: 0;
+
     padding:
       7px;
   }
 
 
-  .cifra-pre {
-    padding:
-      20px 18px 30px;
+  /*
+   * SEVEN SHOWS v91 — reflow mobile por colunas.
+   *
+   * Desktop continua intocado: usa cifraCompleta com white-space: pre.
+   * No celular, o renderer mede a largura útil real e refaz somente as
+   * quebras necessárias. Linhas de acordes e letra são quebradas nas mesmas
+   * colunas para preservar a relação horizontal entre ambos.
+   */
+  .cifra-scroll {
+    overflow-x: hidden;
+  }
 
-    font-size:
-      13px;
+  .cifra-pre-desktop {
+    display: none;
+  }
+
+  .cifra-pre-mobile {
+    display: block;
+    min-width: 0;
+    width: 100%;
+    max-width: 100%;
+
+    /* v121 — aproveita a largura real do aparelho físico.
+     * O recuo anterior de 18px por lado retirava 36px justamente da área
+     * usada pelo cálculo de colunas e antecipava quebras em 360/375px. */
+    padding:
+      20px 8px 30px;
 
     /*
-     * CONTINUA 1.0 TAMBÉM NO CELULAR
+     * SEVEN SHOWS v97 — escala tipográfica mobile.
+     * A própria medição DOM do renderer usa esta fonte renderizada
+     * para recalcular quantas colunas realmente cabem na largura útil.
+     */
+    /*
+     * SEVEN SHOWS v119 — tipografia realmente responsiva no aparelho.
+     *
+     * Em 390px preservamos os 15px já aprovados. Em viewports menores,
+     * reduzimos progressivamente a fonte até 13px. Como o cálculo de
+     * mobileCifraColumns mede a fonte REAL renderizada, o renderer passa
+     * automaticamente a comportar mais colunas no celular físico e deixa
+     * de quebrar frases que ainda cabem visualmente, sem alterar parser,
+     * índices, acordes ou o backend.
+     */
+    /* v121 — escala pelo viewport físico, mantendo 15px em 390px e
+     * permitindo 12px nos aparelhos estreitos. O cálculo JS continua
+     * medindo a fonte efetivamente renderizada; não há hardcode de música. */
+    font-size:
+      clamp(12px, calc(10vw - 24px), 15px);
+
+    /*
+     * SEVEN SHOWS v117 — ajuste exclusivamente vertical.
+     * Mantém integralmente a geometria horizontal aprovada da v115 e
+     * aproxima acordes/letra sem criar os vazios excessivos da v116.
      */
     line-height:
-      1.0;
+      1.12;
+
+    /*
+     * O texto já chega refluído pelo renderer Seven Shows.
+     * O navegador NÃO pode decidir novas quebras, pois isso
+     * separaria novamente a letra da linha de acordes.
+     */
+    white-space: pre;
+    overflow: visible;
+  }
+
+  /*
+   * SEVEN SHOWS v118 — acordes mobile.
+   * v-html não recebe o atributo scoped do componente; por isso a regra
+   * precisa atravessar explicitamente o escopo a partir do elemento pai.
+   * Alteração exclusivamente visual: não muda fonte, largura, espaços,
+   * índices, parsing, reflow ou posicionamento dos acordes.
+   */
+  .cifra-pre-mobile :deep(.cifra-acorde) {
+    color: #ff6c22;
+
+    /* v123 — respiro vertical ampliado no acorde no mobile.
+     * Ajuste exclusivamente vertical, preservando integralmente largura,
+     * colunas, índices, reflow e posição horizontal aprovados na v122. */
+    display: inline-block;
+    padding-top: 6px;
   }
 
 }
+
+
+/* =========================================================
+   MOBILE UX — recuperada da v38/v40 validada
+   PDF separado; tom atual + Alterar tom compactos.
+   Não interfere no renderer/formatador da cifra.
+   ========================================================= */
+.song-mobile-tools {
+  display: none;
+}
+
+@media (max-width: 767.98px) {
+  .song-header-actions-desktop {
+    display: none !important;
+  }
+
+  .song-header {
+    display: block !important;
+  }
+
+  .song-mobile-tools {
+    display: block !important;
+    margin-top: 10px;
+  }
+
+  .mobile-export-pdf {
+    width: auto !important;
+    min-height: 36px !important;
+    padding: 7px 12px !important;
+    font-size: 10px !important;
+  }
+
+  .mobile-tone-row {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin-top: 8px;
+  }
+
+  .mobile-current-tone,
+  .mobile-change-tone-button {
+    flex: 1 1 0;
+    min-height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 7px;
+    font-size: 10px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .mobile-change-tone-button {
+    border: 1px solid #00a9b7;
+    background: #fff;
+    color: #008e9a;
+    padding: 6px 9px;
+  }
+
+  .mobile-tone-picker {
+    margin-top: 7px;
+    padding: 8px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+    border: 1px solid #dce5e8;
+    border-radius: 9px;
+    background: #fff;
+  }
+
+  .mobile-tone-picker .tone-button {
+    min-height: 34px !important;
+    height: 34px !important;
+  }
+
+  /* O transpositor grande continua disponível no desktop,
+     mas fica oculto no mobile, como na UX validada. */
+  .transpose-panel {
+    display: none !important;
+  }
+}
+
 </style>
