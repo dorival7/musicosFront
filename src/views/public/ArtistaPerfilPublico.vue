@@ -80,7 +80,7 @@
                 <i class="ri-image-gallery-line text-primary me-2"></i> Veja a banda no palco
               </h4>
               <p class="portfolio-intro font-monospace mb-4">Assista aos vídeos e conheça alguns momentos dos shows antes de escolher o formato ideal para o seu evento.</p>
-              <div v-if="videosPortfolio && videosPortfolio.length > 0 && !fotoAtivaGrande" class="mb-3 animate__animated animate__fadeIn">
+              <div v-if="videosPortfolio && videosPortfolio.length > 0" class="mb-3 animate__animated animate__fadeIn">
                 <div class="ratio ratio-16x9 rounded-3 overflow-hidden border border-light border-opacity-10 bg-dark shadow-sm">
                   
                 <iframe 
@@ -95,23 +95,8 @@
                 </div>
               </div>
 
-              <!-- 📸 2. NOVO VISUALIZADOR INCORPORADO (Ocupa o topo com a foto quando clicada) -->
-              <div v-if="fotoAtivaGrande" class="mb-3 animate__animated animate__fadeIn">
-                <div class="d-flex justify-content-between align-items-center mb-2 font-monospace">
-                  <span class="badge bg-primary-subtle text-primary font-monospace fs-10 px-2 py-1 rounded-2 text-uppercase">
-                    🔍 Foto em Destaque
-                  </span>
-                  <button @click="fotoAtivaGrande = ''" class="btn btn-link text-muted btn-sm p-0 fs-12 text-decoration-none">
-                    <i class="ri-video-line text-primary me-1"></i> Voltar para o Vídeo
-                  </button>
-                </div>
-                  <div class="ratio ratio-16x9 rounded-3 overflow-hidden border border-light border-opacity-10 bg-dark shadow-sm artist-photo-viewer" style="background-color: #0d0f18 !important;">
-                    <img :src="fotoAtivaGrande" alt="Foto Ampliada" class="w-100 h-100 object-fit-contain p-2 artist-photo-featured" />
-                  </div>
-                </div>
-
               <!-- 🖼️ 2. ESTEIRA HORIZONTAL DE THUMBNAILS -->
-              <div v-if="videosPortfolio && videosPortfolio.length > 1  && !fotoAtivaGrande" class="d-flex flex-wrap gap-2 mb-4 font-monospace artist-video-thumbs">
+              <div v-if="videosPortfolio && videosPortfolio.length > 1" class="d-flex flex-wrap gap-2 mb-4 font-monospace artist-video-thumbs">
                 <div 
                   v-for="(video, index) in videosPortfolio" 
                   :key="video.id"
@@ -136,15 +121,15 @@
                 <hr class="bg-white" />
               </div>
 
-              <!-- 🖼️ 4. GRID DE IMAGENS SECUNDÁRIAS (Gatilho de clique adicionado) -->
+              <!-- 🖼️ 4. GRID DE IMAGENS SECUNDÁRIAS -->
               <div class="row g-3 artist-photo-grid" v-if="fotosPortfolio && fotosPortfolio.length > 0">
                 <div 
                   class="col-sm-4 col-6 artist-photo-col" 
                   v-for="midia in fotosPortfolio" 
                   :key="midia.id || midia.Id"
-                  @click="fotoAtivaGrande = obterUrlImagem(midia.mediaUrl || midia.MediaUrl)"
+                  @click="selecionarFoto(midia)"
                 >
-                  <div class="rounded-3 overflow-hidden border border-light border-opacity-10 position-relative bg-dark-subtle shadow-sm artist-photo-tile" style="height: 140px; cursor: zoom-in;">
+                  <div class="rounded-3 overflow-hidden border border-light border-opacity-10 position-relative bg-dark-subtle shadow-sm artist-photo-tile" :class="{ 'photo-active': (midia.id || midia.Id) === fotoAtivaId }" style="height: 140px; cursor: pointer;">
                     <img 
                       :src="obterUrlImagem(midia.mediaUrl || midia.MediaUrl)" 
                       alt="Foto do Show" 
@@ -240,6 +225,62 @@
       </div>
     </div>
 
+    <!-- GALERIA LIGHTBOX: independente do player de vídeos e da posição da página -->
+    <Teleport to="body">
+      <div
+        v-if="fotoAtivaGrande"
+        class="artist-lightbox"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Galeria de fotos do artista"
+        @click.self="fecharGaleria"
+        @touchstart.passive="iniciarSwipe"
+        @touchend.passive="finalizarSwipe"
+      >
+        <button type="button" class="artist-lightbox-close" @click="fecharGaleria" aria-label="Fechar galeria">
+          <i class="ri-close-line"></i>
+        </button>
+
+        <div class="artist-lightbox-shell">
+          <div class="artist-lightbox-media">
+            <img :src="fotoAtivaGrande" :alt="fotoAtivaLegenda || 'Foto do artista'" />
+
+            <button
+              v-if="fotosPortfolio.length > 1"
+              type="button"
+              class="artist-lightbox-nav artist-lightbox-prev"
+              @click.stop="fotoAnterior"
+              aria-label="Foto anterior"
+            >
+              <i class="ri-arrow-left-s-line"></i>
+            </button>
+            <button
+              v-if="fotosPortfolio.length > 1"
+              type="button"
+              class="artist-lightbox-nav artist-lightbox-next"
+              @click.stop="proximaFoto"
+              aria-label="Próxima foto"
+            >
+              <i class="ri-arrow-right-s-line"></i>
+            </button>
+          </div>
+
+          <aside class="artist-lightbox-info font-monospace">
+            <div class="artist-lightbox-brand">
+              <span class="artist-lightbox-kicker">PORTFÓLIO DE PALCO</span>
+              <strong>{{ artista.nomeBanda || artista.NomeBanda || 'Artista' }}</strong>
+            </div>
+            <div class="artist-lightbox-caption">
+              {{ fotoAtivaLegenda || 'Foto do portfólio' }}
+            </div>
+            <div class="artist-lightbox-counter">
+              {{ fotoAtivaIndex + 1 }} / {{ fotosPortfolio.length }}
+            </div>
+          </aside>
+        </div>
+      </div>
+    </Teleport>
+
   </div>
 </template>
 
@@ -258,7 +299,12 @@ export default {
       fotosPortfolio: [],
       videosPortfolio: [],
       videoAtivoIndex: 0,
-      fotoAtivaGrande: ""
+      fotoAtivaGrande: "",
+      fotoAtivaId: null,
+      fotoAtivaIndex: -1,
+      fotoAtivaLegenda: "",
+      touchInicioX: null,
+      bodyOverflowAnterior: ""
     };
   },
   methods: {
@@ -289,6 +335,61 @@ export default {
 
       const urlLimpa = urlRelativa.startsWith("/") ? urlRelativa : "/" + urlRelativa;
       return base + urlLimpa;
+    },
+    selecionarFoto(midia) {
+      if (!midia) return;
+      const id = midia.id || midia.Id || null;
+      const index = this.fotosPortfolio.findIndex(f => (f.id || f.Id) === id);
+      this.fotoAtivaId = id;
+      this.fotoAtivaIndex = index >= 0 ? index : 0;
+      this.fotoAtivaGrande = this.obterUrlImagem(midia.mediaUrl || midia.MediaUrl);
+      this.fotoAtivaLegenda = midia.caption || midia.Caption || "";
+      if (typeof document !== "undefined") {
+        // Guarda o estado anterior somente na abertura inicial do lightbox.
+        // Ao navegar entre fotos, o body já está com overflow hidden e não
+        // devemos sobrescrever o valor original que será restaurado ao fechar.
+        if (document.body.style.overflow !== "hidden") {
+          this.bodyOverflowAnterior = document.body.style.overflow || "";
+        }
+        document.body.style.overflow = "hidden";
+      }
+    },
+    fotoAnterior() {
+      if (!this.fotosPortfolio.length) return;
+      const atual = this.fotoAtivaIndex >= 0 ? this.fotoAtivaIndex : 0;
+      const novoIndex = (atual - 1 + this.fotosPortfolio.length) % this.fotosPortfolio.length;
+      this.selecionarFoto(this.fotosPortfolio[novoIndex]);
+    },
+    proximaFoto() {
+      if (!this.fotosPortfolio.length) return;
+      const atual = this.fotoAtivaIndex >= 0 ? this.fotoAtivaIndex : 0;
+      const novoIndex = (atual + 1) % this.fotosPortfolio.length;
+      this.selecionarFoto(this.fotosPortfolio[novoIndex]);
+    },
+    fecharGaleria() {
+      this.fotoAtivaGrande = "";
+      this.fotoAtivaId = null;
+      this.fotoAtivaIndex = -1;
+      this.fotoAtivaLegenda = "";
+      this.touchInicioX = null;
+      if (typeof document !== "undefined") document.body.style.overflow = this.bodyOverflowAnterior;
+    },
+    aoPressionarTecla(event) {
+      if (!this.fotoAtivaGrande) return;
+      if (event.key === "Escape") this.fecharGaleria();
+      else if (event.key === "ArrowLeft") this.fotoAnterior();
+      else if (event.key === "ArrowRight") this.proximaFoto();
+    },
+    iniciarSwipe(event) {
+      this.touchInicioX = event.changedTouches && event.changedTouches[0] ? event.changedTouches[0].clientX : null;
+    },
+    finalizarSwipe(event) {
+      if (this.touchInicioX === null || !event.changedTouches || !event.changedTouches[0]) return;
+      const delta = event.changedTouches[0].clientX - this.touchInicioX;
+      this.touchInicioX = null;
+      if (Math.abs(delta) < 45) return;
+      if (delta < 0) this.proximaFoto();
+      else this.fotoAnterior();
     },
     converterLinkYoutube(urlOriginal) {
       if (!urlOriginal) return "";
@@ -330,6 +431,9 @@ export default {
         if (response.data) {
           this.artista = response.data;
           const listaMidias = response.data.medias || response.data.Medias || [];
+
+
+          console.log("Medias", response.data);
           
           this.fotosPortfolio = listaMidias.filter(m => {
             const tipo = (m.mediaType || m.MediaType || m.mediatype || "").toString().toLowerCase();
@@ -371,6 +475,14 @@ export default {
   },
   mounted() {
     this.carregarPerfilPorSlug();
+    window.addEventListener("keydown", this.aoPressionarTecla);
+  },
+  beforeUnmount() {
+    window.removeEventListener("keydown", this.aoPressionarTecla);
+    if (typeof document !== "undefined") {
+      document.body.style.overflow = this.bodyOverflowAnterior || "";
+      document.body.classList.remove("artist-lightbox-open");
+    }
   }
 };
 </script>
@@ -434,6 +546,102 @@ html { scroll-behavior: smooth; }
   transform: scale(1.035);
   filter: brightness(1.08);
 }
+/* Lightbox da galeria: mantém o vídeo intacto e abre a foto no viewport atual. */
+.artist-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 10050;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 28px;
+  background: rgba(3, 4, 8, .94);
+  backdrop-filter: blur(8px);
+}
+.artist-lightbox-shell {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 330px;
+  width: min(1180px, 94vw);
+  height: min(82vh, 820px);
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 16px;
+  background: #0d0f16;
+  box-shadow: 0 24px 80px rgba(0,0,0,.6);
+}
+.artist-lightbox-media {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #050609;
+}
+.artist-lightbox-media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.artist-lightbox-info {
+  display: flex;
+  flex-direction: column;
+  padding: 28px 24px 22px;
+  border-left: 1px solid rgba(255,255,255,.1);
+  color: #fff;
+  background: #11141d;
+}
+.artist-lightbox-brand { display: flex; flex-direction: column; gap: 6px; font-size: 14px; }
+.artist-lightbox-brand strong { font-size: 16px; text-transform: uppercase; }
+.artist-lightbox-kicker { color: #ff6c22; font-size: 10px; font-weight: 800; letter-spacing: 1px; }
+.artist-lightbox-caption {
+  margin-top: 28px;
+  color: #d4d7df;
+  font-size: 13px;
+  line-height: 1.7;
+  white-space: pre-line;
+  overflow-y: auto;
+}
+.artist-lightbox-counter { margin-top: auto; padding-top: 20px; color: #ff8a50; font-size: 12px; font-weight: 800; }
+.artist-lightbox-close {
+  position: fixed;
+  top: 18px;
+  right: 22px;
+  z-index: 2;
+  width: 44px;
+  height: 44px;
+  border: 1px solid rgba(255,255,255,.18);
+  border-radius: 50%;
+  background: rgba(16,18,25,.9);
+  color: #fff;
+  font-size: 26px;
+  line-height: 1;
+  cursor: pointer;
+}
+.artist-lightbox-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 58px;
+  border: 1px solid rgba(255,255,255,.18);
+  border-radius: 10px;
+  background: rgba(7,9,14,.78);
+  color: #fff;
+  font-size: 30px;
+  cursor: pointer;
+}
+.artist-lightbox-prev { left: 16px; }
+.artist-lightbox-next { right: 16px; }
+.artist-photo-tile.photo-active {
+  border-color: #ff6c22 !important;
+  box-shadow: 0 0 0 1px rgba(255,108,34,.45), 0 8px 20px rgba(0,0,0,.3) !important;
+}
+
 #formatos-show { scroll-margin-top: 110px; }
 
 @media (max-width: 991.98px) {
@@ -468,28 +676,6 @@ html { scroll-behavior: smooth; }
   }
   .artist-portfolio-card .ratio {
     border-radius: 12px !important;
-  }
-
-  /* Foto selecionada vira a mídia principal: largura total e altura proporcional. */
-  .artist-photo-viewer.ratio {
-    display: flex !important;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: auto !important;
-    aspect-ratio: auto !important;
-  }
-  .artist-photo-viewer.ratio::before {
-    display: none !important;
-  }
-  .artist-photo-viewer.ratio > .artist-photo-featured {
-    position: static !important;
-    display: block;
-    width: 100% !important;
-    height: auto !important;
-    max-height: 72vh;
-    padding: 0 !important;
-    object-fit: contain !important;
   }
 
   /* Vídeos viram uma esteira real: thumbnails maiores e swipe horizontal. */
@@ -529,6 +715,8 @@ html { scroll-behavior: smooth; }
     border-radius: 10px !important;
   }
 
+
+
   .artist-region-card {
     margin-top: 2px;
     margin-bottom: 18px !important;
@@ -537,6 +725,34 @@ html { scroll-behavior: smooth; }
 
   .package-card { padding: 18px !important; }
   .package-card .btn-primary { min-width: 0; }
+}
+
+@media (max-width: 767.98px) {
+  .artist-lightbox { padding: 0; align-items: stretch; background: #050609; }
+  .artist-lightbox-shell {
+    grid-template-columns: 1fr;
+    grid-template-rows: minmax(0, 1fr) auto;
+    width: 100vw;
+    height: 100dvh;
+    border: 0;
+    border-radius: 0;
+  }
+  .artist-lightbox-media { min-height: 0; padding-top: 48px; }
+  .artist-lightbox-media img { object-fit: contain; }
+  .artist-lightbox-info {
+    max-height: 30vh;
+    padding: 14px 18px 16px;
+    border-left: 0;
+    border-top: 1px solid rgba(255,255,255,.1);
+  }
+  .artist-lightbox-brand { gap: 3px; }
+  .artist-lightbox-brand strong { font-size: 13px; }
+  .artist-lightbox-caption { margin-top: 10px; font-size: 12px; line-height: 1.55; }
+  .artist-lightbox-counter { padding-top: 10px; }
+  .artist-lightbox-close { top: 10px; right: 10px; width: 38px; height: 38px; font-size: 23px; }
+  .artist-lightbox-nav { width: 40px; height: 50px; font-size: 26px; background: rgba(7,9,14,.7); }
+  .artist-lightbox-prev { left: 8px; }
+  .artist-lightbox-next { right: 8px; }
 }
 
 </style>
